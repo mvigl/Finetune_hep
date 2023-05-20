@@ -1,3 +1,5 @@
+from comet_ml import Experiment
+from comet_ml.integration.pytorch import log_model
 import numpy as np
 import awkward as ak
 import matplotlib.pyplot as plt
@@ -160,7 +162,7 @@ def build_features_and_labels(X_pfo,X_jet,X_label,njets, transform_features=True
     label_list = ['label_H_bb']                  
     out['label'] = np.stack([a[n].astype('int') for n in label_list], axis=2)
 
-
+    return out
 
 def infer(model,data,train_batch,device):
     N = train_batch
@@ -182,7 +184,7 @@ def infer_val(model,data,train_batch,device):
 
 def train_step(model,data,labels,opt,loss_fn,train_batch,device):
     model.train()
-    preds = infer(model,data,train_batch)
+    preds = infer(model,data,train_batch,device)
     target = torch.tensor(labels[train_batch]).float().to(device)
     loss = loss_fn(preds,target)
     target.to("cpu")
@@ -199,7 +201,7 @@ def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
         ix_train = np.array_split(train_set,int(len(train_set)/512))
 
         for i in range(len(ix_train)):
-            preds_train_i = infer_val(model,data,ix_train[i]).reshape(len(ix_train[i]))
+            preds_train_i = infer_val(model,data,ix_train[i],device).reshape(len(ix_train[i]))
             if i==0:
                 preds_train = preds_train_i.detach().cpu().numpy()
             else:    
@@ -209,7 +211,7 @@ def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
         ix_val = np.array_split(validtion_set,int(len(validtion_set)/512))
 
         for i in range(len(ix_val)):
-            preds_val_i = infer_val(model,data,ix_val[i]).reshape(len(ix_val[i]))
+            preds_val_i = infer_val(model,data,ix_val[i],device).reshape(len(ix_val[i]))
             if i==0:
                 preds_val = preds_val_i.detach().cpu().numpy()
             else:    
@@ -228,7 +230,7 @@ def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
     
-def train_loop(model, data, labels, config, device):
+def train_loop(model, data, labels, device,experiment, config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
@@ -242,7 +244,7 @@ def train_loop(model, data, labels, config, device):
     train_set = ix2[ix[:N_tr]]
     validtion_set = ix2[ix[N_tr:]]
     with TemporaryDirectory() as tempdir:
-        best_model_params_path = (f'/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/models/COMBINED_TRAINING_{config["LR"]}_{config["batch_size"]}.pt' )
+        best_model_params_path = (f'/home/iwsatlas1/mavigl/Finetune_hep/source/models/COMBINED_TRAINING_{config["LR"]}_{config["batch_size"]}.pt' )
     for epoch in range (0,config['epochs']):
         train_batches = DataLoader(
             ix2,  batch_size=config['batch_size'], sampler=SubsetRandomSampler(ix[:N_tr])
@@ -250,14 +252,14 @@ def train_loop(model, data, labels, config, device):
         print(f'epoch: {epoch+1}') 
         for i, train_batch in enumerate( train_batches ):
             train_batch = train_batch.numpy()
-            report = train_step(model, data, labels, opt, loss_fn,train_batch )
-        evals.append(eval_fn(model,labels, loss_fn,data,train_set,validtion_set) )    
+            report = train_step(model, data, labels, opt, loss_fn,train_batch ,device)
+        evals.append(eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device) )    
         val_loss = evals[epoch]['test_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
 
-        
+        experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, epoch=(epoch))
     model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
     return evals, model
