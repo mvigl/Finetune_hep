@@ -278,3 +278,39 @@ def get_preds(model,data,evts,device):
         else:    
             yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
     return yi_model
+
+
+def get_train_data(path):
+    with open(path+'/X_pfo_train.npy', 'rb') as f:
+        X_pfo_train=np.load(f)
+    with open(path+'/X_jet_train.npy', 'rb') as f:
+        X_jet_train=np.load(f)   
+    with open(path+'/njets_train.npy', 'rb') as f:
+        njets_train=np.load(f)        
+    with open(path+'/labels_train.npy', 'rb') as f:
+        labels_train=np.load(f)
+    with open(path+'/X_label_train.npy', 'rb') as f:
+        X_label_train=np.load(f) 
+
+    evts_train = np.arange(len(X_label_train))[np.where(X_pfo_train[:,0,0,0] != 0)[0]]
+    labels_train = labels_train[evts_train]
+
+    return X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train
+
+def get_test_data(path):
+
+    with open(path+'/X_pfo_test.npy', 'rb') as f:
+        X_pfo_test=np.load(f)
+    with open(path+'/X_jet_test.npy', 'rb') as f:
+        X_jet_test=np.load(f)   
+    with open(path+'/njets_test.npy', 'rb') as f:
+        njets_test=np.load(f)  
+    with open(path+'/labels_test.npy', 'rb') as f:
+        labels_test=np.load(f)
+    with open(path+'/X_label_test.npy', 'rb') as f:
+        X_label_test=np.load(f) 
+
+    evts_test = np.arange(len(X_label_test))[np.where(X_pfo_test[:,0,0,0] != 0)[0]]
+    labels_test = labels_test[evts_test]    
+
+    return X_pfo_test, X_jet_test, njets_test, labels_test, X_label_test, evts_test
