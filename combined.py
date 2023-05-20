@@ -30,11 +30,7 @@ print(model)
 print(device)
 
 X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train = df.get_train_data('/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
-X_pfo_test , X_jet_test , njets_test , labels_test , X_label_test , evts_test  = df.get_train_data('/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
-
-
 train = df.build_features_and_labels(X_pfo_train[evts_train][:,:2],X_jet_train[evts_train][:,:2],X_label_train[evts_train][:,:2],2)
-test = df.build_features_and_labels(X_pfo_test[evts_test][:,:2],X_jet_test[evts_test][:,:2],X_label_test[evts_test][:,:2],2)
 
 experiment = Experiment(
   api_key = "r1SBLyPzovxoWBPDLx3TAE02O",
@@ -46,7 +42,7 @@ experiment = Experiment(
 
 hyper_params = {
    "learning_rate": 0.00004,
-   "steps": 5,
+   "steps": 20,
    "batch_size": 512,
 }
 experiment.log_parameters(hyper_params)
@@ -71,4 +67,4 @@ figure(figsize=(5, 4), dpi=80)
 df.plot_evals(evals_part, 'combined')
 plt.legend()
 plt.semilogy()
-plt.savefig(f"COMBINED_TRAINING_{ hyper_params['learning_rate'] }_{hyper_params['batch_size']}.png")
+plt.savefig(f"ROC_COMBINED_TRAINING_{ hyper_params['learning_rate'] }_{hyper_params['batch_size']}.png")
