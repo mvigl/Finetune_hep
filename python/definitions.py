@@ -230,7 +230,7 @@ def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
     
-def train_loop(model, data, labels, device,experiment, config):
+def train_loop(model, data, labels, device,experiment, path, config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
@@ -244,7 +244,7 @@ def train_loop(model, data, labels, device,experiment, config):
     train_set = ix2[ix[:N_tr]]
     validtion_set = ix2[ix[N_tr:]]
     with TemporaryDirectory() as tempdir:
-        best_model_params_path = (f'/home/iwsatlas1/mavigl/Finetune_hep/source/models/COMBINED_TRAINING_{config["LR"]}_{config["batch_size"]}.pt' )
+        best_model_params_path = path
     for epoch in range (0,config['epochs']):
         train_batches = DataLoader(
             ix2,  batch_size=config['batch_size'], sampler=SubsetRandomSampler(ix[:N_tr])
