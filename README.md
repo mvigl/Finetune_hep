@@ -1,17 +1,17 @@
 # Finetune_hep
 
-All scripts should be run from a 'run' dir outside of source run/my_run as 
+All scripts should be run from a 'run' dir outside of Finetune_hep run/my_run as 
 
 ````
- python ../../source/scripts/run.py --default --subset --model 'mlpHlXbb'
+ python ../../Finetune_hep/scripts/run.py --default --subset --model 'mlpHlXbb'
 ````
-to get loss info in comet add
+to get loss info in comet.ml add
 
 ````
 --ws <'my_workspace'> --api_key <'my_api_key'>
 ````
 
-output:
+output dir will be created in run/my_run:
 
 models/*.pt
 
