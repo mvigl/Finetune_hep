@@ -55,7 +55,7 @@ for mod in models:
     model_params_path=mod
     model.load_state_dict(torch.load(model_params_path))
 
-    yi = df.get_preds(model,test,evts_test,device)
+    yi = ParT_mlp.get_preds(model,test,evts_test,device)
     fpr_i, tpr_i, threshold_i = roc_curve(labels_test, yi)
     fpr.append(fpr_i)
     tpr.append(tpr_i)
