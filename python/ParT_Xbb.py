@@ -1,6 +1,31 @@
+from comet_ml import Experiment
+from comet_ml.integration.pytorch import log_model
+import numpy as np
+import awkward as ak
+import matplotlib.pyplot as plt
+import pandas as pd
+import math
+import vector
 import torch
 import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
+from sklearn.preprocessing import StandardScaler
+from tempfile import TemporaryDirectory
+import torch.optim as optim
+vector.register_awkward()
 from ParticleTransformer import ParticleTransformer
+
+def make_mlp(in_features,out_features,nlayer):
+    layers = []
+    for i in range(nlayer):
+        layers.append(torch.nn.Linear(in_features, out_features))
+        layers.append(torch.nn.ReLU())
+        in_features = out_features
+    layers.append(torch.nn.Linear(in_features, 1))
+    layers.append(torch.nn.Sigmoid())
+    model = torch.nn.Sequential(*layers)
+    return model
 
 class ParticleTransformerWrapper(nn.Module):
     def __init__(self, **kwargs) -> None:
@@ -12,12 +37,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        for out_dim, drop_rate in fc_params:
-            fcs.append(nn.Sequential(nn.Linear(in_dim, out_dim), nn.ReLU(), nn.Dropout(drop_rate)))
-            in_dim = out_dim 
-        fcs.append(nn.Linear(in_dim, num_classes))
-        fcs.append(nn.Sigmoid())
-        self.fc = nn.Sequential(*fcs)
+        self.fc = make_mlp(in_dim,out_features=128,nlayer = 0)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -33,7 +53,6 @@ class ParticleTransformerWrapper(nn.Module):
         if self.for_inference:
             output = torch.softmax(output, dim=1)
         return output
-
 
 def get_model(data_config, **kwargs):
 
@@ -66,3 +85,105 @@ def get_model(data_config, **kwargs):
 
 def get_loss(data_config, **kwargs):
     return torch.nn.BCELoss()
+
+
+def get_preds(model,data,evts,device):
+
+    ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
+    for i in range(len(ix)):
+        preds_i = infer_val(model,data,ix[i],device).reshape(len(ix[i]))
+        if i==0:
+            yi_model = preds_i.detach().cpu().numpy()
+        else:    
+            yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
+    return yi_model
+
+def infer(model,data,train_batch,device):
+    N = train_batch
+    pf_points = torch.tensor(data['pf_points'][N]).float().to(device)
+    pf_features = torch.tensor(data['pf_features'][N]).float().to(device)
+    pf_vectors = torch.tensor(data['pf_vectors'][N]).float().to(device)
+    pf_mask = torch.tensor(data['pf_mask'][N]).float().to(device)
+    preds = model(pf_points,pf_features,pf_vectors,pf_mask)
+    return preds.reshape(len(train_batch))
+
+def infer_val(model,data,train_batch,device):
+    with torch.no_grad():
+        return infer(model,data,train_batch,device)
+    
+
+def train_step(model,data,labels,opt,loss_fn,train_batch,device):
+    model.train()
+    preds = infer(model,data,train_batch,device)
+    target = torch.tensor(labels[train_batch]).float().to(device)
+    loss = loss_fn(preds,target)
+    loss.backward()
+    opt.step()
+    opt.zero_grad()
+    return {'loss': float(loss)}
+
+def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
+    with torch.no_grad():
+        model.eval()
+
+        ix_train = np.array_split(train_set,int(len(train_set)/512))
+
+        for i in range(len(ix_train)):
+            preds_train_i = infer_val(model,data,ix_train[i],device).reshape(len(ix_train[i]))
+            if i==0:
+                preds_train = preds_train_i.detach().cpu().numpy()
+            else:    
+                preds_train = np.concatenate((preds_train,preds_train_i.detach().cpu().numpy()),axis=0)
+        preds_train = torch.tensor(preds_train).float().to(device)
+
+        ix_val = np.array_split(validtion_set,int(len(validtion_set)/512))
+
+        for i in range(len(ix_val)):
+            preds_val_i = infer_val(model,data,ix_val[i],device).reshape(len(ix_val[i]))
+            if i==0:
+                preds_val = preds_val_i.detach().cpu().numpy()
+            else:    
+                preds_val = np.concatenate((preds_val,preds_val_i.detach().cpu().numpy()),axis=0)       
+        preds_val = torch.tensor(preds_val).float().to(device)
+        
+        target_train = torch.tensor(labels[train_set]).float().to(device)
+        train_loss = loss_fn(preds_train,target_train)
+        target_val = torch.tensor(labels[validtion_set]).float().to(device)
+        test_loss = loss_fn(preds_val,target_val)
+        print(f'train_loss: {float(train_loss)} | test_loss: {float(test_loss)}')
+        return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
+    
+    
+def train_loop(model, data, labels, device,experiment, path, config):
+    opt = optim.Adam(model.parameters(), config['LR'])
+    loss_fn = nn.BCELoss()
+    evals = []
+    best_val_loss = float('inf')
+    N = len(data['pf_features'])
+    ix = np.arange(N)
+    ix2 = np.arange(N)
+    np.random.seed(1)
+    np.random.shuffle(ix)
+    N_tr = np.floor(0.8 * N).astype(int)
+    train_set = ix2[ix[:N_tr]]
+    validtion_set = ix2[ix[N_tr:]]
+    with TemporaryDirectory() as tempdir:
+        best_model_params_path = path
+    for epoch in range (0,config['epochs']):
+        train_batches = DataLoader(
+            ix2,  batch_size=config['batch_size'], sampler=SubsetRandomSampler(ix[:N_tr])
+        )
+        print(f'epoch: {epoch+1}') 
+        for i, train_batch in enumerate( train_batches ):
+            train_batch = train_batch.numpy()
+            report = train_step(model, data, labels, opt, loss_fn,train_batch ,device)
+        evals.append(eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device) )    
+        val_loss = evals[epoch]['test_loss']
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), best_model_params_path)
+
+        experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, epoch=(epoch))
+    model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
+
+    return evals, model
