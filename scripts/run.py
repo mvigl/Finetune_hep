@@ -46,7 +46,7 @@ def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,m
         mess = 'training_'+str(i)
         command='../../Finetune_hep/'+macro+' --mess '+mess+' --lr '+str(lr)+' --bs '+str(bs)+\
                 ' --ep '+str(ep)+' --njets_mlp '+str(njets_mlp)+' --nodes_mlp '+str(nodes_mlp)+' --modeltype '+modeltype+\
-                ' --nlayer_mlp '+str(nlayer_mlp)+' --nodes_mlp '+str(nodes_mlp)+' --config '+config_path+' --ParT_weights '+ParT_weights+\
+                ' --nlayer_mlp '+str(nlayer_mlp)+' --config '+config_path+' --ParT_weights '+ParT_weights+\
                 ' --mlp_weights '+mlp_weights+' --data '+data+' --Xbb '+Xbb_scores_path+' --project_name '+project_name+subset+\
                 ' --api_key '+api_key+' --ws '+workspace
         print(command)
