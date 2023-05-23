@@ -14,7 +14,7 @@ def GetParser():
     parser.add_argument('--model', help='modeltype',default='')
     parser.add_argument('--ParT_weights',  help='ParT_weights',default='no')
     parser.add_argument('--mlp_weights',  help='mlp_weights',default='no')
-    parser.add_argument('--config', help='config',default='/home/iwsatlas1/mavigl/Finetune_hep/source/config/myJetClass_full.yaml')
+    parser.add_argument('--config', help='config',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/myJetClass_full.yaml')
     parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
     parser.add_argument('--Xbb', help='Xbb_scores_path',default='no')
     parser.add_argument('--project_name', help='project_name',default='Finetune_ParT')
@@ -61,7 +61,7 @@ def Load_default(modeltype):
             nlayer_mlp = 3
             nodes_mlp = 128
             njets_mlp = 2
-            config_path = '/home/iwsatlas1/mavigl/Finetune_hep/source/config/myJetClass_full.yaml'
+            config_path = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/myJetClass_full.yaml'
             ParT_weights = 'no'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
@@ -73,7 +73,7 @@ def Load_default(modeltype):
             nlayer_mlp = 0
             nodes_mlp = 128
             njets_mlp = 1
-            config_path = '/home/iwsatlas1/mavigl/Finetune_hep/source/config/myJetClass_full.yaml'
+            config_path = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/myJetClass_full.yaml'
             ParT_weights = 'no'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
