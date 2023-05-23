@@ -319,16 +319,23 @@ def get_test_data(path):
 
     return X_pfo_test, X_jet_test, njets_test, labels_test, X_label_test, evts_test
 
-def load_weights_ParT_mlp(model,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
+def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
 
-    if (ParT_params_path != 'no'):
-        for i, layer in enumerate(torch.load(ParT_params_path).keys()):
-            if i > (mlp_layers*2-1):
-                model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
-    if (mlp_params_path != 'no'):
-        for i, layer in enumerate(torch.load(mlp_params_path).keys()):
-            if i <= (mlp_layers*2-1):
-                model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])
+    if modeltype == 'ParTevent':
+        if (ParT_params_path != 'no'):
+            for i, layer in enumerate(torch.load(ParT_params_path).keys()):
+                if i > (mlp_layers*2-1):
+                    model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
+        if (mlp_params_path != 'no'):
+            for i, layer in enumerate(torch.load(mlp_params_path).keys()):
+                if i <= (mlp_layers*2-1):
+                    model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])
+
+    elif modeltype == 'ParTXbb':
+        if (ParT_params_path != 'no'):
+            for i, layer in enumerate(torch.load(ParT_params_path).keys()):
+                if i < len(torch.load(ParT_params_path).keys()) -2:
+                    model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])                
 
     return model    
 

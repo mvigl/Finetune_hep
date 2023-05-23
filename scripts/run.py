@@ -67,14 +67,14 @@ def Load_default(modeltype):
             Xbb_scores_path = 'no'
 
     elif (modeltype =='ParTXbb'):    
-            lr = 0.0001
+            lr = 0.00004
             bs = 512
-            ep = 40
+            ep = 30
             nlayer_mlp = 0
             nodes_mlp = 128
             njets_mlp = 1
             config_path = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = 'no'
+            ParT_weights = "/home/iwsatlas1/mavigl/Hbb/ParT_full.pt"
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 

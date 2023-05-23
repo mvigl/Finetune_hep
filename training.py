@@ -67,7 +67,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         train = df.build_features_and_labels(X_pfo_train[evts_train][:,:2],X_jet_train[evts_train][:,:2],X_label_train[evts_train][:,:2],2)
         model.to(device)
-        model = df.load_weights_ParT_mlp(model,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
+        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
         labels = labels_train
 
     elif modeltype == 'ParTXbb':
@@ -77,6 +77,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         X_label_train = np.reshape(X_label_train,(-1,len(df.labelVars)))
         evts_train = np.where(X_pfo_train[:,0,df.pVars.index('pfcand_ptrel')] != 0 )[0]
         model.to(device)
+        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
         train = df.build_features_and_labels_single_jet(X_pfo_train[evts_train],X_jet_train[evts_train],X_label_train[evts_train])
         labels = train['label'].reshape(-1)
 
