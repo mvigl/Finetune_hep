@@ -1,7 +1,7 @@
 #!/opt/anaconda3/bin/python
 
 import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep/source/python')
+sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
 
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
