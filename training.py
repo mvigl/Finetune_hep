@@ -80,14 +80,14 @@ if modeltype in ['ParTevent','ParTXbb']:
         train = df.build_features_and_labels_single_jet(X_pfo_train[evts_train],X_jet_train[evts_train],X_label_train[evts_train])
         labels = train['label'].reshape(-1)
 
-elif modeltype in ['mlpXbb','mlpHlXbb']:
+elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     train = df.get_mlp_feat(X_jet_train[evts_train],njets_mlp,modeltype,evts_train,Xbb_scores_path,subset)
     labels = labels_train
     model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))    
 else:
-    print('specify a model (ParTevent,ParTXbb,mlpXbb,mlpHlXbb)')    
+    print('specify a model (ParTevent,ParTXbb,mlpXbb,mlpHlXbb,baseline)')    
 
 experiment = Experiment(
   api_key = api_key,
@@ -128,7 +128,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         )
     )
 
-elif modeltype in ['mlpXbb','mlpHlXbb']:
+elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     evals_part, model_part = Mlp.train_loop(
         model,
         train,

@@ -79,7 +79,7 @@ def Load_default(modeltype):
             Xbb_scores_path = 'no'
 
     elif (modeltype =='mlpXbb'):
-            lr = 0.00004
+            lr = 0.0001
             bs = 512
             ep = 50
             nlayer_mlp = 6
@@ -91,7 +91,7 @@ def Load_default(modeltype):
             Xbb_scores_path = 'no'
 
     elif (modeltype =='mlpHlXbb'):
-            lr = 0.00004
+            lr = 0.0001
             bs = 512
             ep = 50
             nlayer_mlp = 6
@@ -101,6 +101,18 @@ def Load_default(modeltype):
             ParT_weights = 'no'
             mlp_weights = 'no'
             Xbb_scores_path = 'no' 
+
+    elif (modeltype =='baseline'):
+            lr = 0.0001
+            bs = 512
+            ep = 50
+            nlayer_mlp = 6
+            nodes_mlp = 24
+            njets_mlp = 2
+            config_path = 'no'
+            ParT_weights = 'no'
+            mlp_weights = 'no'
+            Xbb_scores_path = 'no'        
 
     return lr,bs,ep,nlayer_mlp,nodes_mlp,njets_mlp,config_path,ParT_weights,mlp_weights,Xbb_scores_path     
 

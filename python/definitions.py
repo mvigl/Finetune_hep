@@ -338,17 +338,18 @@ def getXbb_scores(Xbb_scores_path,evts):
     return Xbb_scores
 
 def get_mlp_feat(X_jet,njets,modeltype,evts,Xbb_scores_path='no',subset=False):
-    if (Xbb_scores_path != 'no'): 
+    if ((Xbb_scores_path != 'no') and (modeltype!='baseline')): 
         if subset == True:
             X_jet[:,:,jVars.index('fj_doubleb')] = getXbb_scores(Xbb_scores_path,evts)[:4096] 
         else:
             X_jet[:,:,jVars.index('fj_doubleb')] = getXbb_scores(Xbb_scores_path,evts)
     if modeltype == 'mlpXbb':
         data = np.reshape(X_jet[:,:njets,jVars.index('fj_doubleb')],(-1,2))
-    elif modeltype == 'mlpHlXbb':
+    elif modeltype in ['mlpHlXbb','baseline']:
         X_jet[:,:,jVars.index('fj_mass')] = log(X_jet[:,:,jVars.index('fj_mass')]) 
         X_jet[:,:,jVars.index('fj_sdmass')] = log(X_jet[:,:,jVars.index('fj_sdmass')])  
         X_jet[:,:,jVars.index('fj_pt')] = log(X_jet[:,:,jVars.index('fj_pt')]) 
         data = np.reshape(X_jet[:,:njets],(-1,12))
+        
     return data
         
