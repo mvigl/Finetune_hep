@@ -67,9 +67,9 @@ def Load_default(modeltype):
             Xbb_scores_path = 'no'
 
     elif (modeltype =='ParTXbb'):    
-            lr = 0.00004
+            lr = 0.0001
             bs = 512
-            ep = 50
+            ep = 40
             nlayer_mlp = 0
             nodes_mlp = 128
             njets_mlp = 1
