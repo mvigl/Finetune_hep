@@ -8,7 +8,7 @@ All scripts should be run from a 'run' dir outside of Finetune_hep run/my_run as
 to get loss info in comet.ml add
 
 ````
---ws <'my_workspace'> --api_key <'my_api_key'>
+--ws <'my_workspace'> --api_key <'my_api_key'> --project_name <'my_project_name'>
 ````
 
 output dir will be created in run/my_run:
