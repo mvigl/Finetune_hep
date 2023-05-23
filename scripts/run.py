@@ -62,7 +62,7 @@ def Load_default(modeltype):
             nodes_mlp = 128
             njets_mlp = 2
             config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = 'no'
+            ParT_weights = '../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 
@@ -88,7 +88,7 @@ def Load_default(modeltype):
             config_path = 'no'
             ParT_weights = 'no'
             mlp_weights = 'no'
-            Xbb_scores_path = 'no'
+            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParTXbb_weights.npy'
 
     elif (modeltype =='mlpHlXbb'):
             lr = 0.0001
@@ -100,7 +100,7 @@ def Load_default(modeltype):
             config_path = 'no'
             ParT_weights = 'no'
             mlp_weights = 'no'
-            Xbb_scores_path = 'no' 
+            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParTXbb_weights.npy' 
 
     elif (modeltype =='baseline'):
             lr = 0.0001
