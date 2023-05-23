@@ -56,6 +56,10 @@ subset = args.subset
 api_key = args.api_key
 workspace = args.ws
 
+for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
+    if w != 'no':
+        message = m + message
+
 X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train = df.get_train_data(data,subset)
 
 device = df.get_device()
