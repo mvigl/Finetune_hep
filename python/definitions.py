@@ -301,18 +301,30 @@ def get_train_data(path,subset=False):
 
     return X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train
 
-def get_test_data(path):
+def get_test_data(path,subset=False):
 
-    with open(path+'/X_pfo_test.npy', 'rb') as f:
-        X_pfo_test=np.load(f)
-    with open(path+'/X_jet_test.npy', 'rb') as f:
-        X_jet_test=np.load(f)   
-    with open(path+'/njets_test.npy', 'rb') as f:
-        njets_test=np.load(f)  
-    with open(path+'/labels_test.npy', 'rb') as f:
-        labels_test=np.load(f)
-    with open(path+'/X_label_test.npy', 'rb') as f:
-        X_label_test=np.load(f) 
+    if subset == True:
+        with open(path+'/X_pfo_test.npy', 'rb') as f:
+            X_pfo_test=np.load(f)[:4096]
+        with open(path+'/X_jet_test.npy', 'rb') as f:
+            X_jet_test=np.load(f)[:4096]  
+        with open(path+'/njets_test.npy', 'rb') as f:
+            njets_test=np.load(f)[:4096]  
+        with open(path+'/labels_test.npy', 'rb') as f:
+            labels_test=np.load(f)[:4096]
+        with open(path+'/X_label_test.npy', 'rb') as f:
+            X_label_test=np.load(f)[:4096] 
+    else:    
+        with open(path+'/X_pfo_test.npy', 'rb') as f:
+            X_pfo_test=np.load(f)
+        with open(path+'/X_jet_test.npy', 'rb') as f:
+            X_jet_test=np.load(f)   
+        with open(path+'/njets_test.npy', 'rb') as f:
+            njets_test=np.load(f)  
+        with open(path+'/labels_test.npy', 'rb') as f:
+            labels_test=np.load(f)
+        with open(path+'/X_label_test.npy', 'rb') as f:
+            X_label_test=np.load(f) 
 
     evts_test = np.arange(len(X_label_test))[np.where(X_pfo_test[:,0,0,0] != 0)[0]]
     labels_test = labels_test[evts_test]    
@@ -321,7 +333,13 @@ def get_test_data(path):
 
 def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
 
-    if modeltype == 'ParTevent':
+    if modeltype == 'ParTXbb':
+        if (ParT_params_path != 'no'):
+            for i, layer in enumerate(torch.load(ParT_params_path).keys()):
+                if i < len(torch.load(ParT_params_path).keys()) -2:
+                    model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])                
+
+    else:
         if (ParT_params_path != 'no'):
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
                 if i > (mlp_layers*2-1):
@@ -329,19 +347,13 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
         if (mlp_params_path != 'no'):
             for i, layer in enumerate(torch.load(mlp_params_path).keys()):
                 if i <= (mlp_layers*2-1):
-                    model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])
-
-    elif modeltype == 'ParTXbb':
-        if (ParT_params_path != 'no'):
-            for i, layer in enumerate(torch.load(ParT_params_path).keys()):
-                if i < len(torch.load(ParT_params_path).keys()) -2:
-                    model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])                
+                    model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])                
 
     return model    
 
 def getXbb_scores(Xbb_scores_path,evts):
     with open(Xbb_scores_path, 'rb') as f:
-        Xbb_scores=np.load(f)[evts]
+        Xbb_scores=np.load(f)
     return Xbb_scores
 
 def get_mlp_feat(X_jet,njets,modeltype,evts,Xbb_scores_path='no',subset=False):
@@ -359,4 +371,12 @@ def get_mlp_feat(X_jet,njets,modeltype,evts,Xbb_scores_path='no',subset=False):
         data = np.reshape(X_jet[:,:njets],(-1,12))
         
     return data
-        
+
+def get_latent_feat(latent_scores_path,njets,subset=False):
+    with open(latent_scores_path, 'rb') as f:
+        if subset == True:
+            latent_scores=np.load(f)[:4096]
+        else:
+            latent_scores=np.load(f)
+        data = np.reshape(latent_scores[:,:njets],(-1,128*njets))
+    return data        

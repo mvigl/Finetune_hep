@@ -30,15 +30,18 @@ def make_mlp(in_features,out_features,nlayer):
 
 import pickle
 class myDataset(Dataset):
-    def __init__( self, X, y,device):
+    def __init__( self, X, y,device,scaler_path):
         super(myDataset, self).__init__()
         # Normalize the inputs
         self.scaler = StandardScaler() # this is super useful a scikit learn function
-        X_norm = self.scaler.fit_transform(X)
-        self.x = torch.from_numpy(X_norm).float().to(device)
+        if scaler_path !='no' : 
+            X_norm = self.scaler.fit_transform(X)
+            self.x = torch.from_numpy(X_norm).float().to(device)
+            with open(scaler_path,'wb') as f:
+                pickle.dump(self.scaler, f)
+        else:
+            self.x = torch.from_numpy(X).float().to(device)    
         self.y = torch.from_numpy(y).float().to(device)
-        with open('/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/models/scaler_latent.pkl','wb') as f:
-            pickle.dump(self.scaler, f)
     def __len__(self):
         return self.x.shape[0]
     def __getitem__(self, idx):
@@ -82,8 +85,8 @@ def sample(dataset, batch_size):
     ) # It doesn't matter that the validation set is randomly sampled
     return train_batches, train_set, validtion_set
     
-def train_loop(model, X,y, device, experiment, path, config):
-    dataset = myDataset(X,y,device)
+def train_loop(model, X,y, device, experiment, path, scaler_path,config):
+    dataset = myDataset(X,y,device,scaler_path)
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
@@ -107,3 +110,15 @@ def train_loop(model, X,y, device, experiment, path, config):
     model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
     return evals, model
+
+
+def get_preds(model,data,evts,device):
+    with torch.no_grad():
+        ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
+        for i in range(len(ix)):
+            preds_i = model( torch.tensor(data[ix[i]]).float().to(device)).reshape(len(ix[i]))
+            if i==0:
+                yi_model = preds_i.detach().cpu().numpy()
+            else:    
+                yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
+        return yi_model

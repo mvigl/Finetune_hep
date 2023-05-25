@@ -90,7 +90,15 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     labels = labels_train
     model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
     model.to(device)
-    if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))    
+    if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
+
+elif modeltype in ['mlpLatent']:
+    train = df.get_latent_feat(Xbb_scores_path,njets_mlp)
+    labels = labels_train
+    model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
+    model.to(device)
+    if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
+
 else:
     print('specify a model (ParTevent,ParTXbb,mlpXbb,mlpHlXbb,baseline)')    
 
@@ -117,7 +125,11 @@ Experiment.set_name(experiment,experiment_name)
 
 model_path = (f'models/{experiment_name}.pt' )
 experiment.log_parameters(hyper_params)
-
+if modeltype!='mlpLatent':
+    scaler_path = (f'models/{experiment_name}.pkl' )
+else:
+    scaler_path = 'no'
+    
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
@@ -133,7 +145,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         )
     )
 
-elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
+elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline']:
     evals_part, model_part = Mlp.train_loop(
         model,
         train,
@@ -141,12 +153,14 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
         device,
         experiment,
         model_path,
+        scaler_path,
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['steps']
         )
     )
+
         
 
 log_model(experiment, model, model_name = experiment_name )

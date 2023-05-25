@@ -89,16 +89,6 @@ def get_loss(data_config, **kwargs):
     return torch.nn.BCELoss()
 
 
-def get_preds(model,data,evts,device):
-
-    ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
-    for i in range(len(ix)):
-        preds_i = infer_val(model,data,ix[i],device).reshape(len(ix[i]))
-        if i==0:
-            yi_model = preds_i.detach().cpu().numpy()
-        else:    
-            yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
-    return yi_model
 
 def infer(model,data,train_batch,device):
     N = train_batch
@@ -189,3 +179,15 @@ def train_loop(model, data, labels, device,experiment, path, config):
     model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
     return evals, model
+
+
+def get_preds(model,data,evts,device):
+
+    ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
+    for i in range(len(ix)):
+        preds_i = infer_val(model,data,ix[i],device).reshape(len(ix[i]))
+        if i==0:
+            yi_model = preds_i.detach().cpu().numpy()
+        else:    
+            yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
+    return yi_model
