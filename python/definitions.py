@@ -275,15 +275,20 @@ def get_train_data(path,subset=False):
 
     if subset == True:
         with open(path+'/X_pfo_train.npy', 'rb') as f:
-            X_pfo_train=np.load(f)[:4096]
+            X_pfo_train=np.load(f)
+            X_pfo_train = np.concatenate((X_pfo_train[:2048], X_pfo_train[-2048:]),axis=0)
         with open(path+'/X_jet_train.npy', 'rb') as f:
-            X_jet_train=np.load(f)[:4096]  
+            X_jet_train=np.load(f)
+            X_jet_train = np.concatenate((X_jet_train[:2048], X_jet_train[-2048:]),axis=0)
         with open(path+'/njets_train.npy', 'rb') as f:
-            njets_train=np.load(f)[:4096]        
+            njets_train=np.load(f)
+            njets_train = np.concatenate((njets_train[:2048], njets_train[-2048:]),axis=0)        
         with open(path+'/labels_train.npy', 'rb') as f:
-            labels_train=np.load(f)[:4096]
+            labels_train=np.load(f)
+            labels_train = np.concatenate((labels_train[:2048], labels_train[-2048:]),axis=0)
         with open(path+'/X_label_train.npy', 'rb') as f:
-            X_label_train=np.load(f)[:4096] 
+            X_label_train=np.load(f)
+            X_label_train = np.concatenate((X_label_train[:2048], X_label_train[-2048:]),axis=0) 
     else:
         with open(path+'/X_pfo_train.npy', 'rb') as f:
             X_pfo_train=np.load(f)
@@ -305,15 +310,20 @@ def get_test_data(path,subset=False):
 
     if subset == True:
         with open(path+'/X_pfo_test.npy', 'rb') as f:
-            X_pfo_test=np.load(f)[:4096]
+            X_pfo_test=np.load(f)
+            X_pfo_test = np.concatenate((X_pfo_test[:2048], X_pfo_test[-2048:]),axis=0)
         with open(path+'/X_jet_test.npy', 'rb') as f:
-            X_jet_test=np.load(f)[:4096]  
+            X_jet_test=np.load(f)
+            X_jet_test = np.concatenate((X_jet_test[:2048], X_jet_test[-2048:]),axis=0)
         with open(path+'/njets_test.npy', 'rb') as f:
-            njets_test=np.load(f)[:4096]  
+            njets_test=np.load(f)
+            njets_test = np.concatenate((njets_test[:2048], njets_test[-2048:]),axis=0)
         with open(path+'/labels_test.npy', 'rb') as f:
-            labels_test=np.load(f)[:4096]
+            labels_test=np.load(f)
+            labels_test = np.concatenate((labels_test[:2048], labels_test[-2048:]),axis=0)
         with open(path+'/X_label_test.npy', 'rb') as f:
-            X_label_test=np.load(f)[:4096] 
+            X_label_test=np.load(f)
+            X_label_test = np.concatenate((X_label_test[:2048], X_label_test[-2048:]),axis=0)
     else:    
         with open(path+'/X_pfo_test.npy', 'rb') as f:
             X_pfo_test=np.load(f)
@@ -346,7 +356,7 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
                     model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
         if (mlp_params_path != 'no'):
             for i, layer in enumerate(torch.load(mlp_params_path).keys()):
-                if i <= (mlp_layers*2-1):
+                #if i <= (mlp_layers*2-1):
                     model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])                
 
     return model    
@@ -359,7 +369,7 @@ def getXbb_scores(Xbb_scores_path,evts):
 def get_mlp_feat(X_jet,njets,modeltype,evts,Xbb_scores_path='no',subset=False):
     if ((Xbb_scores_path != 'no') and (modeltype!='baseline')): 
         if subset == True:
-            X_jet[:,:,jVars.index('fj_doubleb')] = getXbb_scores(Xbb_scores_path,evts)[:4096] 
+            X_jet[:,:,jVars.index('fj_doubleb')] = np.concatenate((getXbb_scores(Xbb_scores_path,evts)[:2048],getXbb_scores(Xbb_scores_path,evts)[-2047:]),axis=0)
         else:
             X_jet[:,:,jVars.index('fj_doubleb')] = getXbb_scores(Xbb_scores_path,evts)
     if modeltype == 'mlpXbb':
@@ -375,7 +385,8 @@ def get_mlp_feat(X_jet,njets,modeltype,evts,Xbb_scores_path='no',subset=False):
 def get_latent_feat(latent_scores_path,njets,subset=False):
     with open(latent_scores_path, 'rb') as f:
         if subset == True:
-            latent_scores=np.load(f)[:4096]
+            latent_scores=np.load(f)
+            latent_scores = np.concatenate((latent_scores[:2048], latent_scores[-2048:]),axis=0)
         else:
             latent_scores=np.load(f)
         data = np.reshape(latent_scores[:,:njets],(-1,128*njets))

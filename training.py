@@ -116,9 +116,6 @@ hyper_params = {
    "batch_size": batch_size,
 }
 
-nlayer_mlp = args.nlayer_mlp
-nodes_mlp = args.nodes_mlp
-njets_mlp = args.njets_mlp
 
 experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_{message}'
 Experiment.set_name(experiment,experiment_name)
