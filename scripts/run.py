@@ -43,7 +43,7 @@ def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,m
     macro = 'training.py'     
 
     for i in range(Ntrainings):
-        mess = 'training_'+str(i)
+        mess = 'training_'+str(i)+'full'
         if modeltype == 'ParTevent': 
               ParT_weights = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i}.pt') 
         elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{i}.npy')
