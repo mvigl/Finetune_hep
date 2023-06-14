@@ -77,11 +77,11 @@ elif modeltype == 'ParT_latent':
 else:
     print('specify a model (ParTXbb,...)')    
 
-for i in range(5):
-    weights = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i+5}.pt')
+for i in range(10):
+    weights = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i}.pt')
     name = f'{modeltype}_scores'
-    model_path = (f'../../Finetune_hep/models/ParTXbb/{name}_{i+5}.npy')
-    model_path_test = (f'../../Finetune_hep/models/ParTXbb/{name}_{i+5}_test.npy')
+    model_path = (f'../../Finetune_hep/models/ParTXbb/{name}_{i}.npy')
+    model_path_test = (f'../../Finetune_hep/models/ParTXbb/{name}_{i}_test.npy')
 
     if modeltype == 'ParTXbb':
         model.load_state_dict(torch.load(weights))

@@ -99,6 +99,17 @@ elif modeltype in ['mlpLatent']:
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
+elif modeltype in ['LatentXbb']:
+    X_jet_train = np.reshape(X_jet_train[evts_train],(-1,len(df.jVars)))
+    X_pfo_train = np.reshape(X_pfo_train[evts_train],(-1,110,len(df.pVars)))
+    X_label_train = np.reshape(X_label_train[evts_train],(-1,len(df.labelVars)))
+    evts_train = np.where(X_pfo_train[:,0,df.pVars.index('pfcand_ptrel')] != 0 )[0]
+    train = df.get_latent_feat_Xbb(Xbb_scores_path)[evts_train]
+    labels = np.reshape(X_label_train[evts_train,df.labelVars.index('label_H_bb')],(-1))
+    model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
+    model.to(device)
+    if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
+
 else:
     print('specify a model (ParTevent,ParTXbb,mlpXbb,mlpHlXbb,baseline)')    
 
@@ -122,7 +133,7 @@ Experiment.set_name(experiment,experiment_name)
 
 model_path = (f'models/{experiment_name}.pt' )
 experiment.log_parameters(hyper_params)
-if modeltype!='mlpLatent':
+if modeltype not in ['mlpLatent','LatentXbb']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
     scaler_path = 'no'
@@ -142,7 +153,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         )
     )
 
-elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline']:
+elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb']:
     evals_part, model_part = Mlp.train_loop(
         model,
         train,

@@ -43,12 +43,13 @@ def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,m
     macro = 'training.py'     
 
     for i in range(Ntrainings):
-        mess = 'training_'+str(i)+'full'
+        mess = 'training_'+str(i)
         if modeltype == 'ParTevent': 
               ParT_weights = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i}.pt') 
         elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{i}.npy')
+        elif modeltype == 'LatentXbb': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb/LatentXbb_scores_{i}.npy')
         elif modeltype in ['mlpXbb','mlpHlXbb']: Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_scores_{i}.npy')
-        command='CUDA_VISIBLE_DEVICES=1 ../../Finetune_hep/'+macro+' --mess '+mess+' --lr '+str(lr)+' --bs '+str(bs)+\
+        command='CUDA_VISIBLE_DEVICES=0 ../../Finetune_hep/'+macro+' --mess '+mess+' --lr '+str(lr)+' --bs '+str(bs)+\
                 ' --ep '+str(ep)+' --njets_mlp '+str(njets_mlp)+' --nodes_mlp '+str(nodes_mlp)+' --modeltype '+modeltype+\
                 ' --nlayer_mlp '+str(nlayer_mlp)+' --config '+config_path+' --ParT_weights '+ParT_weights+\
                 ' --mlp_weights '+mlp_weights+' --data '+data+' --Xbb '+Xbb_scores_path+' --project_name '+project_name+subset+\
@@ -82,6 +83,18 @@ def Load_default(modeltype):
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 
+    elif (modeltype =='LatentXbb'):    
+            lr = 0.00004
+            bs = 512
+            ep = 100
+            nlayer_mlp = 0
+            nodes_mlp = 128
+            njets_mlp = 1
+            config_path = 'no'
+            ParT_weights = 'no'
+            mlp_weights = 'no'
+            Xbb_scores_path = '../../Finetune_hep/models/LatentXbb/LatentXbb_scores_0.npy'        
+
     elif (modeltype =='mlpXbb'):
             lr = 0.0006
             bs = 512
@@ -104,7 +117,7 @@ def Load_default(modeltype):
             config_path = 'no'
             ParT_weights = 'no'
             mlp_weights = 'no'
-            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParTXbb_scores.npy' 
+            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParT_latent_scores_0.npy' 
 
     elif (modeltype =='mlpLatent'):
             lr = 0.00004
