@@ -93,5 +93,5 @@ ax.grid(True)
 ax.legend(loc='lower left')
 ax.set_title(f"ROC")
 fig.savefig(f"../../Finetune_hep/plots/ROC_Xbb.pdf")
-fig.savefig(f"../../Finetune_hep/plots/ROC_Xbb.jpeg")
+fig.savefig(f"../../Finetune_hep/plots/ROC_Xbb.png")
 
