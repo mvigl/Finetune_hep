@@ -19,7 +19,7 @@ import yaml
 import numpy as np
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--modeltype', help='modeltype',default='LatentXbb')
+parser.add_argument('--modeltype', help='modeltype',default='LatentXbb_Aux')
 parser.add_argument('--nlayer_mlp', type=int, help='nlayer_mlp',default=6)
 parser.add_argument('--nodes_mlp', type=int, help='nodes_mlp',default=128)
 parser.add_argument('--weights',  help='weights',default='no')
@@ -56,14 +56,18 @@ model.to(device)
 train = df.build_features_and_labels_single_jet(X_pfo_train,X_jet_train,X_label_train)
 test = df.build_features_and_labels_single_jet(X_pfo_test,X_jet_test,X_label_test)
 
-
-weights = (f'../../Finetune_hep/models/ParTevent/ParTevent_hl3_nodes128_nj2_lr4e-05_bs512_WparT_training_0.pt')
+if modeltype == 'LatentXbb':
+    weights = (f'../../Finetune_hep/models/ParTevent/ParTevent_hl3_nodes128_nj2_lr4e-05_bs512_WparT_training_0.pt')
+elif modeltype == 'LatentXbb_Aux':
+    weights = (f'../../Finetune_hep/models/Aux/Aux_hl3_nodes128_nj2_lr4e-05_bs512_alpha0.01_WparT_training_0.pt')
 name = f'{modeltype}_scores'
-model_path = (f'../../Finetune_hep/models/LatentXbb/{name}_0.npy')
-model_path_test = (f'../../Finetune_hep/models/LatentXbb/{name}_0_test.npy')
+model_path = (f'../../Finetune_hep/models/{modeltype}/{name}_0.npy')
+model_path_test = (f'../../Finetune_hep/models/{modeltype}/{name}_0_test.npy')
 
-
-model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=4,ParT_params_path=weights,mlp_params_path='no')
+if modeltype == 'LatentXbb':
+    model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=4,ParT_params_path=weights,mlp_params_path='no')
+elif modeltype == 'LatentXbb_Aux':
+    model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=5,ParT_params_path=weights,mlp_params_path='no')
 model.eval()
 preds = ParT_latent.get_preds(model,train,X_label_train,device)
 preds_test = ParT_latent.get_preds(model,test,X_label_test,device)

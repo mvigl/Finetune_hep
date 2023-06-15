@@ -392,12 +392,12 @@ def get_latent_feat(latent_scores_path,njets,subset=False):
         data = np.reshape(latent_scores[:,:njets],(-1,128*njets))
     return data     
 
-def get_latent_feat_Xbb(latent_scores_path,subset=False):
+def get_latent_feat_Xbb(latent_scores_path,njets=2,subset=False):
     with open(latent_scores_path, 'rb') as f:
         if subset == True:
             latent_scores=np.load(f)
             latent_scores = np.concatenate((latent_scores[:2048], latent_scores[-2048:]),axis=0)
         else:
             latent_scores=np.load(f)
-        data = np.reshape(latent_scores,(-1,128))
+        data = np.reshape(latent_scores[:,:njets],(-1,128))
     return data     

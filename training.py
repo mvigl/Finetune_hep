@@ -6,6 +6,7 @@ sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
 import ParT_mlp
+import ParT_mlp_aux
 import ParT_Xbb
 import Mlp
 import definitions as df
@@ -35,6 +36,7 @@ parser.add_argument('--project_name', help='project_name',default='Finetune_ParT
 parser.add_argument('--subset',  action='store_true', help='subset', default=False)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
+parser.add_argument('--alpha', type=float,  help='alpha',default=0.01)
 
 args = parser.parse_args()
 
@@ -55,6 +57,7 @@ project_name = args.project_name
 subset = args.subset
 api_key = args.api_key
 workspace = args.ws
+alpha = args.alpha
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
@@ -63,7 +66,7 @@ for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):
 X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train = df.get_train_data(data,subset)
 
 device = df.get_device()
-if modeltype in ['ParTevent','ParTXbb']:
+if modeltype in ['ParTevent','ParTXbb','Aux']:
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
@@ -73,6 +76,13 @@ if modeltype in ['ParTevent','ParTXbb']:
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
         labels = labels_train
+
+    elif modeltype == 'Aux':
+        model = ParT_mlp_aux.get_model(data_config,for_inference=False)  
+        train = df.build_features_and_labels(X_pfo_train[evts_train][:,:2],X_jet_train[evts_train][:,:2],X_label_train[evts_train][:,:2],2)
+        model.to(device)
+        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
+        labels = labels_train    
 
     elif modeltype == 'ParTXbb':
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
@@ -99,12 +109,12 @@ elif modeltype in ['mlpLatent']:
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
-elif modeltype in ['LatentXbb']:
+elif modeltype in ['LatentXbb','LatentXbb_Aux']:
     X_jet_train = np.reshape(X_jet_train[evts_train],(-1,len(df.jVars)))
     X_pfo_train = np.reshape(X_pfo_train[evts_train],(-1,110,len(df.pVars)))
     X_label_train = np.reshape(X_label_train[evts_train],(-1,len(df.labelVars)))
     evts_train = np.where(X_pfo_train[:,0,df.pVars.index('pfcand_ptrel')] != 0 )[0]
-    train = df.get_latent_feat_Xbb(Xbb_scores_path)[evts_train]
+    train = df.get_latent_feat_Xbb(Xbb_scores_path,5)[evts_train]
     labels = np.reshape(X_label_train[evts_train,df.labelVars.index('label_H_bb')],(-1))
     model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
     model.to(device)
@@ -125,15 +135,17 @@ hyper_params = {
    "learning_rate": learning_rate,
    "steps": epochs,
    "batch_size": batch_size,
+   "alpha": alpha
 }
 
 
 experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_{message}'
+if modeltype == 'Aux': experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_alpha{hyper_params["alpha"]}_{message}'
 Experiment.set_name(experiment,experiment_name)
 
 model_path = (f'models/{experiment_name}.pt' )
 experiment.log_parameters(hyper_params)
-if modeltype not in ['mlpLatent','LatentXbb']:
+if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
     scaler_path = 'no'
@@ -153,7 +165,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         )
     )
 
-elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb']:
+elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','LatentXbb_Aux']:
     evals_part, model_part = Mlp.train_loop(
         model,
         train,
@@ -169,7 +181,23 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb']:
         )
     )
 
-        
+elif modeltype == 'Aux':
+    evals_part, model_part = ParT_mlp_aux.train_loop(
+        model,
+        train,
+        labels,
+        device,
+        experiment,
+        model_path,
+        config = dict(    
+            LR = hyper_params['learning_rate'],
+            batch_size = hyper_params['batch_size'],
+            epochs = hyper_params['steps'],
+            alpha = hyper_params['alpha']
+        )
+    )
+
+ParT_mlp_aux        
 
 log_model(experiment, model, model_name = experiment_name )
 
