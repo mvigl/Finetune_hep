@@ -33,9 +33,13 @@ with open(config_path) as file:
 
 ParTevent_model = ParT_mlp.get_model(data_config,for_inference=False)  
 Aux3_model = ParT_mlp_aux.get_model(data_config,for_inference=False)  
+Aux3_model_05 = ParT_mlp_aux.get_model(data_config,for_inference=False)  
+Aux3_model_1 = ParT_mlp_aux.get_model(data_config,for_inference=False)  
 ParTevent_test = df.build_features_and_labels(X_pfo_test[evts_test][:,:2],X_jet_test[evts_test][:,:2],X_label_test[evts_test][:,:2],2)
 ParTevent_model.to(device)
 Aux3_model.to(device)
+Aux3_model_05.to(device)
+Aux3_model_1.to(device)
 
 mlpXbb_test = df.get_mlp_feat(X_jet_test[evts_test],2,'mlpXbb',evts_test,'../../Finetune_hep/models/ParTXbb/ParTXbb_scores_0_test.npy',subset)
 mlpHlXbb_test = df.get_mlp_feat(X_jet_test[evts_test],2,'mlpHlXbb',evts_test,'../../Finetune_hep/models/ParTXbb/ParTXbb_scores_0_test.npy',subset)
@@ -62,8 +66,8 @@ with open('../../Finetune_hep/models/baseline/baseline_hl6_nodes24_nj2_lr0.0006_
 baseline_test = scaler.transform(baseline_test)  
 
 Nsigma = 10
-models = [ParTevent_model,mlpLatent_model,mlpHlXbb_model,Aux3_model,mlpXbb_model,baseline_model]
-test_set = [ParTevent_test,mlpLatent_test,mlpHlXbb_test,ParTevent_test,mlpXbb_test,baseline_test]
+models = [ParTevent_model,mlpLatent_model,mlpHlXbb_model,Aux3_model,Aux3_model_05,Aux3_model_1,mlpXbb_model,baseline_model]
+test_set = [ParTevent_test,mlpLatent_test,mlpHlXbb_test,ParTevent_test,ParTevent_test,ParTevent_test,mlpXbb_test,baseline_test]
 
 m=0
 for mod,test in zip(models,test_set):
@@ -107,7 +111,25 @@ for mod,test in zip(models,test_set):
             fpr_i, tpr_i, threshold_i = roc_curve(labels_test, yi,drop_intermediate=False)
             fpr.append(fpr_i)
             tpr.append(tpr_i)
-            threshold.append(threshold_i)         
+            threshold.append(threshold_i) 
+
+    elif m == 4:
+        for i in range(1):
+            mod.load_state_dict(torch.load(f'../../Finetune_hep/models/Aux/Aux_hl3_nodes128_nj2_lr4e-05_bs512_alpha0.5_WparT_hlXbb3_training_{i}.pt'))
+            yi = ParT_mlp_aux.get_preds(mod,test,evts_test,device)[0]
+            fpr_i, tpr_i, threshold_i = roc_curve(labels_test, yi,drop_intermediate=False)
+            fpr.append(fpr_i)
+            tpr.append(tpr_i)
+            threshold.append(threshold_i)             
+             
+    elif m == 5:
+        for i in range(1):
+            mod.load_state_dict(torch.load(f'../../Finetune_hep/models/Aux/Aux_hl3_nodes128_nj2_lr4e-05_bs512_alpha1.0_WparT_hlXbb3_training_{i}.pt'))
+            yi = ParT_mlp_aux.get_preds(mod,test,evts_test,device)[0]
+            fpr_i, tpr_i, threshold_i = roc_curve(labels_test, yi,drop_intermediate=False)
+            fpr.append(fpr_i)
+            tpr.append(tpr_i)
+            threshold.append(threshold_i)    
 
     else:
         yi = Mlp.get_preds(mod,test,evts_test,device)    
@@ -129,8 +151,9 @@ auc_mlpHlXbb = []
 auc_mlpLatent = []
 tpr_plot = np.arange(0,1,0.001)
 
-Aux3_bkg_rej = np.interp(tpr_plot, tpr[-3], 1/fpr[-3])
-
+Aux3_05_bkg_rej = np.interp(tpr_plot, tpr[-4], 1/fpr[-4])
+Aux3_bkg_rej = np.interp(tpr_plot, tpr[-5], 1/fpr[-5])
+Aux3_1_bkg_rej = np.interp(tpr_plot, tpr[-3], 1/fpr[-3])
 print(tpr[i])
 print(fpr[i])
 for i in range(Nsigma):   
@@ -198,7 +221,9 @@ ax.plot(tpr_plot, mlpLatent_bkg_rej_mean, lw=0.8, label=(f'mlpLatent_mean AUC = 
 ax.fill_between(tpr_plot, (mlpLatent_bkg_rej_mean-mlpLatent_bkg_rej_std), (mlpLatent_bkg_rej_mean+mlpLatent_bkg_rej_std),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, mlpHlXbb_bkg_rej_mean, lw=0.8, label=(f'mlpHlXbb_mean AUC = {auc_mlpHlXbb_mean} +/- {auc_mlpHlXbb_std}'), color=next(color))
 ax.fill_between(tpr_plot, (mlpHlXbb_bkg_rej_mean-mlpHlXbb_bkg_rej_std), (mlpHlXbb_bkg_rej_mean+mlpHlXbb_bkg_rej_std),color=next(color),alpha=0.2)
-ax.plot(tpr_plot, Aux3_bkg_rej, lw=0.8, label=('EndToEnd_aux3 AUC = {:.3f}%'.format(auc(fpr[-3],tpr[-3])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_bkg_rej, lw=0.8, label=('EndToEnd_aux3 AUC = {:.3f}%'.format(auc(fpr[-5],tpr[-5])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_05_bkg_rej, lw=0.8, label=('EndToEnd_aux3_05 AUC = {:.3f}%'.format(auc(fpr[-4],tpr[-4])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_1_bkg_rej, lw=0.8, label=('EndToEnd_aux3_1 AUC = {:.3f}%'.format(auc(fpr[-3],tpr[-3])*100)), color=next(color))
 ax.plot(tpr[-2], 1/fpr[-2], lw=0.8, label=('mlpXbb AUC = {:.3f}%'.format(auc(fpr[-2],tpr[-2])*100)), color=next(color))
 ax.plot(tpr[-1], 1/fpr[-1], lw=0.8, label=('baseline AUC = {:.3f}%'.format(auc(fpr[-1],tpr[-1])*100)), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
@@ -218,7 +243,9 @@ ax.plot(tpr_plot, mlpLatent_bkg_rej_mean, lw=0.8, label=(f'mlpLatent_mean AUC = 
 ax.fill_between(tpr_plot, (mlpLatent_bkg_rej_mean-mlpLatent_bkg_rej_std), (mlpLatent_bkg_rej_mean+mlpLatent_bkg_rej_std),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, mlpHlXbb_bkg_rej_mean, lw=0.8, label=(f'mlpHlXbb_mean AUC = {auc_mlpHlXbb_mean} +/- {auc_mlpHlXbb_std}'.format(auc_mlpHlXbb_mean)), color=next(color))
 ax.fill_between(tpr_plot, (mlpHlXbb_bkg_rej_mean-mlpHlXbb_bkg_rej_std), (mlpHlXbb_bkg_rej_mean+mlpHlXbb_bkg_rej_std),color=next(color),alpha=0.2)
-ax.plot(tpr_plot, Aux3_bkg_rej, lw=0.8, label=('EndToEnd_aux3 AUC = {:.3f}%'.format(auc(fpr[-3],tpr[-3])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_bkg_rej, lw=0.8, label=('EndToEnd_aux3 AUC = {:.3f}%'.format(auc(fpr[-5],tpr[-5])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_05_bkg_rej, lw=0.8, label=('EndToEnd_aux3_05 AUC = {:.3f}%'.format(auc(fpr[-4],tpr[-4])*100)), color=next(color))
+ax.plot(tpr_plot, Aux3_1_bkg_rej, lw=0.8, label=('EndToEnd_aux3_1 AUC = {:.3f}%'.format(auc(fpr[-3],tpr[-3])*100)), color=next(color))
 ax.plot(tpr[-2], 1/fpr[-2], lw=0.8, label=('mlpXbb AUC = {:.3f}%'.format(auc(fpr[-2],tpr[-2])*100)), color=next(color))
 ax.plot(tpr[-1], 1/fpr[-1], lw=0.8, label=('baseline AUC = {:.3f}%'.format(auc(fpr[-1],tpr[-1])*100)), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
@@ -243,6 +270,10 @@ ax.plot(tpr_plot, (ParTevent_bkg_rej_mean)/(mlpLatent_bkg_rej_mean), lw=0.8, lab
 ax.fill_between(tpr_plot, (ParTevent_bkg_rej_mean-ParTevent_bkg_rej_std)/(mlpLatent_bkg_rej_mean), (ParTevent_bkg_rej_mean+ParTevent_bkg_rej_std)/(mlpLatent_bkg_rej_mean),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3/hl'), color=next(color))
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_05/hl'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_05/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_1/hl'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_1/latent'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR)')
 ax.set_ylim(0.8,2)
@@ -260,6 +291,10 @@ ax.plot(tpr_plot, ParTevent_ratio_mean_latent, lw=0.8, label=('EndToEnd/latent')
 ax.fill_between(tpr_plot, (ParTevent_ratio_mean_latent-ParTevent_ratio_std_latent), (ParTevent_ratio_mean_latent+ParTevent_ratio_std_latent),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3/hl'), color=next(color))
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_05/hl'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_05/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_1/hl'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_1/latent'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR)')
 ax.set_ylim(0.8,2)
@@ -276,6 +311,8 @@ ax.fill_between(tpr_plot, (ParTevent_bkg_rej_mean-ParTevent_bkg_rej_std)/(mlpHlX
 ax.plot(tpr_plot, (mlpHlXbb_bkg_rej_mean)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('mlpHlXbb'), color=next(color))
 ax.fill_between(tpr_plot, (mlpHlXbb_bkg_rej_mean-mlpHlXbb_bkg_rej_std)/(mlpHlXbb_bkg_rej_mean), (mlpHlXbb_bkg_rej_mean+mlpHlXbb_bkg_rej_std)/(mlpHlXbb_bkg_rej_mean),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_05'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_1'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR_mlpHlXbb)')
 ax.set_ylim(0.8,2)
@@ -290,6 +327,8 @@ fig, ax = plt.subplots()
 ax.plot(tpr_plot, ParTevent_ratio_mean, lw=0.8, label=('EndToEnd'), color=next(color))
 ax.fill_between(tpr_plot, (ParTevent_ratio_mean-ParTevent_ratio_std), (ParTevent_ratio_mean+ParTevent_ratio_std),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_05'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpHlXbb_bkg_rej_mean), lw=0.8, label=('Aux3_1'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR_mlpHlXbb)')
 ax.set_ylim(0.8,2)
@@ -310,6 +349,8 @@ ax.fill_between(tpr_plot, (ParTevent_bkg_rej_mean-ParTevent_bkg_rej_std)/(mlpLat
 ax.plot(tpr_plot, (mlpLatent_bkg_rej_mean)/mlpLatent_bkg_rej_mean, lw=0.8, label=('mlpLatent'), color=next(color))
 ax.fill_between(tpr_plot, (mlpLatent_bkg_rej_mean-mlpLatent_bkg_rej_std)/mlpLatent_bkg_rej_mean, (mlpLatent_bkg_rej_mean+mlpLatent_bkg_rej_std)/mlpLatent_bkg_rej_mean,color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_05/latent'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_1/latent'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR_mlpLatent)')
 ax.set_ylim(0.8,2)
@@ -326,6 +367,8 @@ skip=next(color)
 ax.plot(tpr_plot, ParTevent_ratio_mean_latent, lw=0.8, label=('EndToEnd'), color=next(color))
 ax.fill_between(tpr_plot, (ParTevent_ratio_mean_latent-ParTevent_ratio_std_latent), (ParTevent_ratio_mean_latent+ParTevent_ratio_std_latent),color=next(color),alpha=0.2)
 ax.plot(tpr_plot, (Aux3_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3'), color=next(color))
+ax.plot(tpr_plot, (Aux3_05_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_05'), color=next(color))
+ax.plot(tpr_plot, (Aux3_1_bkg_rej)/(mlpLatent_bkg_rej_mean), lw=0.8, label=('Aux3_1'), color=next(color))
 ax.set_xlabel(r'Signal Efficiency')
 ax.set_ylabel(r'(1/FPR) / (1/FPR_mlpLatent)')
 ax.set_ylim(0.8,2)

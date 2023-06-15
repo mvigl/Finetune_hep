@@ -85,7 +85,7 @@ def Load_default(modeltype):
             ParT_weights = '../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
-            alpha = 0.01        
+            alpha = 1        
 
     elif (modeltype =='ParTXbb'):    
             lr = 0.00004
