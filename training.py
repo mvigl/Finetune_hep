@@ -58,65 +58,42 @@ subset = args.subset
 api_key = args.api_key
 workspace = args.ws
 alpha = args.alpha
+filelist = args.filelist
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
         message = m + message
 
-X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train = df.get_train_data(data,subset)
-
+idxmap = df.get_idxmap(filelist)
 device = df.get_device()
+
 if modeltype in ['ParTevent','ParTXbb','Aux']:
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
     if modeltype == 'ParTevent':
         model = ParT_mlp.get_model(data_config,for_inference=False)  
-        train = df.build_features_and_labels(X_pfo_train[evts_train][:,:2],X_jet_train[evts_train][:,:2],X_label_train[evts_train][:,:2],2)
         model.to(device)
-        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
-        labels = labels_train
-
-    elif modeltype == 'Aux':
-        model = ParT_mlp_aux.get_model(data_config,for_inference=False)  
-        train = df.build_features_and_labels(X_pfo_train[evts_train][:,:2],X_jet_train[evts_train][:,:2],X_label_train[evts_train][:,:2],2)
-        model.to(device)
-        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
-        labels = labels_train    
+        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
 
     elif modeltype == 'ParTXbb':
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
-        X_jet_train = np.reshape(X_jet_train,(-1,len(df.jVars)))
-        X_pfo_train = np.reshape(X_pfo_train,(-1,110,len(df.pVars)))
-        X_label_train = np.reshape(X_label_train,(-1,len(df.labelVars)))
-        evts_train = np.where(X_pfo_train[:,0,df.pVars.index('pfcand_ptrel')] != 0 )[0]
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
-        train = df.build_features_and_labels_single_jet(X_pfo_train[evts_train],X_jet_train[evts_train],X_label_train[evts_train])
-        labels = train['label'].reshape(-1)
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
-    train = df.get_mlp_feat(X_jet_train[evts_train],njets_mlp,modeltype,evts_train,Xbb_scores_path,subset)
-    labels = labels_train
-    model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
+    model = ParT_mlp.make_mlp(12,nodes_mlp,nlayer_mlp)
+    if modeltype == 'mlpXbb': model = ParT_mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
 elif modeltype in ['mlpLatent']:
-    train = df.get_latent_feat(Xbb_scores_path,njets_mlp)
-    labels = labels_train
-    model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
+    model = ParT_mlp.make_mlp(256,nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
 elif modeltype in ['LatentXbb','LatentXbb_Aux']:
-    X_jet_train = np.reshape(X_jet_train[evts_train],(-1,len(df.jVars)))
-    X_pfo_train = np.reshape(X_pfo_train[evts_train],(-1,110,len(df.pVars)))
-    X_label_train = np.reshape(X_label_train[evts_train],(-1,len(df.labelVars)))
-    evts_train = np.where(X_pfo_train[:,0,df.pVars.index('pfcand_ptrel')] != 0 )[0]
-    train = df.get_latent_feat_Xbb(Xbb_scores_path,5)[evts_train]
-    labels = np.reshape(X_label_train[evts_train,df.labelVars.index('label_H_bb')],(-1))
-    model = ParT_mlp.make_mlp(len(train[0]),nodes_mlp,nlayer_mlp)
+    model = ParT_mlp.make_mlp(128,nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
@@ -153,8 +130,7 @@ else:
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
-        train,
-        labels,
+        idxmap,
         device,
         experiment,
         model_path,
@@ -168,8 +144,7 @@ if modeltype in ['ParTevent','ParTXbb']:
 elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','LatentXbb_Aux']:
     evals_part, model_part = Mlp.train_loop(
         model,
-        train,
-        labels,
+        idxmap,
         device,
         experiment,
         model_path,
@@ -181,28 +156,4 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         )
     )
 
-elif modeltype == 'Aux':
-    evals_part, model_part = ParT_mlp_aux.train_loop(
-        model,
-        train,
-        labels,
-        device,
-        experiment,
-        model_path,
-        config = dict(    
-            LR = hyper_params['learning_rate'],
-            batch_size = hyper_params['batch_size'],
-            epochs = hyper_params['steps'],
-            alpha = hyper_params['alpha']
-        )
-    )
-
-ParT_mlp_aux        
-
 log_model(experiment, model, model_name = experiment_name )
-
-figure(figsize=(5, 4), dpi=80)
-df.plot_evals(evals_part, 'combined')
-plt.legend()
-plt.semilogy()
-plt.savefig(f"plots/LOSS_{experiment_name}.png")
