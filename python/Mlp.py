@@ -13,6 +13,8 @@ from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
 from sklearn.preprocessing import StandardScaler
 from tempfile import TemporaryDirectory
 import torch.optim as optim
+import h5py
+import pickle
 vector.register_awkward()
 from ParticleTransformer import ParticleTransformer
 
@@ -27,25 +29,37 @@ def make_mlp(in_features,out_features,nlayer):
     model = torch.nn.Sequential(*layers)
     return model
 
-
-import pickle
-class myDataset(Dataset):
-    def __init__( self, X, y,device,scaler_path):
-        super(myDataset, self).__init__()
-        # Normalize the inputs
-        self.scaler = StandardScaler() # this is super useful a scikit learn function
-        if scaler_path !='no' : 
-            X_norm = self.scaler.fit_transform(X)
-            self.x = torch.from_numpy(X_norm).float().to(device)
-            with open(scaler_path,'wb') as f:
+class CustomDataset(Dataset):
+    def __init__(self, idxmap,device,scaler_path):
+        self.scaler_path = scaler_path
+        self.device = device
+        self.scaler = StandardScaler()
+        self.idxmap = idxmap
+        self.data = []
+        self.length = 0
+        
+        for file_path in self.idxmap.keys():
+                self.length += len(idxmap[file_path])
+        
+    def __getitem__(self, index):
+        file_path = [k for k,v in self.idxmap.items() if index in v][0]
+        offset = np.min(self.idxmap[file_path])
+        data = {}
+        with h5py.File(file_path, 'r') as f:
+            x = f['X_jet'][index-offset].reshape(-1)
+            y = f['labels'][index-offset]
+        if self.scaler_path !='no' : 
+            X_norm = self.scaler.fit_transform(x)
+            self.x = torch.from_numpy(X_norm).float().to(self.device)
+            with open(self.scaler_path,'wb') as f:
                 pickle.dump(self.scaler, f)
         else:
-            self.x = torch.from_numpy(X).float().to(device)    
-        self.y = torch.from_numpy(y).float().to(device)
+            self.x = torch.from_numpy(x).float().to(self.device)    
+        self.y = torch.from_numpy(y).float().to(self.device)    
+        return x,y
+    
     def __len__(self):
-        return self.x.shape[0]
-    def __getitem__(self, idx):
-        return self.x[idx], self.y[idx]
+        return self.length    
     
 def train_step(model,data,target,opt,loss_fn):
     model.train()
@@ -56,52 +70,52 @@ def train_step(model,data,target,opt,loss_fn):
     opt.zero_grad()
     return {'loss': float(loss)}
 
-def eval_fn(model, loss_fn,train_set,val_set):
+def eval_fn(model, loss_fn,train_loader,val_loader):
     with torch.no_grad():
-        data, target = train_set
-        data_val, target_val = val_set
-        model.eval()
+        for i, train_batch in enumerate( train_loader ):
+             if i < 100:    
+                if i==0:
+                    data, target = train_batch
+                else: 
+                    data = np.concatenate((data,train_batch[0]),axis=0)
+                    target = np.concatenate((target,train_batch[0]),axis=0)
+
+        for i, val_batch in enumerate( val_loader ):
+             if i < 100:    
+                if i==0:
+                    data_val, target_val = val_batch
+                else: 
+                    data_val = np.concatenate((data_val,val_batch[0]),axis=0)
+                    target_val = np.concatenate((target_val,val_batch[0]),axis=0)            
+
+
         train_loss = loss_fn(model(data).reshape(len(data)),target.float())
         test_loss = loss_fn(model(data_val).reshape(len(data_val)),target_val.float())
         print(f'train_loss: {float(train_loss)} | test_loss: {float(test_loss)}')
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
 
-def sample(dataset, batch_size):
-    N = len(dataset)
-    ix = np.arange(N)
-    np.random.seed(1)
-    np.random.shuffle(ix)
-    #Samplers for the train / val split
-    N_tr = np.floor(0.8 * N).astype(int)
-    train_batches = DataLoader(
-        dataset, batch_size=batch_size, sampler=SubsetRandomSampler(ix[:N_tr])
-    )
-    train_set = DataLoader(
-        dataset, batch_size=int(N_tr), sampler=SubsetRandomSampler(ix[:N_tr])
-    )
-    validtion_set = DataLoader(
-        dataset, batch_size=int(N-N_tr), sampler=SubsetRandomSampler(ix[N_tr:])
-    ) # It doesn't matter that the validation set is randomly sampled
-    return train_batches, train_set, validtion_set
-    
-def train_loop(model, X,y, device, experiment, path, scaler_path,config):
-    dataset = myDataset(X,y,device,scaler_path)
+def train_loop(model, idxmap, device, experiment, path, scaler_path,config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
     best_val_loss = float('inf')
     with TemporaryDirectory() as tempdir:
         best_model_params_path = path
+    Dataset = CustomDataset(idxmap,device,scaler_path)
+    num_samples = Dataset.length
+    num_train = int(0.80 * num_samples)
+    num_val = num_samples - num_train
+    train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])    
     for epoch in range (0,config['epochs']):
         print(f'epoch: {epoch+1}') 
-        train_batches, train_set, validtion_set = sample(dataset, config['batch_size'])
-        for i, train_batch in enumerate( train_batches ):
+        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
+        for i, train_batch in enumerate( train_loader ):
             data, target = train_batch
             report = train_step(model, data, target.float(), opt, loss_fn )
-        for train, val in zip(train_set, validtion_set):    
-            evals.append(eval_fn(model, loss_fn,train,val) )    
-            val_loss = evals[epoch]['test_loss']
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader) )    
+        val_loss = evals[epoch]['test_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
@@ -112,13 +126,14 @@ def train_loop(model, X,y, device, experiment, path, scaler_path,config):
     return evals, model
 
 
-def get_preds(model,data,evts,device):
+def get_preds(model,loader):
     with torch.no_grad():
-        ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
-        for i in range(len(ix)):
-            preds_i = model( torch.tensor(data[ix[i]]).float().to(device)).reshape(len(ix[i]))
-            if i==0:
-                yi_model = preds_i.detach().cpu().numpy()
-            else:    
-                yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
-        return yi_model
+        for i, batch in enumerate( loader ):
+             if i < 100:    
+                if i==0:
+                    data, target = batch
+                else: 
+                    data = np.concatenate((data,batch[0]),axis=0)
+                    target = np.concatenate((target,batch[0]),axis=0)
+    
+    return model(data),target

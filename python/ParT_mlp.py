@@ -1,3 +1,7 @@
+import sys, os
+sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
+
+import definitions as df
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
 import numpy as np
@@ -89,88 +93,80 @@ def get_loss(data_config, **kwargs):
     return torch.nn.BCELoss()
 
 
-
-def infer(model,data,train_batch,device):
-    N = train_batch
-    pf_points = torch.tensor(data['pf_points'][N]).float().to(device)
-    pf_features = torch.tensor(data['pf_features'][N]).float().to(device)
-    pf_vectors = torch.tensor(data['pf_vectors'][N]).float().to(device)
-    pf_mask = torch.tensor(data['pf_mask'][N]).float().to(device)
+def infer(model,batch,device):
+    pf_points = torch.tensor(batch['pf_points']).float().to(device)
+    pf_features = torch.tensor(batch['pf_features']).float().to(device)
+    pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
+    pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
     preds = model(pf_points,pf_features,pf_vectors,pf_mask)
-    return preds.reshape(len(train_batch))
+    return preds.reshape(-1)
 
-def infer_val(model,data,train_batch,device):
+def infer_val(model,batch,device):
     with torch.no_grad():
-        return infer(model,data,train_batch,device)
+        return infer(model,batch,device)
     
 
-def train_step(model,data,labels,opt,loss_fn,train_batch,device):
+def train_step(model,opt,loss_fn,train_batch,device):
     model.train()
-    preds = infer(model,data,train_batch,device)
-    target = torch.tensor(labels[train_batch]).float().to(device)
+    preds = infer(model,train_batch,device)
+    target = torch.tensor(train_batch['evt_label']).float().to(device)
     loss = loss_fn(preds,target)
     loss.backward()
     opt.step()
     opt.zero_grad()
     return {'loss': float(loss)}
 
-def eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device):
+def eval_fn(model,loss_fn,train_loader,val_loader,device):
     with torch.no_grad():
-        model.eval()
 
-        ix_train = np.array_split(train_set,int(len(train_set)/512))
-
-        for i in range(len(ix_train)):
-            preds_train_i = infer_val(model,data,ix_train[i],device).reshape(len(ix_train[i]))
-            if i==0:
-                preds_train = preds_train_i.detach().cpu().numpy()
-            else:    
-                preds_train = np.concatenate((preds_train,preds_train_i.detach().cpu().numpy()),axis=0)
+        for i, train_batch in enumerate( train_loader ):
+            if i < 100:    
+                if i==0:
+                    preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
+                    target_train = train_batch['evt_label']
+                else:    
+                    preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
+                    target_train = np.concatenate((target_train,train_batch['evt_label']),axis=0)
         preds_train = torch.tensor(preds_train).float().to(device)
+        target_train = torch.tensor(target_train).float().to(device)
 
-        ix_val = np.array_split(validtion_set,int(len(validtion_set)/512))
-
-        for i in range(len(ix_val)):
-            preds_val_i = infer_val(model,data,ix_val[i],device).reshape(len(ix_val[i]))
+        for i, val_batch in enumerate( val_loader ):
             if i==0:
-                preds_val = preds_val_i.detach().cpu().numpy()
+                preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
+                target_val = val_batch['evt_label']
             else:    
-                preds_val = np.concatenate((preds_val,preds_val_i.detach().cpu().numpy()),axis=0)       
+                preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
+                target_val = np.concatenate((target_val,val_batch['evt_label']),axis=0)     
         preds_val = torch.tensor(preds_val).float().to(device)
+        target_val = torch.tensor(target_val).float().to(device)
         
-        target_train = torch.tensor(labels[train_set]).float().to(device)
         train_loss = loss_fn(preds_train,target_train)
-        target_val = torch.tensor(labels[validtion_set]).float().to(device)
-        test_loss = loss_fn(preds_val,target_val)
-        print(f'train_loss: {float(train_loss)} | test_loss: {float(test_loss)}')
-        return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
+        val_loss = loss_fn(preds_val,target_val)
+        print(f'train_loss: {float(train_loss)} | validation_loss: {float(val_loss)}')
+        return {'train_loss': float(train_loss),'validation_loss': float(val_loss)}
     
     
-def train_loop(model, data, labels, device,experiment, path, config):
+def train_loop(model, idxmap, device,experiment, path, config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
     best_val_loss = float('inf')
-    N = len(data['pf_features'])
-    ix = np.arange(N)
-    ix2 = np.arange(N)
-    np.random.seed(1)
-    np.random.shuffle(ix)
-    N_tr = np.floor(0.8 * N).astype(int)
-    train_set = ix2[ix[:N_tr]]
-    validtion_set = ix2[ix[N_tr:]]
+    Dataset = df.CustomDataset(idxmap)
+    num_samples = Dataset.length
+    num_train = int(0.80 * num_samples)
+    num_val = num_samples - num_train
+    train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
+
     with TemporaryDirectory() as tempdir:
         best_model_params_path = path
     for epoch in range (0,config['epochs']):
-        train_batches = DataLoader(
-            ix2,  batch_size=config['batch_size'], sampler=SubsetRandomSampler(ix[:N_tr])
-        )
+        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
         print(f'epoch: {epoch+1}') 
-        for i, train_batch in enumerate( train_batches ):
-            train_batch = train_batch.numpy()
-            report = train_step(model, data, labels, opt, loss_fn,train_batch ,device)
-        evals.append(eval_fn(model,labels, loss_fn,data,train_set,validtion_set,device) )    
-        val_loss = evals[epoch]['test_loss']
+        for i, train_batch in enumerate( train_loader ):
+            report = train_step(model, opt, loss_fn,train_batch ,device)
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device) )    
+        val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
@@ -181,13 +177,16 @@ def train_loop(model, data, labels, device,experiment, path, config):
     return evals, model
 
 
-def get_preds(model,data,evts,device):
+def get_preds(model,data_loader,device):
 
-    ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
-    for i in range(len(ix)):
-        preds_i = infer_val(model,data,ix[i],device).reshape(len(ix[i]))
-        if i==0:
-            yi_model = preds_i.detach().cpu().numpy()
-        else:    
-            yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
-    return yi_model
+    with torch.no_grad():
+        model.eval()
+        for i, batch in enumerate( data_loader ):
+                if i==0:
+                    preds = infer_val(model,batch,device).detach().cpu().numpy()
+                    target = batch['evt_label']
+                else:    
+                    preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
+                    target = np.concatenate((target,batch['evt_label']),axis=0)
+
+    return preds,target

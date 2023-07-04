@@ -68,27 +68,29 @@ def get_model(data_config, **kwargs):
 
     model = ParticleTransformerWrapper(**cfg)
     return model
-
-def infer(model,data,train_batch,device):
-    N = train_batch
-    pf_points = torch.tensor(data['pf_points'][N]).float().to(device)
-    pf_features = torch.tensor(data['pf_features'][N]).float().to(device)
-    pf_vectors = torch.tensor(data['pf_vectors'][N]).float().to(device)
-    pf_mask = torch.tensor(data['pf_mask'][N]).float().to(device)
+    
+def infer(model,batch,device):
+    pf_points = torch.tensor(batch['pf_points']).float().to(device)
+    pf_features = torch.tensor(batch['pf_features']).float().to(device)
+    pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
+    pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
     preds = model(pf_points,pf_features,pf_vectors,pf_mask)
     return preds.reshape((-1,128))
 
-def infer_val(model,data,train_batch,device):
+def infer_val(model,batch,device):
     with torch.no_grad():
-        return infer(model,data,train_batch,device)
+        return infer(model,batch,device)    
 
-def get_preds(model,data,evts,device):
 
-    ix = np.array_split(np.arange(len(evts)),int(len(evts)/512))
-    for i in range(len(ix)):
-        preds_i = infer_val(model,data,ix[i],device).reshape((-1,128))
-        if i==0:
-            yi_model = preds_i.detach().cpu().numpy()
-        else:    
-            yi_model = np.concatenate((yi_model,preds_i.detach().cpu().numpy()),axis=0)
-    return yi_model        
+def get_preds(model,data_loader,device):
+    with torch.no_grad():
+        model.eval()
+        for i, batch in enumerate( data_loader ):
+                if i==0:
+                    preds = infer_val(model,batch,device).detach().cpu().numpy()
+                    target = batch['evt_label']
+                else:    
+                    preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
+                    target = np.concatenate((target,batch['evt_label']),axis=0)
+
+    return preds,target
