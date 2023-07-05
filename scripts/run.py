@@ -4,10 +4,10 @@ import argparse
 
 def GetParser():
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--lr', type=float, help='learning rate',default='0.00004')
-    parser.add_argument('--bs', type=int, help='batch size',default='512')
-    parser.add_argument('--ep', type=int, help='epochs',default='2')
-    parser.add_argument('--Ntrainings', type=int, help='Ntrainings',default='1')
+    parser.add_argument('--lr', type=float, help='learning rate',default=0.00004)
+    parser.add_argument('--bs', type=int, help='batch size',default=512)
+    parser.add_argument('--ep', type=int, help='epochs',default=2)
+    parser.add_argument('--Ntrainings', type=int, help='Ntrainings',default=1)
     parser.add_argument('--nlayer_mlp', type=int, help='nlayer_mlp',default=6)
     parser.add_argument('--nodes_mlp', type=int, help='nodes_mlp',default=24)
     parser.add_argument('--njets_mlp', type=int, help='njets_mlp',default=2)
@@ -15,9 +15,9 @@ def GetParser():
     parser.add_argument('--ParT_weights',  help='ParT_weights',default='no')
     parser.add_argument('--mlp_weights',  help='mlp_weights',default='no')
     parser.add_argument('--config', help='config',default='../../Finetune_hep/config/myJetClass_full.yaml')
-    parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
+    parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/test_list.txt')
     parser.add_argument('--Xbb', help='Xbb_scores_path',default='no')
-    parser.add_argument('--project_name', help='project_name',default='Finetune_ParT')
+    parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
     parser.add_argument('--default',  action='store_true', help='use default hp', default=False)
     parser.add_argument('--subset',  action='store_true', help='subset', default=False)
     parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
@@ -47,7 +47,7 @@ def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,m
         mess = 'training_'+str(i)
         if modeltype == 'Aux': mess = 'hlXbb3_'+mess
         if modeltype in ['ParTevent','Aux']: 
-              ParT_weights = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i}.pt') 
+              ParT_weights = ''#(f'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_{i}.pt') 
         elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{i}.npy')
         elif modeltype == 'LatentXbb': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb/LatentXbb_scores_{i}.npy')
         elif modeltype == 'LatentXbb_Aux': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb_Aux/LatentXbb_Aux_scores_{i}.npy')
@@ -65,12 +65,12 @@ def Load_default(modeltype):
     if (modeltype =='ParTevent'): 
             lr = 0.00004
             bs = 512
-            ep = 35
+            ep = 2
             nlayer_mlp = 3
             nodes_mlp = 128
             njets_mlp = 2
             config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = '../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
+            ParT_weights = ''#'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 
@@ -82,7 +82,7 @@ def Load_default(modeltype):
             nodes_mlp = 128
             njets_mlp = 2
             config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = '../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
+            ParT_weights = ''#'../../Finetune_hep/models/ParTXbb/ParTXbb_hl0_nodes128_nj1_lr4e-05_bs512_WparT_training_0.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
             alpha = 1        
@@ -95,7 +95,7 @@ def Load_default(modeltype):
             nodes_mlp = 128
             njets_mlp = 1
             config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = '../../Finetune_hep/models/ParT_full.pt'
+            ParT_weights = ''#'../../Finetune_hep/models/ParT_full.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 
@@ -160,9 +160,9 @@ def Load_default(modeltype):
             Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParT_latent_scores.npy'        
 
     elif (modeltype =='baseline'):
-            lr = 0.0006
+            lr = 0.01
             bs = 512
-            ep = 100
+            ep = 10
             nlayer_mlp = 6
             nodes_mlp = 24
             njets_mlp = 2

@@ -90,7 +90,6 @@ def build_features_and_labels_single(Data, transform_features=True):
     a={}
     for var in pVars:
         a[var] = Data['X_pfo'][:,:,pVars.index(var)]
-    a['label_H_bb'] =  Data['X_label'][:,labelVars.index('label_H_bb')] 
     a['label_sig'] = Data['labels']
 
     etasign = np.sign(Data['X_jet'][:,jVars.index('fj_eta')])
@@ -161,44 +160,183 @@ def build_features_and_labels_single(Data, transform_features=True):
     for k, names in feature_list.items():
         out[k] = np.stack([a[n] for n in names], axis=1)
         
-    label_list = ['label_H_bb']
     evt_label_list = ['label_sig']
-    out['jet_label'] = np.stack([a[n].astype('int') for n in label_list], axis=1)
-    out['evt_label'] = np.stack([a[n].astype('int') for n in evt_label_list], axis=0)
+    out['label'] = np.stack([a[n].astype('int') for n in evt_label_list], axis=0)
+
+    return out
+
+
+def build_features_and_labels_single_Xbb(Data, transform_features=True):
+
+    # compute new features
+    L = vector.array(
+        {
+            "pt": Data['X_jet'][jVars.index('fj_pt')],
+            "phi": Data['X_jet'][jVars.index('fj_phi')],
+            "eta": Data['X_jet'][jVars.index('fj_eta')],
+            "M": Data['X_jet'][jVars.index('fj_sdmass')],
+        }
+    )
+    fj_energy = L.energy
+    a={}
+    for var in pVars:
+        a[var] = Data['X_pfo'][:,pVars.index(var)]
+    a['label_H_bb'] =  Data['X_label'][labelVars.index('label_H_bb')] 
+
+    etasign = np.sign(Data['X_jet'][jVars.index('fj_eta')])
+
+    a['pfcand_energy'] =  a['pfcand_erel']*(fj_energy)
+    a['pfcand_pt'] = a['pfcand_ptrel']*(Data['X_jet'][jVars.index('fj_pt')])
+    a['pfcand_eta'] = (np.ma.masked_equal((Data['X_jet'][jVars.index('fj_eta')]),0) + np.ma.masked_equal(a['pfcand_etarel']*(etasign),0)).filled(fill_value=0)
+    a['pfcand_phi'] = InverseDeltaPhi((Data['X_jet'][jVars.index('fj_phi')]) , a['pfcand_phirel'] )
+    a['pfcand_px'] = a['pfcand_pt']*np.cos(np.ma.masked_equal(a['pfcand_phi'],0)).filled(fill_value=0)
+    a['pfcand_py'] = a['pfcand_pt']*np.sin(np.ma.masked_equal(a['pfcand_phi'],0)).filled(fill_value=0)
+    a['pfcand_pz'] = a['pfcand_pt']*np.sinh(np.ma.masked_equal(a['pfcand_eta'],0)).filled(fill_value=0)
+    a['pfcand_dphi'] = np.copy(a['pfcand_phirel'])
+    a['pfcand_deta'] = np.copy(a['pfcand_etarel'])
+
+    arr = np.copy(a['pfcand_ptrel'])
+    a['pfcand_mask'] = np.where(arr == 0, 0, 1)
+    a['pfcand_pt_log'] = log(a['pfcand_pt'])
+    a['pfcand_e_log'] = log(a['pfcand_energy'])
+    a['pfcand_logptrel'] = log(Data['X_pfo'][:,pVars.index('pfcand_ptrel')])
+    a['pfcand_logerel'] = log(Data['X_pfo'][:,pVars.index('pfcand_erel')])
+    a['pfcand_d0err'] = divide(Data['X_pfo'][:,pVars.index('pfcand_dxy')] , Data['X_pfo'][:,pVars.index('pfcand_dxysig')])
+    a['pfcand_dzerr'] = divide(Data['X_pfo'][:,pVars.index('pfcand_dz')] , Data['X_pfo'][:,pVars.index('pfcand_dzsig')])
+    a['pfcand_d0'] = np.tanh(np.ma.masked_equal(Data['X_pfo'][:,pVars.index('pfcand_dxy')],0)).filled(fill_value=0)
+    a['pfcand_dz'] = np.tanh(np.ma.masked_equal(Data['X_pfo'][:,pVars.index('pfcand_dz')],0)).filled(fill_value=0)
+
+
+
+    # apply standardization
+    if transform_features:
+        a['pfcand_pt_log'] = standard(a['pfcand_pt_log'],1.7,0.7) 
+        a['pfcand_e_log'] = standard(a['pfcand_e_log'],2.0,0.7) 
+        a['pfcand_logptrel'] = standard(a['pfcand_logptrel'],-4.7,0.7) 
+        a['pfcand_logerel'] = standard(a['pfcand_logerel'],-4.7,0.7)
+        a['pfcand_deltaR'] = standard(Data['X_pfo'][:,pVars.index('pfcand_deltaR')],0.2,4.0) 
+        a['pfcand_d0err'] = _clip(a['pfcand_d0err'] , 0, 1)
+        a['pfcand_dzerr'] = _clip(a['pfcand_dzerr'], 0, 1)
+
+    feature_list = {
+        'pf_points': ['pfcand_deta', 'pfcand_dphi'], # not used in ParT
+        'pf_features': ['pfcand_pt_log',
+                        'pfcand_e_log',
+                        'pfcand_logptrel',
+                        'pfcand_logerel',
+                        'pfcand_deltaR',
+                        'pfcand_charge', 
+                        'pfcand_isChargedHad',
+                        'pfcand_isNeutralHad', 
+                        'pfcand_isGamma',
+                        'pfcand_isEl', 
+                        'pfcand_isMu', 
+                        'pfcand_d0', 
+                        'pfcand_d0err',
+                        'pfcand_dz', 
+                        'pfcand_dzerr', 
+                        'pfcand_deta',
+                        'pfcand_dphi',
+                        ],
+        'pf_vectors': [
+            'pfcand_px',
+            'pfcand_py',
+            'pfcand_pz',
+            'pfcand_energy',
+        ],
+        'pf_mask': ['pfcand_mask']
+    }
+    
+    out = {}
+    for k, names in feature_list.items():
+        out[k] = np.stack([a[n] for n in names], axis=0)
+        
+    label_list = ['label_H_bb']
+    out['label'] = np.stack([a[n].astype('int') for n in label_list], axis=0)
 
     return out
 
 def get_idxmap(filelist):
     idxmap = {}
     offset = 0 
-    for filename in filelist:
-        with h5py.File(filename, 'r') as Data:
-            idxmap[filename] = np.arange(offset,offset+len(Data['labels'][:]))
-            offset += len(Data['labels'][:])
+    with open(filelist) as f:
+        for line in f:
+            filename = line.strip()
+            with h5py.File(filename, 'r') as Data:
+                idxmap[filename] = np.arange(offset,offset+len(Data['labels'][:]))
+                offset += len(Data['labels'][:])
+    return idxmap            
 
+def get_idxmap_Xbb(filelist):
+    idxmap_Xbb = {}
+    offset_Xbb = 0 
+    with open(filelist) as f:
+        for line in f:
+            filename = line.strip()
+            with h5py.File(filename, 'r') as Data:
+                idxmap_Xbb[filename] = np.arange(offset_Xbb,offset_Xbb+len(Data['labels'][:])*2)
+                offset_Xbb += len(Data['labels'][:])*2       
+    return idxmap_Xbb             
+
+def create_integer_file_map(idxmap):
+    integer_file_map = {}
+    file_names = list(idxmap.keys())
+    file_vectors = list(idxmap.values())
+    for i, file in enumerate(file_names):
+        vector = file_vectors[i]
+        for integer in vector:
+            if integer in integer_file_map:
+                integer_file_map[integer].append(file)
+            else:
+                integer_file_map[integer] = [file]
+
+    return integer_file_map     
+    
 class CustomDataset(Dataset):
-    def __init__(self, idxmap):
+    def __init__(self, idxmap,integer_file_map):
+        self.integer_file_map = integer_file_map
+        self.length = len(integer_file_map)
         self.idxmap = idxmap
-        self.data = []
-        self.length = 0
+        print("N data : ", self.length)
         
-        for file_path in self.idxmap.keys():
-                self.length += len(idxmap[file_path])
-
     def __getitem__(self, index):
-        file_path = [k for k,v in self.idxmap.items() if index in v][0]
+        file_path = self.integer_file_map[index][0]
         offset = np.min(self.idxmap[file_path])
         data = {}
         with h5py.File(file_path, 'r') as f:
             data['X_jet'] = f['X_jet'][index-offset]
             data['X_pfo'] = f['X_pfo'][index-offset]
-            data['X_label'] = f['X_label'][index-offset]
             data['labels'] = f['labels'][index-offset]
             data = build_features_and_labels_single(data)
         return data
     
     def __len__(self):
-        return self.length
+        return self.length    
+
+class Xbb_CustomDataset(Dataset):
+    def __init__(self, idxmap,integer_file_map):
+        self.integer_file_map = integer_file_map
+        self.length = len(integer_file_map)
+        self.idxmap = idxmap
+        print("N data : ", self.length)  
+        
+    def __getitem__(self, index):
+        file_path = self.integer_file_map[index][0]
+        offset = np.min(self.idxmap[file_path])
+        data = {}
+        with h5py.File(file_path, 'r') as f:
+            jet = 0
+            if (index-offset) >= (len(f['X_label'])) : 
+                jet = 1
+                offset = (offset + len(f['X_label']))
+            data['X_jet'] = f['X_jet'][index-offset,jet]
+            data['X_pfo'] = f['X_pfo'][index-offset,jet]
+            data['X_label'] = f['X_label'][index-offset,jet]
+            data = build_features_and_labels_single_Xbb(data)
+        return data
+    
+    def __len__(self):
+        return self.length    
     
 def plot_evals(evals,label):
     l = plt.plot(pd.DataFrame([e['train_loss'] for e in evals]), linestyle='dashed')

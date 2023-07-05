@@ -52,9 +52,9 @@ class ParticleTransformerWrapper(nn.Module):
         return {'mod.cls_token', }
 
     def forward(self, points, features, lorentz_vectors, mask):
-        features = torch.reshape(features,(-1,17,110))
-        lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,110))
-        mask = torch.reshape(mask,(-1,1,110))
+        features = torch.reshape(features,(-1,17,100))
+        lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
+        mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
         output_parT = torch.reshape(x_cls,(-1,2*128))
         output = self.fc(output_parT)
@@ -109,34 +109,36 @@ def infer_val(model,batch,device):
 def train_step(model,opt,loss_fn,train_batch,device):
     model.train()
     preds = infer(model,train_batch,device)
-    target = torch.tensor(train_batch['evt_label']).float().to(device)
+    target = torch.tensor(train_batch['label']).float().to(device)
     loss = loss_fn(preds,target)
     loss.backward()
     opt.step()
     opt.zero_grad()
     return {'loss': float(loss)}
 
-def eval_fn(model,loss_fn,train_loader,val_loader,device):
+def eval_fn(model,loss_fn,train_loader,val_loader,device,subset):
     with torch.no_grad():
 
         for i, train_batch in enumerate( train_loader ):
             if i < 100:    
                 if i==0:
                     preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
-                    target_train = train_batch['evt_label']
+                    target_train = train_batch['label']
                 else:    
                     preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
-                    target_train = np.concatenate((target_train,train_batch['evt_label']),axis=0)
+                    target_train = np.concatenate((target_train,train_batch['label']),axis=0)
+            if (subset and i > 10): break        
         preds_train = torch.tensor(preds_train).float().to(device)
         target_train = torch.tensor(target_train).float().to(device)
 
         for i, val_batch in enumerate( val_loader ):
             if i==0:
                 preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
-                target_val = val_batch['evt_label']
+                target_val = val_batch['label']
             else:    
                 preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
-                target_val = np.concatenate((target_val,val_batch['evt_label']),axis=0)     
+                target_val = np.concatenate((target_val,val_batch['label']),axis=0)    
+            if (subset and i > 10): break     
         preds_val = torch.tensor(preds_val).float().to(device)
         target_val = torch.tensor(target_val).float().to(device)
         
@@ -146,12 +148,12 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device):
         return {'train_loss': float(train_loss),'validation_loss': float(val_loss)}
     
     
-def train_loop(model, idxmap, device,experiment, path, config):
+def train_loop(model, idxmap,integer_file_map, device,experiment, path,subset, config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCELoss()
     evals = []
     best_val_loss = float('inf')
-    Dataset = df.CustomDataset(idxmap)
+    Dataset = df.CustomDataset(idxmap,integer_file_map)
     num_samples = Dataset.length
     num_train = int(0.80 * num_samples)
     num_val = num_samples - num_train
@@ -165,7 +167,8 @@ def train_loop(model, idxmap, device,experiment, path, config):
         print(f'epoch: {epoch+1}') 
         for i, train_batch in enumerate( train_loader ):
             report = train_step(model, opt, loss_fn,train_batch ,device)
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device) )    
+            if (subset and i > 10): break
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset) )    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -184,9 +187,9 @@ def get_preds(model,data_loader,device):
         for i, batch in enumerate( data_loader ):
                 if i==0:
                     preds = infer_val(model,batch,device).detach().cpu().numpy()
-                    target = batch['evt_label']
+                    target = batch['label']
                 else:    
                     preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
-                    target = np.concatenate((target,batch['evt_label']),axis=0)
+                    target = np.concatenate((target,batch['label']),axis=0)
 
     return preds,target

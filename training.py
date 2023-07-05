@@ -6,7 +6,6 @@ sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
 import ParT_mlp
-import ParT_mlp_aux
 import ParT_Xbb
 import Mlp
 import definitions as df
@@ -30,9 +29,9 @@ parser.add_argument('--njets_mlp', type=int, help='njets_mlp',default=2)
 parser.add_argument('--ParT_weights',  help='ParT_weights',default='../../Finetune_hep/models/ParT_full.pt')
 parser.add_argument('--mlp_weights',  help='mlp_weights',default='no')
 parser.add_argument('--config', help='config',default='../../Finetune_hep/config/myJetClass_full.yaml')
-parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
+parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_list.txt')
 parser.add_argument('--Xbb', help='Xbb_scores_path',default='/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/data/ParT_Xbb.npy')
-parser.add_argument('--project_name', help='project_name',default='Finetune_ParT')
+parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
 parser.add_argument('--subset',  action='store_true', help='subset', default=False)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
@@ -51,21 +50,20 @@ config_path = args.config
 modeltype = args.modeltype
 ParT_weights = args.ParT_weights
 mlp_weights = args.mlp_weights
-data = args.data
 Xbb_scores_path = args.Xbb
 project_name = args.project_name
 subset = args.subset
 api_key = args.api_key
 workspace = args.ws
 alpha = args.alpha
-filelist = args.filelist
+filelist = args.data
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
         message = m + message
 
-idxmap = df.get_idxmap(filelist)
 device = df.get_device()
+idxmap = df.get_idxmap(filelist)
 
 if modeltype in ['ParTevent','ParTXbb','Aux']:
     with open(config_path) as file:
@@ -77,6 +75,7 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
 
     elif modeltype == 'ParTXbb':
+        idxmap = df.get_idxmap_Xbb(filelist)
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
@@ -105,7 +104,7 @@ experiment = Experiment(
   project_name = project_name,
   workspace=workspace,
   log_graph=True, # Can be True or False.
-  auto_metric_logging=False # Can be True or False
+  auto_metric_logging=True # Can be True or False
 )
 
 hyper_params = {
@@ -126,14 +125,19 @@ if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
     scaler_path = 'no'
-    
+scaler_path = 'no'    
+        
+integer_file_map = df.create_integer_file_map(idxmap)
+
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
         idxmap,
+        integer_file_map,
         device,
         experiment,
         model_path,
+        subset,
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
@@ -145,10 +149,12 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
     evals_part, model_part = Mlp.train_loop(
         model,
         idxmap,
+        integer_file_map,
         device,
         experiment,
         model_path,
         scaler_path,
+        subset,
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],

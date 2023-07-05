@@ -88,9 +88,9 @@ def get_preds(model,data_loader,device):
         for i, batch in enumerate( data_loader ):
                 if i==0:
                     preds = infer_val(model,batch,device).detach().cpu().numpy()
-                    target = batch['evt_label']
+                    target = batch['label']
                 else:    
                     preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
-                    target = np.concatenate((target,batch['evt_label']),axis=0)
+                    target = np.concatenate((target,batch['label']),axis=0)
 
     return preds,target
