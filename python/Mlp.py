@@ -18,38 +18,75 @@ import pickle
 vector.register_awkward()
 from ParticleTransformer import ParticleTransformer
 
-def make_mlp(in_features,out_features,nlayer):
+
+labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]       
+jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
+pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]        
+
+def log(data):
+    ma_data = np.ma.masked_equal(data,0)
+    result = np.log(ma_data)
+    return result.filled(fill_value=0)  
+
+def make_mlp(in_features,out_features,nlayer,for_inference=False):
     layers = []
     for i in range(nlayer):
         layers.append(torch.nn.Linear(in_features, out_features))
         layers.append(torch.nn.ReLU())
         in_features = out_features
     layers.append(torch.nn.Linear(in_features, 1))
-    layers.append(torch.nn.Sigmoid())
+    if for_inference: layers.append(torch.nn.Sigmoid())
     model = torch.nn.Sequential(*layers)
     return model
 
 class CustomDataset(Dataset):
-    def __init__(self, idxmap,integer_file_map,device,scaler_path):
-        self.scaler_path = scaler_path
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
         self.device = device
-        self.scaler = StandardScaler()
-        self.integer_file_map = integer_file_map
-        self.length = len(integer_file_map)
-        self.idxmap = idxmap
-        print("N data : ", self.length)      
+        self.x=[]
+        self.y=[]
+        i=0
+        with open(filelist) as f:
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                with h5py.File(filename, 'r') as Data:
+                    if i ==0:
+                        data = Data['X_jet'][:]
+                        target = Data['labels'][:] 
+                    else:
+                        data = np.concatenate((data,Data['X_jet'][:]),axis=0)
+                        target = np.concatenate((target,Data['labels'][:]),axis=0)
+                    i+=1    
+        self.scaler = StandardScaler() # this is super useful a scikit learn function
+        data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
+        data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
+        data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
+        if Xbb_scores_path != 'no': 
+            print('loading Xbb scores from : ',Xbb_scores_path)
+            with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
+                data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+        if scaler_path !='no' : 
+            if (test == False): 
+                X_norm = self.scaler.fit_transform(data.reshape(-1,12))
+                self.x = torch.from_numpy(X_norm).float().to(device)
+                with open(scaler_path,'wb') as f:
+                    pickle.dump(self.scaler, f)
+            else:         
+                with open(scaler_path,'rb') as f:
+                    self.scaler = pickle.load(f)
+                X_norm = self.scaler.transform(data.reshape(-1,12))
+                self.x = torch.from_numpy(X_norm).float().to(device)
+        else:
+            self.x = torch.from_numpy(data.reshape(-1,12)).float().to(device)    
+        self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
+        self.length = len(target)
+        print('N data : ',self.length)
         
-    def __getitem__(self, index):
-        file_path = self.integer_file_map[index][0]
-        offset = np.min(self.idxmap[file_path])
-        with h5py.File(file_path, 'r') as f:
-            x = f['X_jet'][index-offset].reshape(12)
-            y = f['labels'][index-offset].reshape(-1)
-        self.x = torch.from_numpy(x).float().to(self.device)    
-        self.y = torch.from_numpy(y).float().to(self.device)    
-        return self.x,self.y
     def __len__(self):
-        return self.length            
+        return self.length
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+             
     
 def train_step(model,data,target,opt,loss_fn):
     model.train()
@@ -62,16 +99,16 @@ def train_step(model,data,target,opt,loss_fn):
 
 def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
     with torch.no_grad():
-        for i, train_batch in enumerate( train_loader ):
-            if i < 100:    
-                if i==0:
-                    data, target = train_batch
-                    data = data.cpu().numpy()
-                    target = target.cpu().numpy()
-                else: 
-                    data = np.concatenate((data,train_batch[0].cpu().numpy()),axis=0)
-                    target = np.concatenate((target,train_batch[1].cpu().numpy()),axis=0)
-            if (subset and i > 10): break 
+        model.eval()
+        for i, train_batch in enumerate( train_loader ): 
+            if i==0:
+                data, target = train_batch
+                data = data.cpu().numpy()
+                target = target.cpu().numpy()
+            else: 
+                data = np.concatenate((data,train_batch[0].cpu().numpy()),axis=0)
+                target = np.concatenate((target,train_batch[1].cpu().numpy()),axis=0)
+            if (i > 100): break 
         for i, val_batch in enumerate( val_loader ):
             if i==0:
                 data_val, target_val = val_batch
@@ -88,22 +125,22 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
 
-def train_loop(model, idxmap,integer_file_map, device, experiment, path, scaler_path,subset,config):
+def train_loop(model,filelist, device, experiment, path, scaler_path,Xbb_scores_path,subset,config):
     opt = optim.Adam(model.parameters(), config['LR'])
-    loss_fn = nn.BCELoss()
+    loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([15.2]).to(device))
     evals = []
     best_val_loss = float('inf')
     with TemporaryDirectory() as tempdir:
         best_model_params_path = path
-    Dataset = CustomDataset(idxmap,integer_file_map,device,scaler_path)
+    Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path)
     num_samples = Dataset.length
     num_train = int(0.80 * num_samples)
     num_val = num_samples - num_train
     train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])    
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
     for epoch in range (0,config['epochs']):
         print(f'epoch: {epoch+1}') 
         train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
         for i, train_batch in enumerate( train_loader ):
             data, target = train_batch
             report = train_step(model, data, target, opt, loss_fn )
@@ -126,12 +163,10 @@ def get_preds(model,loader,subset,device):
         for i, batch in enumerate( loader ):
             if i==0:
                 data, target = batch
-                data = data.cpu().numpy()
+                yi = model(data).detach().cpu().numpy()
                 target = target.cpu().numpy()
             else: 
-                data = np.concatenate((data,batch[0].cpu().numpy()),axis=0)
+                yi = np.concatenate((yi,model(batch[0]).detach().cpu().numpy()),axis=0)
                 target = np.concatenate((target,batch[1].cpu().numpy()),axis=0)
             if (subset and i > 10): break    
-    print('oi')            
-    print(data.shape)
-    return model(torch.from_numpy(data).float().to(device)).detach().cpu().numpy(),target
+    return yi,target

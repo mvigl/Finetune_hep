@@ -19,15 +19,19 @@ from tempfile import TemporaryDirectory
 import torch.optim as optim
 vector.register_awkward()
 from ParticleTransformer import ParticleTransformer
+import h5py
+from torch_optimizer import Lookahead
+from torch.optim.lr_scheduler import ExponentialLR
+from ignite.handlers import create_lr_scheduler_with_warmup
 
-def make_mlp(in_features,out_features,nlayer):
+def make_mlp(in_features,out_features,nlayer,for_inference=False):
     layers = []
     for i in range(nlayer):
         layers.append(torch.nn.Linear(in_features, out_features))
         layers.append(torch.nn.ReLU())
         in_features = out_features
     layers.append(torch.nn.Linear(in_features, 1))
-    layers.append(torch.nn.Sigmoid())
+    if for_inference: layers.append(torch.nn.Sigmoid())
     model = torch.nn.Sequential(*layers)
     return model
 
@@ -41,7 +45,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = make_mlp(in_dim*2,out_features=128,nlayer = 3)
+        self.fc = make_mlp(in_dim*2,out_features=128,nlayer = 3,for_inference=self.for_inference)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -89,9 +93,6 @@ def get_model(data_config, **kwargs):
     model = ParticleTransformerWrapper(**cfg)
     return model
 
-def get_loss(data_config, **kwargs):
-    return torch.nn.BCELoss()
-
 
 def infer(model,batch,device):
     pf_points = torch.tensor(batch['pf_points']).float().to(device)
@@ -99,46 +100,56 @@ def infer(model,batch,device):
     pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
     pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
     preds = model(pf_points,pf_features,pf_vectors,pf_mask)
-    return preds.reshape(-1)
+    return preds
 
 def infer_val(model,batch,device):
     with torch.no_grad():
         return infer(model,batch,device)
     
 
-def train_step(model,opt,loss_fn,train_batch,device):
+def train_step(model,opt,loss_fn,train_batch,device,scheduler):
     model.train()
+    opt.zero_grad()
     preds = infer(model,train_batch,device)
     target = torch.tensor(train_batch['label']).float().to(device)
     loss = loss_fn(preds,target)
     loss.backward()
     opt.step()
-    opt.zero_grad()
+    scheduler.step()
     return {'loss': float(loss)}
 
-def eval_fn(model,loss_fn,train_loader,val_loader,device,subset):
+def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
     with torch.no_grad():
-
-        for i, train_batch in enumerate( train_loader ):
-            if i < 100:    
-                if i==0:
-                    preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
-                    target_train = train_batch['label']
-                else:    
-                    preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
-                    target_train = np.concatenate((target_train,train_batch['label']),axis=0)
-            if (subset and i > 10): break        
+        model.eval()
+        for i, train_batch in enumerate( train_loader ): 
+            train_batch['X_jet']=train_batch['X_jet'].numpy()
+            train_batch['X_pfo']=train_batch['X_pfo'].numpy()
+            train_batch['X_label']=train_batch['X_label'].numpy()
+            train_batch['labels']=train_batch['labels'].numpy()
+            train_batch = build_features(train_batch)
+            if i==0:
+                preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
+                target_train = train_batch['label']
+            else:    
+                preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
+                target_train = np.concatenate((target_train,train_batch['label']),axis=0)
+            if (i > 100): break        
         preds_train = torch.tensor(preds_train).float().to(device)
         target_train = torch.tensor(target_train).float().to(device)
 
         for i, val_batch in enumerate( val_loader ):
+            val_batch['X_jet']=val_batch['X_jet'].numpy()
+            val_batch['X_pfo']=val_batch['X_pfo'].numpy()
+            val_batch['X_label']=val_batch['X_label'].numpy()
+            val_batch['labels']=val_batch['labels'].numpy()
+            val_batch = build_features(val_batch)
             if i==0:
                 preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
                 target_val = val_batch['label']
             else:    
                 preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
                 target_val = np.concatenate((target_val,val_batch['label']),axis=0)    
-            if (subset and i > 10): break     
+            if (subset and i > 5): break     
         preds_val = torch.tensor(preds_val).float().to(device)
         target_val = torch.tensor(target_val).float().to(device)
         
@@ -147,28 +158,63 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset):
         print(f'train_loss: {float(train_loss)} | validation_loss: {float(val_loss)}')
         return {'train_loss': float(train_loss),'validation_loss': float(val_loss)}
     
+def get_scheduler(epochs,njets_train,batch_size,warmup_steps,opt):
+    total_steps = epochs * int(math.ceil(njets_train/batch_size))
+    warmup_steps = warmup_steps
+    flat_steps = total_steps * 0.7 - 1
+    min_factor = 0.00
+    def lr_fn(step_num):
+        if step_num > total_steps:
+            raise ValueError(
+                "Tried to step {} times. The specified number of total steps is {}".format(
+                    step_num + 1, total_steps))
+        if step_num < warmup_steps:
+            return 1. * step_num / warmup_steps
+        if step_num <= flat_steps:
+            return 1.0
+        pct = (step_num - flat_steps) / (total_steps - flat_steps)
+        return max(min_factor, 1 - pct)
+
+    scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lr_fn, last_epoch=-1)
+    scheduler._update_per_step = True  # mark it to update the lr every step, instead of every epoch
+    return scheduler      
     
-def train_loop(model, idxmap,integer_file_map, device,experiment, path,subset, config):
-    opt = optim.Adam(model.parameters(), config['LR'])
-    loss_fn = nn.BCELoss()
+def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,subset, config):
     evals = []
     best_val_loss = float('inf')
-    Dataset = df.CustomDataset(idxmap,integer_file_map)
+    if config['Xbb']:
+        print('Xbb task')
+        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.2]).to(device))
+        Dataset = df.Xbb_CustomDataset(idxmap,integer_file_map)
+        build_features = df.build_features_and_labels_Xbb
+    else:    
+        print('Evt task')
+        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([15.2]).to(device))
+        Dataset = df.CustomDataset(idxmap,integer_file_map)
+        build_features = df.build_features_and_labels
     num_samples = Dataset.length
     num_train = int(0.80 * num_samples)
     num_val = num_samples - num_train
     train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=6)
 
-    with TemporaryDirectory() as tempdir:
-        best_model_params_path = path
+    base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
+    opt = Lookahead(base_opt, k=6, alpha=0.5)
+    scheduler = get_scheduler(config['epochs'],num_train,config['batch_size'],50,opt)
+
+    best_model_params_path = path
     for epoch in range (0,config['epochs']):
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
-        print(f'epoch: {epoch+1}') 
+        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=6)
+        print('Epoch:', epoch,'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
-            report = train_step(model, opt, loss_fn,train_batch ,device)
-            if (subset and i > 10): break
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset) )    
+            train_batch['X_jet']=train_batch['X_jet'].numpy()
+            train_batch['X_pfo']=train_batch['X_pfo'].numpy()
+            train_batch['X_label']=train_batch['X_label'].numpy()
+            train_batch['labels']=train_batch['labels'].numpy()
+            train_batch = build_features(train_batch)
+            report = train_step(model, opt, loss_fn,train_batch ,device,scheduler)
+            if (subset and i > 5): break
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features) )    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -180,16 +226,64 @@ def train_loop(model, idxmap,integer_file_map, device,experiment, path,subset, c
     return evals, model
 
 
-def get_preds(model,data_loader,device):
+def get_preds(model,data_loader,device,subset,build_features):
 
     with torch.no_grad():
         model.eval()
-        for i, batch in enumerate( data_loader ):
+        for i, batch in enumerate( data_loader ):  
+                if (i % 500) == 0: print('batch : ', i)
+                batch['X_jet']=batch['X_jet'].numpy()
+                batch['X_pfo']=batch['X_pfo'].numpy()
+                batch['X_label']=batch['X_label'].numpy()
+                batch['labels']=batch['labels'].numpy()
+                batch = build_features(batch)  
                 if i==0:
                     preds = infer_val(model,batch,device).detach().cpu().numpy()
                     target = batch['label']
                 else:    
                     preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
                     target = np.concatenate((target,batch['label']),axis=0)
+                if (subset and i>5): break    
 
+    return preds,target
+
+def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
+
+    with torch.no_grad():
+        model.eval()
+        with open(filelist) as f:
+            i=-1
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                with h5py.File(filename, 'r') as Data:
+                    if len(Data['X_label']) > 3000: size = 1024
+                    else : 
+                        size = len(Data['X_label'])/2
+                        if len(Data['X_label']) == 0: 
+                            print('no data')
+                            continue
+                    i+=1    
+                    batches = np.array_split(np.arange(len(Data['X_label'])),int(len(Data['X_label'])/size))
+                    for j in range(len(batches)):
+                        data = {}
+                        if Xbb:
+                            build_features = df.build_features_and_labels_Xbb
+                            data['X_jet'] = Data['X_jet'][batches[j]].reshape(-1,6)
+                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,100, 15)
+                            data['X_label'] = Data['X_label'][batches[j]].reshape(-1,6)
+                            data = build_features(data)
+                        else:   
+                            build_features = df.build_features_and_labels
+                            data['X_jet'] = Data['X_jet'][batches[j]]
+                            data['X_pfo'] = Data['X_pfo'][batches[j]]
+                            data['labels'] = Data['labels'][batches[j]]
+                            data = build_features(data) 
+                        if (i ==0 and j==0):
+                            preds = infer_val(model,data,device).detach().cpu().numpy()
+                            target = data['label']
+                        else:
+                            preds = np.concatenate((preds,infer_val(model,data,device).detach().cpu().numpy()),axis=0)
+                            target = np.concatenate((target,data['label']),axis=0)
+                if (subset and i>5): break
     return preds,target

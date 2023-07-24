@@ -73,16 +73,18 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
+        Xbb = False
 
     elif modeltype == 'ParTXbb':
         idxmap = df.get_idxmap_Xbb(filelist)
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
         model.to(device)
+        Xbb = True
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
-    model = ParT_mlp.make_mlp(12,nodes_mlp,nlayer_mlp)
-    if modeltype == 'mlpXbb': model = ParT_mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
+    model = Mlp.make_mlp(12,nodes_mlp,nlayer_mlp)
+    if modeltype == 'mlpXbb': model = Mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
@@ -124,14 +126,14 @@ experiment.log_parameters(hyper_params)
 if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
-    scaler_path = 'no'
-scaler_path = 'no'    
+    scaler_path = 'no'  
         
 integer_file_map = df.create_integer_file_map(idxmap)
 
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
+        filelist,
         idxmap,
         integer_file_map,
         device,
@@ -141,19 +143,20 @@ if modeltype in ['ParTevent','ParTXbb']:
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
-            epochs = hyper_params['steps']
+            epochs = hyper_params['steps'],
+            Xbb = Xbb
         )
     )
 
 elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','LatentXbb_Aux']:
     evals_part, model_part = Mlp.train_loop(
         model,
-        idxmap,
-        integer_file_map,
+        filelist,
         device,
         experiment,
         model_path,
         scaler_path,
+        Xbb_scores_path,
         subset,
         config = dict(    
             LR = hyper_params['learning_rate'],
