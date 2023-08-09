@@ -32,29 +32,31 @@ def get_vars(filelist):
                     data = Data['X_jet'][:]
                     target = Data['labels'][:]
                     target_jet = Data['X_label'][:]
+                    jet_mask = Data['jet_mask'][:]
                 else:
                     data = np.concatenate((data,Data['X_jet'][:]),axis=0)
                     target = np.concatenate((target,Data['labels'][:]),axis=0) 
                     target_jet = np.concatenate((target_jet,Data['X_label'][:]),axis=0) 
+                    jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0) 
             i+=1
-    return data,target,target_jet
+    return data,target,target_jet,jet_mask
 
-data,target,target_jet = get_vars(filelist)
+data,target,target_jet,jet_mask = get_vars(filelist)
 
 fpr=[]
 tpr=[]
 threshold=[]
-
-yi_doubleb = (data[:,:,jVars.index('fj_doubleb')].reshape(-1,1)+1)/2
-target_doubleb = target_jet[:,:,labelVars.index('label_H_bb')].reshape(-1,1)
+jet_mask = (jet_mask.reshape(-1)).astype(bool)
+yi_doubleb = (data[:,:,jVars.index('fj_doubleb')].reshape(-1)[jet_mask]+1)/2
+target_doubleb = target_jet[:,:,labelVars.index('label_H_bb')].reshape(-1)[jet_mask]
 fpr_i, tpr_i, threshold_i = roc_curve(target_doubleb, yi_doubleb,drop_intermediate=False)
 fpr.append(fpr_i)
 tpr.append(tpr_i)
 threshold.append(threshold_i)
 
 
-with h5py.File('../../Finetune_hep/models/ParTXbb/ParTXbb_test_full.h5', 'r') as test_data:
-    yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1),test_data['X_label'][:].reshape(-1)
+with h5py.File('../../Finetune_hep/models/ParTXbb/Final_ParTXbb_test.h5', 'r') as test_data:
+    yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1)[jet_mask],test_data['X_label'][:].reshape(-1)[jet_mask]
 fpr_i, tpr_i, threshold_i = roc_curve(target_ParTXbb, yi_ParTXbb,drop_intermediate=False)
 fpr.append(fpr_i)
 tpr.append(tpr_i)

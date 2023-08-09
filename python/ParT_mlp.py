@@ -45,7 +45,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = make_mlp(in_dim*2,out_features=128,nlayer = 3,for_inference=self.for_inference)
+        self.fc = make_mlp(in_dim,out_features=128,nlayer = 3,for_inference=self.for_inference)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -55,12 +55,12 @@ class ParticleTransformerWrapper(nn.Module):
     def no_weight_decay(self):
         return {'mod.cls_token', }
 
-    def forward(self, points, features, lorentz_vectors, mask):
+    def forward(self, points, features, lorentz_vectors, mask,jet_mask):
         features = torch.reshape(features,(-1,17,100))
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
-        mask = torch.reshape(mask,(-1,1,100))
+        mask = torch.reshape(mask,(-1,1,100))+torch.abs(torch.reshape(jet_mask,(-1,1,1))-1)
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
-        output_parT = torch.reshape(x_cls,(-1,2*128))
+        output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
         output = self.fc(output_parT)
         return output
 
@@ -99,7 +99,8 @@ def infer(model,batch,device):
     pf_features = torch.tensor(batch['pf_features']).float().to(device)
     pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
     pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
-    preds = model(pf_points,pf_features,pf_vectors,pf_mask)
+    jet_mask = torch.tensor(batch['jet_mask']).float().to(device)
+    preds = model(pf_points,pf_features,pf_vectors,pf_mask,jet_mask)
     return preds
 
 def infer_val(model,batch,device):
@@ -126,6 +127,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
+            train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
             if i==0:
                 preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
@@ -142,6 +144,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
             val_batch['X_pfo']=val_batch['X_pfo'].numpy()
             val_batch['X_label']=val_batch['X_label'].numpy()
             val_batch['labels']=val_batch['labels'].numpy()
+            val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
             val_batch = build_features(val_batch)
             if i==0:
                 preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
@@ -184,19 +187,19 @@ def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,
     best_val_loss = float('inf')
     if config['Xbb']:
         print('Xbb task')
-        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.2]).to(device))
+        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.39]).to(device))
         Dataset = df.Xbb_CustomDataset(idxmap,integer_file_map)
         build_features = df.build_features_and_labels_Xbb
     else:    
         print('Evt task')
-        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([15.2]).to(device))
+        loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(device))
         Dataset = df.CustomDataset(idxmap,integer_file_map)
         build_features = df.build_features_and_labels
     num_samples = Dataset.length
     num_train = int(0.80 * num_samples)
     num_val = num_samples - num_train
     train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
-    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=6)
+    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=24)
 
     base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
     opt = Lookahead(base_opt, k=6, alpha=0.5)
@@ -204,13 +207,14 @@ def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,
 
     best_model_params_path = path
     for epoch in range (0,config['epochs']):
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=6)
+        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=24)
         print('Epoch:', epoch,'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
+            train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
             report = train_step(model, opt, loss_fn,train_batch ,device,scheduler)
             if (subset and i > 5): break
@@ -236,6 +240,7 @@ def get_preds(model,data_loader,device,subset,build_features):
                 batch['X_pfo']=batch['X_pfo'].numpy()
                 batch['X_label']=batch['X_label'].numpy()
                 batch['labels']=batch['labels'].numpy()
+                batch['jet_mask']=batch['jet_mask'].numpy()
                 batch = build_features(batch)  
                 if i==0:
                     preds = infer_val(model,batch,device).detach().cpu().numpy()
@@ -257,9 +262,9 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
                 filename = line.strip()
                 print('reading : ',filename)
                 with h5py.File(filename, 'r') as Data:
-                    if len(Data['X_label']) > 3000: size = 1024
+                    if len(Data['X_label']) > 3000: size = 512
                     else : 
-                        size = len(Data['X_label'])/2
+                        size = len(Data['X_label'])/10
                         if len(Data['X_label']) == 0: 
                             print('no data')
                             continue

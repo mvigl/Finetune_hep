@@ -44,7 +44,7 @@ def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,m
     macro = 'training.py'     
 
     for i in range(Ntrainings):
-        mess = 'training_PaperW_'+str(i)
+        mess = 'training_'+str(i)
         if modeltype == 'Aux': mess = 'hlXbb3_'+mess
         elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{i}.npy')
         elif modeltype == 'LatentXbb': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb/LatentXbb_scores_{i}.npy')
@@ -62,13 +62,13 @@ def Load_default(modeltype):
     alpha = 0.01    
     if (modeltype =='ParTevent'): 
             lr = 1e-3
-            bs = 512
+            bs = 256
             ep = 20
             nlayer_mlp = 3
             nodes_mlp = 128
             njets_mlp = 2
             config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
-            ParT_weights = '../../Finetune_hep/models/ParT_full.pt'#'/home/iwsatlas1/mavigl/Finetune_hep_dir/run/ParTXbb_full/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_0.pt'
+            ParT_weights = '/home/iwsatlas1/mavigl/Finetune_hep_dir/run/Final_ParTXbb/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_0.pt'#'../../Finetune_hep/models/ParT_full.pt'
             mlp_weights = 'no'
             Xbb_scores_path = 'no'
 
@@ -137,13 +137,13 @@ def Load_default(modeltype):
             lr = 1e-3
             bs = 512
             ep = 30
-            nlayer_mlp = 6
+            nlayer_mlp = 3
             nodes_mlp = 24
             njets_mlp = 2
             config_path = 'no'
             ParT_weights = 'no'
             mlp_weights = 'no'
-            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParTXbb_train_full.h5' 
+            Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/Final_ParTXbb_train.h5' 
 
     elif (modeltype =='mlpLatent'):
             lr = 5e-4
@@ -158,10 +158,10 @@ def Load_default(modeltype):
             Xbb_scores_path = '../../Finetune_hep/models/ParTXbb/ParT_latent_scores.npy'        
 
     elif (modeltype =='baseline'):
-            lr = 5e-4
+            lr = 1e-3
             bs = 512
             ep = 30
-            nlayer_mlp = 6
+            nlayer_mlp = 3
             nodes_mlp = 24
             njets_mlp = 2
             config_path = 'no'

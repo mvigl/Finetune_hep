@@ -91,6 +91,7 @@ def build_features_and_labels(Data, transform_features=True):
     for var in pVars:
         a[var] = Data['X_pfo'][:,:,:,pVars.index(var)]
     a['label_sig'] = Data['labels']
+    a['jet_mask'] = Data['jet_mask']
 
     etasign = np.sign(Data['X_jet'][:,:,jVars.index('fj_eta')])
 
@@ -159,7 +160,10 @@ def build_features_and_labels(Data, transform_features=True):
     out = {}
     for k, names in feature_list.items():
         out[k] = np.stack([a[n] for n in names], axis=2)
-        
+
+    jet_mask_list = ['jet_mask']
+    out['jet_mask'] = np.stack([a[n].astype('int') for n in jet_mask_list], axis=2)
+
     evt_label_list = ['label_sig']
     out['label'] = np.stack([a[n].astype('int') for n in evt_label_list], axis=1)
 
@@ -448,15 +452,16 @@ def get_idxmap(filelist):
     return idxmap            
 
 def get_idxmap_Xbb(filelist):
-    idxmap_Xbb = {}
-    offset_Xbb = 0 
+    idxmap = {}
+    offset = 0 
     with open(filelist) as f:
         for line in f:
             filename = line.strip()
             with h5py.File(filename, 'r') as Data:
-                idxmap_Xbb[filename] = np.arange(offset_Xbb,offset_Xbb+len(Data['labels'][:])*2)
-                offset_Xbb += len(Data['labels'][:])*2       
-    return idxmap_Xbb             
+                idxmap[filename] = np.arange(offset,offset+len(Data['X_label_singlejet'][:]))
+                offset += len(Data['X_label_singlejet'][:])
+    return idxmap              
+         
 
 def create_integer_file_map(idxmap):
     integer_file_map = {}
@@ -488,7 +493,7 @@ class CustomDataset(Dataset):
             data['X_pfo'] = f['X_pfo'][index-offset]
             data['X_label'] = f['X_label'][index-offset]
             data['labels'] = f['labels'][index-offset]
-            #data = build_features_and_labels_single(data)
+            data['jet_mask'] = f['jet_mask'][index-offset]
         return data
     
     def __len__(self):
@@ -500,26 +505,22 @@ class Xbb_CustomDataset(Dataset):
         self.integer_file_map = integer_file_map
         self.length = len(integer_file_map)
         self.idxmap = idxmap
-        print("N data : ", self.length)  
+        print("N data : ", self.length)
         
     def __getitem__(self, index):
         file_path = self.integer_file_map[index][0]
         offset = np.min(self.idxmap[file_path])
         data = {}
         with h5py.File(file_path, 'r') as f:
-            jet = 0
-            if (index-offset) >= (len(f['X_label'])) : 
-                jet = 1
-                offset = (offset + len(f['X_label']))
-            data['X_jet'] = f['X_jet'][index-offset,jet]
-            data['X_pfo'] = f['X_pfo'][index-offset,jet]
-            data['X_label'] = f['X_label'][index-offset,jet]
-            data['labels'] = f['labels'][index-offset]
-            #data = build_features_and_labels_single_Xbb(data)
+            data['X_jet'] = f['X_jet_singlejet'][index-offset]
+            data['X_pfo'] = f['X_pfo_singlejet'][index-offset]
+            data['X_label'] = f['X_label_singlejet'][index-offset]
+            data['labels'] = f['X_label_singlejet'][index-offset]
         return data
     
     def __len__(self):
         return self.length    
+
     
 class Xbb_CustomDataset_heavy(Dataset):
     def __init__(self, filelist):
@@ -562,7 +563,7 @@ def plot_evals(evals,label):
 
 def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
 
-    if modeltype in ['ParTXbb','ParTevent']:
+    if modeltype in ['ParTXbb']:
         if (ParT_params_path != 'no'):
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
                 if i < len(torch.load(ParT_params_path).keys()) -2:

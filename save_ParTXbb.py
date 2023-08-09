@@ -36,19 +36,18 @@ threshold=[]
 
 ParTXbb_model.to(device)
 ParTXbb_model.eval()
-ParTXbb_model.load_state_dict(torch.load(f'/home/iwsatlas1/mavigl/Finetune_hep_dir/run/ParTXbb_full/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_0.pt'))
+ParTXbb_model.load_state_dict(torch.load(f'/home/iwsatlas1/mavigl/Finetune_hep_dir/run/Final_ParTXbb/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_0.pt'))
 
-build_features = df.build_features_and_labels_Xbb
 yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
-Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/ParTXbb_train_full.h5', 'w')
-Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,2))
-Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,2),dtype='i4')
+Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/Final_ParTXbb_train.h5', 'w')
+Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
+Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
 Data_train.close()        
 
 yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,Xbb=True)
-Data_test = h5py.File(f'../../Finetune_hep/models/ParTXbb/ParTXbb_test_full.h5', 'w')
-Data_test.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,2))
-Data_test.create_dataset('X_label', data=target_ParTXbb.reshape(-1,2),dtype='i4')
+Data_test = h5py.File(f'../../Finetune_hep/models/ParTXbb/Final_ParTXbb_test.h5', 'w')
+Data_test.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
+Data_test.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
 Data_test.close()        
 
       

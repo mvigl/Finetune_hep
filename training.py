@@ -83,7 +83,8 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
-    model = Mlp.make_mlp(12,nodes_mlp,nlayer_mlp)
+    model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
+                                rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp))
     if modeltype == 'mlpXbb': model = Mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
