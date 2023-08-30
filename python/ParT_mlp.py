@@ -58,7 +58,7 @@ class ParticleTransformerWrapper(nn.Module):
     def forward(self, points, features, lorentz_vectors, mask,jet_mask):
         features = torch.reshape(features,(-1,17,100))
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
-        mask = torch.reshape(mask,(-1,1,100))+torch.abs(torch.reshape(jet_mask,(-1,1,1))-1)
+        mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
         output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
         output = self.fc(output_parT)
@@ -129,6 +129,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
             train_batch['labels']=train_batch['labels'].numpy()
             train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
+            train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
             if i==0:
                 preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
                 target_train = train_batch['label']
@@ -146,6 +147,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
             val_batch['labels']=val_batch['labels'].numpy()
             val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
             val_batch = build_features(val_batch)
+            val_batch['pf_mask'][:,:,:,:2] += np.abs(val_batch['jet_mask'][:,:,np.newaxis]-1)
             if i==0:
                 preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
                 target_val = val_batch['label']
@@ -216,6 +218,7 @@ def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,
             train_batch['labels']=train_batch['labels'].numpy()
             train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
+            train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
             report = train_step(model, opt, loss_fn,train_batch ,device,scheduler)
             if (subset and i > 5): break
         evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features) )    
@@ -242,6 +245,7 @@ def get_preds(model,data_loader,device,subset,build_features):
                 batch['labels']=batch['labels'].numpy()
                 batch['jet_mask']=batch['jet_mask'].numpy()
                 batch = build_features(batch)  
+                batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
                 if i==0:
                     preds = infer_val(model,batch,device).detach().cpu().numpy()
                     target = batch['label']

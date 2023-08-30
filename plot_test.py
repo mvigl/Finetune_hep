@@ -77,7 +77,7 @@ ParTevent_model.eval()
 ParTevent_model.load_state_dict(torch.load(f'/home/iwsatlas1/mavigl/Finetune_hep_dir/run/Final_ParTevent/models/ParTevent_hl3_nodes128_nj2_lr0.001_bs256_WparT_training_0.pt'))
 Dataset = df.CustomDataset(idxmap,integer_file_map)
 
-train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=24)
+train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
 build_features = df.build_features_and_labels
 yi_ete,target_ete = ParT_mlp.get_preds(ParTevent_model,train_loader,device,subset,build_features)
 
