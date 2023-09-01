@@ -1,22 +1,8 @@
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
-import ParT_Xbb
-import ParT_mlp
-import Mlp
-import definitions as df
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
-import torch
-import torch.nn as nn
-import yaml
 from sklearn.metrics import roc_curve, auc
 from matplotlib.pyplot import cm
 import numpy as np
-import argparse
-import pickle
 import h5py
-from torch.utils.data import Dataset, DataLoader
 
 filelist = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/test_list.txt'
 jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]

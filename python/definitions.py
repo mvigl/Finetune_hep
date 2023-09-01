@@ -1,5 +1,3 @@
-from comet_ml import Experiment
-from comet_ml.integration.pytorch import log_model
 import numpy as np
 import awkward as ak
 import matplotlib.pyplot as plt
@@ -9,10 +7,6 @@ import vector
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
-from sklearn.preprocessing import StandardScaler
-from tempfile import TemporaryDirectory
-import torch.optim as optim
 import h5py
 vector.register_awkward()
 

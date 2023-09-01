@@ -1,22 +1,10 @@
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
-import ParT_Xbb
-import ParT_mlp
-import Mlp
-import definitions as df
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
+from Finetune_hep.python import ParT_Xbb
+from Finetune_hep.python import ParT_mlp
+from Finetune_hep.python import definitions as df
 import torch
-import torch.nn as nn
 import yaml
-from sklearn.metrics import roc_curve, auc
-from matplotlib.pyplot import cm
-import numpy as np
-import argparse
-import pickle
 import h5py
-from torch.utils.data import Dataset, DataLoader
+
 
 subset=False
 filelist_train = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_list.txt'

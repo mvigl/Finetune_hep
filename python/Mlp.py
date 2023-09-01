@@ -1,22 +1,14 @@
-from comet_ml import Experiment
-from comet_ml.integration.pytorch import log_model
 import numpy as np
-import awkward as ak
-import matplotlib.pyplot as plt
-import pandas as pd
-import math
 import vector
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
 from sklearn.preprocessing import StandardScaler
 from tempfile import TemporaryDirectory
 import torch.optim as optim
 import h5py
 import pickle
 vector.register_awkward()
-from ParticleTransformer import ParticleTransformer
 
 
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]       
@@ -147,7 +139,7 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
 
-def train_loop(model,filelist, device, experiment, path, scaler_path,Xbb_scores_path,subset,config):
+def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_path,Xbb_scores_path,Xbb_scores_path_val,subset,config):
     opt = optim.Adam(model.parameters(), config['LR'])
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(device))
     evals = []
@@ -155,14 +147,15 @@ def train_loop(model,filelist, device, experiment, path, scaler_path,Xbb_scores_
     with TemporaryDirectory() as tempdir:
         best_model_params_path = path
     Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path)
-    num_samples = Dataset.length
-    num_train = int(0.80 * num_samples)
-    num_val = num_samples - num_train
-    train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])    
-    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True)
+    Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
+    # num_samples = Dataset.length
+    # num_train = int(0.80 * num_samples)
+    # num_val = num_samples - num_train
+    # train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])    
+    val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True)
     for epoch in range (0,config['epochs']):
         print(f'epoch: {epoch+1}') 
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+        train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True)
         for i, train_batch in enumerate( train_loader ):
             data, target, jet_mask = train_batch
             report = train_step(model, data, target,jet_mask, opt, loss_fn )
@@ -197,14 +190,10 @@ def get_preds(model,loader,subset,device):
 
 
 
-
-from typing import Union
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch import FloatTensor
-from torch.autograd import Variable
+
 
 
 

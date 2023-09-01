@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from functools import partial
 
-from logger import _logger
+from Finetune_hep.python.logger import _logger
 
 
 @torch.jit.script

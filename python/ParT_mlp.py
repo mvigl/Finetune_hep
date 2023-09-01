@@ -1,28 +1,16 @@
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
-import definitions as df
-from comet_ml import Experiment
-from comet_ml.integration.pytorch import log_model
+from Finetune_hep.python import definitions as df
 import numpy as np
-import awkward as ak
-import matplotlib.pyplot as plt
-import pandas as pd
 import math
 import vector
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
-from sklearn.preprocessing import StandardScaler
-from tempfile import TemporaryDirectory
-import torch.optim as optim
 vector.register_awkward()
-from ParticleTransformer import ParticleTransformer
+from Finetune_hep.python.ParticleTransformer import ParticleTransformer
 import h5py
 from torch_optimizer import Lookahead
-from torch.optim.lr_scheduler import ExponentialLR
-from ignite.handlers import create_lr_scheduler_with_warmup
+# from torch.optim.lr_scheduler import ExponentialLR
+# from ignite.handlers import create_lr_scheduler_with_warmup
 
 def make_mlp(in_features,out_features,nlayer,for_inference=False):
     layers = []
@@ -94,24 +82,26 @@ def get_model(data_config, **kwargs):
     return model
 
 
-def infer(model,batch,device):
+def infer(model,batch,device,isXbb):
     pf_points = torch.tensor(batch['pf_points']).float().to(device)
     pf_features = torch.tensor(batch['pf_features']).float().to(device)
     pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
     pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
-    jet_mask = torch.tensor(batch['jet_mask']).float().to(device)
-    preds = model(pf_points,pf_features,pf_vectors,pf_mask,jet_mask)
+    if isXbb: preds = model(pf_points,pf_features,pf_vectors,pf_mask)
+    else: 
+        jet_mask = torch.tensor(batch['jet_mask']).float().to(device)
+        preds = model(pf_points,pf_features,pf_vectors,pf_mask,jet_mask)
     return preds
 
-def infer_val(model,batch,device):
+def infer_val(model,batch,device,isXbb=False):
     with torch.no_grad():
-        return infer(model,batch,device)
+        return infer(model,batch,device,isXbb)
     
 
-def train_step(model,opt,loss_fn,train_batch,device,scheduler):
+def train_step(model,opt,loss_fn,train_batch,device,scheduler,isXbb=False):
     model.train()
     opt.zero_grad()
-    preds = infer(model,train_batch,device)
+    preds = infer(model,train_batch,device,isXbb)
     target = torch.tensor(train_batch['label']).float().to(device)
     loss = loss_fn(preds,target)
     loss.backward()
@@ -119,42 +109,43 @@ def train_step(model,opt,loss_fn,train_batch,device,scheduler):
     scheduler.step()
     return {'loss': float(loss)}
 
-def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features):
+def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,isXbb=False):
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ): 
+            if (subset and i > 1): break    
+            if (i > 100): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
-            train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+            if not isXbb: train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
-            train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
+            if not isXbb: train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
             if i==0:
-                preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
+                preds_train = infer_val(model,train_batch,device,isXbb).detach().cpu().numpy()
                 target_train = train_batch['label']
             else:    
-                preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
-                target_train = np.concatenate((target_train,train_batch['label']),axis=0)
-            if (i > 100): break        
+                preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device,isXbb).detach().cpu().numpy()),axis=0)
+                target_train = np.concatenate((target_train,train_batch['label']),axis=0)        
         preds_train = torch.tensor(preds_train).float().to(device)
         target_train = torch.tensor(target_train).float().to(device)
 
         for i, val_batch in enumerate( val_loader ):
+            if (subset and i > 1): break 
             val_batch['X_jet']=val_batch['X_jet'].numpy()
             val_batch['X_pfo']=val_batch['X_pfo'].numpy()
             val_batch['X_label']=val_batch['X_label'].numpy()
             val_batch['labels']=val_batch['labels'].numpy()
-            val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
+            if not isXbb: val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
             val_batch = build_features(val_batch)
-            val_batch['pf_mask'][:,:,:,:2] += np.abs(val_batch['jet_mask'][:,:,np.newaxis]-1)
+            if not isXbb: val_batch['pf_mask'][:,:,:,:2] += np.abs(val_batch['jet_mask'][:,:,np.newaxis]-1)
             if i==0:
-                preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
+                preds_val = infer_val(model,val_batch,device,isXbb).detach().cpu().numpy()
                 target_val = val_batch['label']
             else:    
-                preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
-                target_val = np.concatenate((target_val,val_batch['label']),axis=0)    
-            if (subset and i > 5): break     
+                preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device,isXbb).detach().cpu().numpy()),axis=0)  
+                target_val = np.concatenate((target_val,val_batch['label']),axis=0)        
         preds_val = torch.tensor(preds_val).float().to(device)
         target_val = torch.tensor(target_val).float().to(device)
         
@@ -184,44 +175,46 @@ def get_scheduler(epochs,njets_train,batch_size,warmup_steps,opt):
     scheduler._update_per_step = True  # mark it to update the lr every step, instead of every epoch
     return scheduler      
     
-def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,subset, config):
+def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, device,experiment, path,subset, config):
     evals = []
     best_val_loss = float('inf')
     if config['Xbb']:
         print('Xbb task')
         loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.39]).to(device))
         Dataset = df.Xbb_CustomDataset(idxmap,integer_file_map)
+        Dataset_val = df.Xbb_CustomDataset(idxmap_val,integer_file_map_val)
         build_features = df.build_features_and_labels_Xbb
     else:    
         print('Evt task')
         loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(device))
         Dataset = df.CustomDataset(idxmap,integer_file_map)
+        Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
         build_features = df.build_features_and_labels
     num_samples = Dataset.length
-    num_train = int(0.80 * num_samples)
-    num_val = num_samples - num_train
-    train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
-    val_loader = DataLoader(val_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=24)
+    # num_train = int(0.80 * num_samples)
+    # num_val = num_samples - num_train
+    # train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
+    val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True,num_workers=12)
 
     base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
     opt = Lookahead(base_opt, k=6, alpha=0.5)
-    scheduler = get_scheduler(config['epochs'],num_train,config['batch_size'],50,opt)
+    scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],50,opt)
 
     best_model_params_path = path
     for epoch in range (0,config['epochs']):
-        train_loader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True,num_workers=24)
+        train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True,num_workers=12)
         print('Epoch:', epoch,'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
+            if (subset and i > 1): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
-            train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+            if not config['Xbb']: train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
-            train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
-            report = train_step(model, opt, loss_fn,train_batch ,device,scheduler)
-            if (subset and i > 5): break
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features) )    
+            if not config['Xbb']: train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
+            report = train_step(model, opt, loss_fn,train_batch ,device,scheduler,config['Xbb'])
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features,config['Xbb']) )    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -233,7 +226,7 @@ def train_loop(model,filelist, idxmap,integer_file_map, device,experiment, path,
     return evals, model
 
 
-def get_preds(model,data_loader,device,subset,build_features):
+def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
 
     with torch.no_grad():
         model.eval()
@@ -243,14 +236,14 @@ def get_preds(model,data_loader,device,subset,build_features):
                 batch['X_pfo']=batch['X_pfo'].numpy()
                 batch['X_label']=batch['X_label'].numpy()
                 batch['labels']=batch['labels'].numpy()
-                batch['jet_mask']=batch['jet_mask'].numpy()
+                if not isXbb: batch['jet_mask']=batch['jet_mask'].numpy()
                 batch = build_features(batch)  
-                batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
+                if not isXbb: batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
                 if i==0:
-                    preds = infer_val(model,batch,device).detach().cpu().numpy()
+                    preds = infer_val(model,batch,device,isXbb).detach().cpu().numpy()
                     target = batch['label']
                 else:    
-                    preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
+                    preds = np.concatenate((preds,infer_val(model,batch,device,isXbb).detach().cpu().numpy()),axis=0)
                     target = np.concatenate((target,batch['label']),axis=0)
                 if (subset and i>5): break    
 

@@ -1,24 +1,9 @@
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
-import ParT_mlp
-from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
-import numpy as np
-import awkward as ak
-import matplotlib.pyplot as plt
-import pandas as pd
-import math
 import vector
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
-from sklearn.preprocessing import StandardScaler
-from tempfile import TemporaryDirectory
-import torch.optim as optim
 vector.register_awkward()
-from ParticleTransformer import ParticleTransformer
+from Finetune_hep.python.ParticleTransformer import ParticleTransformer
 
 def make_mlp(in_features,out_features,nlayer,for_inference=False):
     layers = []

@@ -1,19 +1,7 @@
 #!/opt/anaconda3/bin/python
 
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
-from comet_ml import Experiment
-from comet_ml.integration.pytorch import log_model
-import ParT_mlp
-import ParT_Xbb
-import ParT_latent
-import Mlp
-import definitions as df
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
-import torch
-import torch.nn as nn
+from Finetune_hep.python import ParT_latent
+from Finetune_hep.python import definitions as df
 import argparse
 import yaml
 import numpy as np

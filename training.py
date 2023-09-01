@@ -1,21 +1,14 @@
 #!/opt/anaconda3/bin/python
 
-import sys, os
-sys.path.append('/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/python')
-
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
-import ParT_mlp
-import ParT_Xbb
-import Mlp
-import definitions as df
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
+from Finetune_hep.python import ParT_mlp
+from Finetune_hep.python import ParT_Xbb
+from Finetune_hep.python import Mlp
+from Finetune_hep.python import definitions as df
 import torch
-import torch.nn as nn
 import argparse
 import yaml
-import numpy as np
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.00004')
@@ -30,7 +23,9 @@ parser.add_argument('--ParT_weights',  help='ParT_weights',default='../../Finetu
 parser.add_argument('--mlp_weights',  help='mlp_weights',default='no')
 parser.add_argument('--config', help='config',default='../../Finetune_hep/config/myJetClass_full.yaml')
 parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_list.txt')
+parser.add_argument('--data_val', help='data_val',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/val_list.txt')
 parser.add_argument('--Xbb', help='Xbb_scores_path',default='/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/data/ParT_Xbb.npy')
+parser.add_argument('--Xbb_val', help='Xbb_scores_path_val',default='/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/data/ParT_Xbb.npy')
 parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
 parser.add_argument('--subset',  action='store_true', help='subset', default=False)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
@@ -51,12 +46,14 @@ modeltype = args.modeltype
 ParT_weights = args.ParT_weights
 mlp_weights = args.mlp_weights
 Xbb_scores_path = args.Xbb
+Xbb_scores_path_val = args.Xbb_val
 project_name = args.project_name
 subset = args.subset
 api_key = args.api_key
 workspace = args.ws
 alpha = args.alpha
 filelist = args.data
+filelist_val = args.data_val
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
@@ -64,6 +61,7 @@ for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):
 
 device = df.get_device()
 idxmap = df.get_idxmap(filelist)
+idxmap_val = df.get_idxmap(filelist_val)
 
 if modeltype in ['ParTevent','ParTXbb','Aux']:
     with open(config_path) as file:
@@ -130,13 +128,15 @@ else:
     scaler_path = 'no'  
         
 integer_file_map = df.create_integer_file_map(idxmap)
+integer_file_map_val = df.create_integer_file_map(idxmap_val)
 
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
-        filelist,
         idxmap,
         integer_file_map,
+        idxmap_val,
+        integer_file_map_val,
         device,
         experiment,
         model_path,
@@ -153,11 +153,13 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
     evals_part, model_part = Mlp.train_loop(
         model,
         filelist,
+        filelist_val,
         device,
         experiment,
         model_path,
         scaler_path,
         Xbb_scores_path,
+        Xbb_scores_path_val,
         subset,
         config = dict(    
             LR = hyper_params['learning_rate'],
