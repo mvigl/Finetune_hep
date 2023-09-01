@@ -1,5 +1,3 @@
-#!/opt/anaconda3/bin/python
-
 from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import ParT_mlp
