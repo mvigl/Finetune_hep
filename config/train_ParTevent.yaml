@@ -1,7 +1,7 @@
 model: 'ParTevent'
 lr: 0.001
 bs: 256
-ep: 30
+ep: 1
 nlayer-mlp: 3
 nodes-mlp: 128
 njets-mlp: 5
@@ -19,3 +19,7 @@ default: False
 subset: True
 api-key: 'r1SBLyPzovxoWBPDLx3TAE02O'
 ws: 'mvigl'
+checkpoint: 'no'
+check-message: 'no'
+start-epoch: 0
+Fyaml: '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_ParTevent.yaml'

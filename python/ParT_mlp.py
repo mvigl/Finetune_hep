@@ -203,7 +203,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
     best_model_params_path = path
     for epoch in range (0,config['epochs']):
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True,num_workers=12)
-        print('Epoch:', epoch,'LR:',opt.param_groups[0]["lr"])
+        print('Epoch:', epoch+config["start_epoch"],'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
             if (subset and i > 1): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
@@ -219,8 +219,8 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
-
-        experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, epoch=(epoch))
+        torch.save(model.state_dict(), f'{path.replace(".pt", "")}_epoch_{epoch+config["start_epoch"]}_Val_loss_{val_loss}.pt')
+        experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, step=(epoch+config["start_epoch"]),epoch=(epoch+config["start_epoch"]))
     model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
     return evals, model

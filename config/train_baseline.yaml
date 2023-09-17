@@ -19,3 +19,7 @@ default: False
 subset: True
 api-key: 'r1SBLyPzovxoWBPDLx3TAE02O'
 ws: 'mvigl'
+checkpoint: 'no'
+check-message: 'no'
+start-epoch: 0
+Fyaml: '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_baseline.yaml'

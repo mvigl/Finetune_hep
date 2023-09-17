@@ -10,33 +10,36 @@ def GetParser():
 
 def InitializeOutputDir():
 
-	directory=os.popen('pwd').read()
-	print(directory.split('/')[-2])
-	if (directory.split('/')[-2]!='run') : 
-		print('\n*********\nYou are in the wrong directory!\nCreate an output dir in Finetune_hep/run and run from there\n*********\n')
-		sys.exit()
-	if (not os.path.exists('models')): os.system('mkdir models')
-	if (not os.path.exists('plots')): os.system('mkdir plots')
+        directory=os.popen('pwd').read()
+        print(directory.split('/')[-2])
+        if (directory.split('/')[-2]!='run') : 
+                print('\n*********\nYou are in the wrong directory!\nCreate an output dir in Finetune_hep/run and run from there\n*********\n')
+                sys.exit()
+        if (not os.path.exists('models')): os.system('mkdir models')
+        if (not os.path.exists('plots')): os.system('mkdir plots')
+        if (not os.path.exists('config')): os.system('mkdir config')
 
 	
-def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,modeltype,ParT_weights,mlp_weights,data,data_val,Xbb_scores_path,Xbb_scores_path_val,project_name,subset,api_key,workspace,alpha) :
+def RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,modeltype,
+                ParT_weights,mlp_weights,data,data_val,Xbb_scores_path,
+                Xbb_scores_path_val,project_name,subset,api_key,workspace,alpha,
+                checkpoint,check_message,start_epoch,Fyaml) :
 
     macro = 'training.py'     
 
-    for i in range(Ntrainings):
-        mess = 'training_'+str(i)
-        if modeltype == 'Aux': mess = 'hlXbb3_'+mess
-        elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{i}.npy')
-        elif modeltype == 'LatentXbb': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb/LatentXbb_scores_{i}.npy')
-        elif modeltype == 'LatentXbb_Aux': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb_Aux/LatentXbb_Aux_scores_{i}.npy')
-        #elif modeltype in ['mlpXbb','mlpHlXbb']: Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_scores_{i}.npy')
-        command='CUDA_VISIBLE_DEVICES=1 python ../../Finetune_hep/'+macro+' --mess '+mess+' --lr '+str(lr)+' --bs '+str(bs)+\
-                ' --ep '+str(ep)+' --njets_mlp '+str(njets_mlp)+' --nodes_mlp '+str(nodes_mlp)+' --modeltype '+modeltype+\
-                ' --nlayer_mlp '+str(nlayer_mlp)+' --config '+config_path+' --ParT_weights '+ParT_weights+\
-                ' --mlp_weights '+mlp_weights+' --data '+data+' --data_val '+data_val+' --Xbb '+Xbb_scores_path+' --Xbb_val '+Xbb_scores_path_val+' --project_name '+project_name+subset+\
-                ' --api_key '+api_key+' --ws '+workspace+' --alpha '+str(alpha)
-        print(command)
-        os.system(command)
+    mess = 'training_'+str(Ntrainings)
+    if modeltype == 'Aux': mess = 'hlXbb3_'+mess
+    elif modeltype == 'mlpLatent': Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParT_latent_scores_{mess}.npy')
+    elif modeltype == 'LatentXbb': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb/LatentXbb_scores_{mess}.npy')
+    elif modeltype == 'LatentXbb_Aux': Xbb_scores_path = (f'../../Finetune_hep/models/LatentXbb_Aux/LatentXbb_Aux_scores_{mess}.npy')
+    #elif modeltype in ['mlpXbb','mlpHlXbb']: Xbb_scores_path = (f'../../Finetune_hep/models/ParTXbb/ParTXbb_scores_{i}.npy')
+    command='python ../../Finetune_hep/'+macro+' --mess '+mess+' --lr '+str(lr)+' --bs '+str(bs)+\
+            ' --ep '+str(ep)+' --njets_mlp '+str(njets_mlp)+' --nodes_mlp '+str(nodes_mlp)+' --modeltype '+modeltype+\
+            ' --nlayer_mlp '+str(nlayer_mlp)+' --config '+config_path+' --ParT_weights '+ParT_weights+\
+            ' --mlp_weights '+mlp_weights+' --data '+data+' --data_val '+data_val+' --Xbb '+Xbb_scores_path+' --Xbb_val '+Xbb_scores_path_val+' --project_name '+project_name+subset+\
+            ' --api_key '+api_key+' --ws '+workspace+' --alpha '+str(alpha)+' --checkpoint '+checkpoint+' --check_message '+check_message+' --start_epoch '+str(start_epoch)+' --yaml_file '+Fyaml
+    print(command)
+    os.system(command)
 
 def Load_default(modeltype):
     alpha = 0.01    
@@ -179,6 +182,10 @@ def main():
     Xbb_scores_path = config['Xbb']
     Xbb_scores_path_val = config['Xbb-val']
     alpha = config['alpha']
+    checkpoint= config['checkpoint']
+    check_message = config['check-message']
+    start_epoch = config['start-epoch']
+    Fyaml = config['Fyaml']
 
     InitializeOutputDir()
     
@@ -199,7 +206,10 @@ def main():
     else:
         subset = ''  
     
-    RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,modeltype,ParT_weights,mlp_weights,data,data_val,Xbb_scores_path,Xbb_scores_path_val,project_name,subset,api_key,workspace,alpha)
+    RunTraining(lr,bs,ep,Ntrainings,nlayer_mlp,nodes_mlp,njets_mlp,config_path,
+                modeltype,ParT_weights,mlp_weights,data,data_val,Xbb_scores_path,
+                Xbb_scores_path_val,project_name,subset,api_key,workspace,alpha,
+                checkpoint,check_message,start_epoch,Fyaml)
 	
 
 if __name__ == "__main__":

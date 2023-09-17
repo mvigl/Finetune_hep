@@ -1,4 +1,4 @@
-from comet_ml import Experiment
+from comet_ml import Experiment,ExistingExperiment
 from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import ParT_Xbb
@@ -29,6 +29,10 @@ parser.add_argument('--subset',  action='store_true', help='subset', default=Fal
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--alpha', type=float,  help='alpha',default=0.01)
+parser.add_argument('--checkpoint',  help='training-checkpoint',default='../../Finetune_hep/models/ParT_full.pt')
+parser.add_argument('--check_message', help='check-exp-key',default='')
+parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
+parser.add_argument('--yaml_file', help='yaml',default='')
 
 args = parser.parse_args()
 
@@ -52,6 +56,10 @@ workspace = args.ws
 alpha = args.alpha
 filelist = args.data
 filelist_val = args.data_val
+checkpoint = args.checkpoint
+check_message = args.check_message
+start_epoch = args.start_epoch
+yaml_file = args.yaml_file
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
@@ -73,6 +81,7 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
 
     elif modeltype == 'ParTXbb':
         idxmap = df.get_idxmap_Xbb(filelist)
+        idxmap_val = df.get_idxmap_Xbb(filelist_val)
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
         model.to(device)
         Xbb = True
@@ -98,28 +107,53 @@ elif modeltype in ['LatentXbb','LatentXbb_Aux']:
 else:
     print('specify a model (ParTevent,ParTXbb,mlpXbb,mlpHlXbb,baseline)')    
 
-experiment = Experiment(
-  api_key = api_key,
-  project_name = project_name,
-  workspace=workspace,
-  log_graph=True, # Can be True or False.
-  auto_metric_logging=True # Can be True or False
-)
 
 hyper_params = {
    "learning_rate": learning_rate,
    "steps": epochs,
    "batch_size": batch_size,
-   "alpha": alpha
+   "alpha": alpha,
+   "start_epoch": start_epoch 
 }
+
 
 
 experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_{message}'
 if modeltype == 'Aux': experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_alpha{hyper_params["alpha"]}_{message}'
-Experiment.set_name(experiment,experiment_name)
+
+if checkpoint=='no': 
+    experiment = Experiment(
+    api_key = api_key,
+    project_name = project_name,
+    workspace=workspace,
+    log_graph=True, # Can be True or False.
+    auto_metric_logging=True # Can be True or False
+    )
+    Experiment.set_name(experiment,experiment_name)
+    print(experiment.get_key())
+    experiment.log_parameter("exp_key", experiment.get_key())
+    if modeltype in ['ParTevent','ParTXbb','Aux']:
+        for i in range(30):
+            with open(yaml_file) as file:
+                check_config = yaml.load(file, Loader=yaml.FullLoader)  
+                check_config['checkpoint'] = f'models/{experiment_name}.pt'
+                check_config['check-message'] = experiment.get_key()
+                check_config['start-epoch'] = i+1
+
+            with open(f'config/training_{modeltype}_{message}_{i+1}.yaml', 'w') as file:
+                yaml.dump(check_config, file)
+else:
+    experiment_check_name = f'{check_message}'
+    experiment = ExistingExperiment(api_key=api_key, 
+                                    previous_experiment=experiment_check_name,
+                                    log_env_details=True,
+                                    log_env_gpu=True
+                                    )
+
+experiment.log_parameters(hyper_params)
 
 model_path = (f'models/{experiment_name}.pt' )
-experiment.log_parameters(hyper_params)
+
 if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
@@ -127,6 +161,8 @@ else:
         
 integer_file_map = df.create_integer_file_map(idxmap)
 integer_file_map_val = df.create_integer_file_map(idxmap_val)
+
+if checkpoint!= 'no': model.load_state_dict(torch.load(checkpoint))
 
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
@@ -143,7 +179,8 @@ if modeltype in ['ParTevent','ParTXbb']:
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['steps'],
-            Xbb = Xbb
+            Xbb = Xbb,
+            start_epoch = hyper_params['start_epoch'] 
         )
     )
 
@@ -166,4 +203,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         )
     )
 
-log_model(experiment, model, model_name = experiment_name )
+if checkpoint == 'no':
+    log_model(experiment, model, model_name = experiment_name )
+else:
+    log_model(experiment, model, model_name = experiment_check_name )
