@@ -5,17 +5,6 @@ import torch
 vector.register_awkward()
 from Finetune_hep.python.ParticleTransformer import ParticleTransformer
 
-def make_mlp(in_features,out_features,nlayer):
-    layers = []
-    for i in range(nlayer):
-        layers.append(torch.nn.Linear(in_features, out_features))
-        layers.append(torch.nn.ReLU())
-        in_features = out_features
-    layers.append(torch.nn.Linear(in_features, 1))
-    layers.append(torch.nn.Sigmoid())
-    model = torch.nn.Sequential(*layers)
-    return model
-
 class ParticleTransformerWrapper(torch.nn.Module):
     def __init__(self, **kwargs) -> None:
         super().__init__()
@@ -58,28 +47,3 @@ def get_model(data_config, **kwargs):
     model = ParticleTransformerWrapper(**cfg)
     return model
     
-def infer(model,batch,device):
-    pf_points = torch.tensor(batch['pf_points']).float().to(device)
-    pf_features = torch.tensor(batch['pf_features']).float().to(device)
-    pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
-    pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
-    preds = model(pf_points,pf_features,pf_vectors,pf_mask)
-    return preds.reshape((-1,128))
-
-def infer_val(model,batch,device):
-    with torch.no_grad():
-        return infer(model,batch,device)    
-
-
-def get_preds(model,data_loader,device):
-    with torch.no_grad():
-        model.eval()
-        for i, batch in enumerate( data_loader ):
-                if i==0:
-                    preds = infer_val(model,batch,device).detach().cpu().numpy()
-                    target = batch['label']
-                else:    
-                    preds = np.concatenate((preds,infer_val(model,batch,device).detach().cpu().numpy()),axis=0)
-                    target = np.concatenate((target,batch['label']),axis=0)
-
-    return preds,target

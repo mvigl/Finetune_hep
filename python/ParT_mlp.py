@@ -249,6 +249,30 @@ def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
 
     return preds,target
 
+
+def get_latent_preds(model,data_loader,device,subset,build_features,isXbb=False):
+
+    with torch.no_grad():
+        model.eval()
+        for i, batch in enumerate( data_loader ):  
+                if (i % 500) == 0: print('batch : ', i)
+                batch['X_jet']=batch['X_jet'].numpy()
+                batch['X_pfo']=batch['X_pfo'].numpy()
+                batch['X_label']=batch['X_label'].numpy()
+                batch['labels']=batch['labels'].numpy()
+                if not isXbb: batch['jet_mask']=batch['jet_mask'].numpy()
+                batch = build_features(batch)  
+                if not isXbb: batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
+                if i==0:
+                    preds = infer_val(model,batch,device,isXbb).detach().cpu().numpy()
+                    target = batch['label']
+                else:    
+                    preds = np.concatenate((preds,infer_val(model,batch,device,isXbb).detach().cpu().numpy()),axis=0)
+                    target = np.concatenate((target,batch['label']),axis=0)
+                if (subset and i>5): break    
+
+    return preds,target    
+
 def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
 
     with torch.no_grad():
@@ -282,10 +306,10 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
                             data['labels'] = Data['labels'][batches[j]]
                             data = build_features(data) 
                         if (i ==0 and j==0):
-                            preds = infer_val(model,data,device).detach().cpu().numpy()
+                            preds = infer_val(model,data,device,Xbb).detach().cpu().numpy()
                             target = data['label']
                         else:
-                            preds = np.concatenate((preds,infer_val(model,data,device).detach().cpu().numpy()),axis=0)
+                            preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
                             target = np.concatenate((target,data['label']),axis=0)
                 if (subset and i>5): break
     return preds,target

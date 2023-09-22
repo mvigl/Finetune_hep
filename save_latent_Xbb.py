@@ -1,44 +1,72 @@
-#!/opt/anaconda3/bin/python
-
-from Finetune_hep.python import ParT_latent
+from Finetune_hep.python import ParT_Xbb
+from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import definitions as df
-import argparse
+from torch.utils.data import Dataset, DataLoader
+import torch
 import yaml
-import numpy as np
+import h5py
+import argparse
 
-parser = argparse.ArgumentParser(description='')
-parser.add_argument('--modeltype', help='modeltype',default='LatentXbb_Aux')
-parser.add_argument('--nlayer_mlp', type=int, help='nlayer_mlp',default=6)
-parser.add_argument('--nodes_mlp', type=int, help='nodes_mlp',default=128)
-parser.add_argument('--weights',  help='weights',default='no')
-parser.add_argument('--config', help='config',default='../../Finetune_hep/config/myJetClass_full.yaml')
-parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Hbb/ParT/Dataset')
+def GetParser():
+    parser = argparse.ArgumentParser(description='Training script')
+    parser.add_argument('--config', dest='config_file', required=True, help='YAML configuration file')
+    return parser.parse_args()
 
+args=GetParser()
+with open(args.config_file, 'r') as config_file:
+    config = yaml.safe_load(config_file)
 
-args = parser.parse_args()
+subset= config['subset']
+filelist_train= config['data-train']
+filelist_test= config['data-test']
+config_path = config['config-path']
+model_path = config['model-path']
+name = config['out-name']
 
-nlayer_mlp = args.nlayer_mlp
-nodes_mlp = args.nodes_mlp
-config_path = args.config
-modeltype = args.modeltype
-weights = args.weights
-data = args.data
-
-
-X_pfo_train, X_jet_train, njets_train, labels_train, X_label_train, evts_train = df.get_train_data(data)
-X_pfo_test, X_jet_test, njets_test, labels_test, X_label_test, evts_test = df.get_test_data(data)
+jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
+labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]  
 
 device = df.get_device()
 with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
+ParTXbb_model = ParT_Xbb.get_model(data_config,for_inference=True)  
 
-model = ParT_latent.get_model(data_config,for_inference=False) 
-X_jet_train = np.reshape(X_jet_train[evts_train],(-1,len(df.jVars)))
-X_pfo_train = np.reshape(X_pfo_train[evts_train],(-1,110,len(df.pVars)))
-X_label_train = np.reshape(X_label_train[evts_train],(-1,len(df.labelVars)))
-X_jet_test = np.reshape(X_jet_test[evts_test],(-1,len(df.jVars)))
-X_pfo_test = np.reshape(X_pfo_test[evts_test],(-1,110,len(df.pVars)))
-X_label_test = np.reshape(X_label_test[evts_test],(-1,len(df.labelVars)))
+fpr=[]
+tpr=[]
+threshold=[]
+
+ParTXbb_model.to(device)
+ParTXbb_model.eval()
+ParTXbb_model.load_state_dict(torch.load(model_path))
+
+
+idxmap_train = df.get_idxmap(filelist_train)
+idxmap_test = df.get_idxmap(filelist_test)
+integer_file_map_train = df.create_integer_file_map(idxmap_train)
+integer_file_map_test = df.create_integer_file_map(idxmap_test)
+
+Dataset_train = df.Xbb_CustomDataset(idxmap_train,integer_file_map_train)
+Dataset_test = df.Xbb_CustomDataset(idxmap_test,integer_file_map_test)
+build_features = df.build_features_and_labels_Xbb
+
+train_loader = DataLoader(Dataset_train, batch_size=512, shuffle=True,num_workers=12)
+test_loader = DataLoader(Dataset_test, batch_size=512, shuffle=True,num_workers=12)
+
+print('device: ', device)
+#yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
+yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,train_loader,device,subset,build_features,isXbb=True)
+Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/train_{name}.h5', 'w')
+Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
+Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
+Data_train.close()        
+
+#yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,Xbb=True)
+yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,test_loader,device,subset,build_features,isXbb=True)
+Data_test = h5py.File(f'../../Finetune_hep/models/ParTXbb/test_{name}.h5', 'w')
+Data_test.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
+Data_test.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
+Data_test.close()        
+
 
 model.to(device)
 train = df.build_features_and_labels_single_jet(X_pfo_train,X_jet_train,X_label_train)
