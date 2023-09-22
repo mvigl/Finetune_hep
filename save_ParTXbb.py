@@ -1,6 +1,7 @@
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import definitions as df
+from torch.utils.data import Dataset, DataLoader
 import torch
 import yaml
 import h5py
