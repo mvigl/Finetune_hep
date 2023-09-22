@@ -277,8 +277,10 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
 
     with torch.no_grad():
         model.eval()
+        print('opening file..')
         with open(filelist) as f:
             i=-1
+            print('..done')
             for line in f:
                 filename = line.strip()
                 print('reading : ',filename)

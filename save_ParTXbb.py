@@ -27,6 +27,8 @@ model_path = config['model-path']
 name = config['out-name']
 subset=True
 
+print('subset: ',subset)
+
 jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]  
 
