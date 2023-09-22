@@ -43,7 +43,7 @@ ParTXbb_model.load_state_dict(torch.load(model_path))
 
 
 print('device: ', device)
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True):
+yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
 Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/train_{name}.h5', 'w')
 Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
 Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
