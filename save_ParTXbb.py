@@ -12,8 +12,8 @@ def GetParser():
     return parser.parse_args()
 
 args=GetParser()
-    with open(args.config_file, 'r') as config_file:
-        config = yaml.safe_load(config_file)
+with open(args.config_file, 'r') as config_file:
+    config = yaml.safe_load(config_file)
 
 subset= config['subset']
 filelist_train= config['data-train']
