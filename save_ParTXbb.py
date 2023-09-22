@@ -48,15 +48,18 @@ Dataset_train = df.Xbb_CustomDataset(idxmap_train,integer_file_map_train)
 Dataset_test = df.Xbb_CustomDataset(idxmap_test,integer_file_map_test)
 build_features = df.build_features_and_labels_Xbb
 
+train_loader = DataLoader(Dataset_train, batch_size=512, shuffle=True,num_workers=12)
+test_loader = DataLoader(Dataset_test, batch_size=512, shuffle=True,num_workers=12)
+
 #yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,Dataset_train,device,subset,build_features,isXbb=True)
+yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,train_loader,device,subset,build_features,isXbb=True)
 Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/train_{name}.h5', 'w')
 Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
 Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
 Data_train.close()        
 
 #yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,Xbb=True)
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,Dataset_test,device,subset,build_features,isXbb=True)
+yi_ParTXbb,target_ParTXbb = ParT_mlp.get_preds(ParTXbb_model,test_loader,device,subset,build_features,isXbb=True)
 Data_test = h5py.File(f'../../Finetune_hep/models/ParTXbb/test_{name}.h5', 'w')
 Data_test.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
 Data_test.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
