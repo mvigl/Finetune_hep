@@ -7,6 +7,9 @@ import yaml
 import h5py
 import argparse
 
+
+print('start')
+
 def GetParser():
     parser = argparse.ArgumentParser(description='Training script')
     parser.add_argument('--config', dest='config_file', required=True, help='YAML configuration file')
@@ -32,6 +35,8 @@ with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
 ParTXbb_model = ParT_Xbb.get_model(data_config,for_inference=True)  
 
+print('get model')
+
 fpr=[]
 tpr=[]
 threshold=[]
@@ -43,6 +48,7 @@ ParTXbb_model.load_state_dict(torch.load(model_path))
 
 
 print('device: ', device)
+
 yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
 Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb/train_{name}.h5', 'w')
 Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
