@@ -1,0 +1,6 @@
+config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
+model-path: '../../Finetune_hep/models/ParT_full.pt'
+data-train: '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_list.txt'
+data-test: '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/val_list.txt' 
+out-name: 'ParTXbb_score_training_1'
+subset: True

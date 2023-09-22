@@ -133,7 +133,7 @@ if checkpoint=='no':
     print(experiment.get_key())
     experiment.log_parameter("exp_key", experiment.get_key())
     if modeltype in ['ParTevent','ParTXbb','Aux']:
-        for i in range(30):
+        for i in range(10):
             with open(yaml_file) as file:
                 check_config = yaml.load(file, Loader=yaml.FullLoader)  
                 check_config['checkpoint'] = f'models/{experiment_name}.pt'
