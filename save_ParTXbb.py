@@ -26,7 +26,6 @@ filelist_test= config['data-test']
 config_path = config['config-path']
 model_path = config['model-path']
 name = config['out-name']
-subset=True
 
 print('subset: ',subset)
 
