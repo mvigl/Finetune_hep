@@ -1,5 +1,6 @@
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
+from Finetune_hep.python import ParT_latent
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
 from torch.utils.data import Dataset, DataLoader
@@ -56,6 +57,23 @@ if modeltype == 'ParTevent':
     build_features = df.build_features_and_labels
     yi,target = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
 
+if modeltype == 'ParTLatent':
+    with open(config_path) as file:
+        data_config = yaml.load(file, Loader=yaml.FullLoader)  
+
+    model = ParT_latent.get_model(data_config,for_inference=False)  
+    model.to(device)
+    Xbb = False
+    model.load_state_dict(torch.load(model_path))
+    model.eval()
+
+    idxmap = df.get_idxmap(filelist_test)
+    integer_file_map = df.create_integer_file_map(idxmap)
+    Dataset = df.CustomDataset(idxmap,integer_file_map)
+
+    train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
+    build_features = df.build_features_and_labels
+    yi,target = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
 
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
@@ -102,8 +120,15 @@ else:
 
 print('device: ', device)
 
-Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
-Data.create_dataset('evt_score', data=yi.reshape(-1))
-Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-Data.close()        
+if modeltype == 'ParTLatent':
+    Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
+    Data.create_dataset('evt_score', data=yi.reshape(-1,128))
+    Data.create_dataset('evt_label', data=target.reshape(-1,1),dtype='i4')
+    Data.close()        
+
+else:
+    Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
+    Data.create_dataset('evt_score', data=yi.reshape(-1))
+    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+    Data.close()        
 
