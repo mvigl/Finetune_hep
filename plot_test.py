@@ -23,8 +23,8 @@ for i in range(5):
     #target_ParTevent = data['evt_score']
     #yi_ParTevent = data['evt_label']
     with h5py.File(filename, 'r') as Data:
-        target_ParTevent = Data['Xbb'][:].reshape(-1,1)
-        yi_ParTevent = Data['X_label'][:].reshape(-1,1)
+        yi_ParTevent = Data['Xbb'][:].reshape(-1,1)
+        target_ParTevent = Data['X_label'][:].reshape(-1,1)
     fpr_i, tpr_i, threshold_i = roc_curve(target_ParTevent, yi_ParTevent,drop_intermediate=False)
 
     if i==0: 
