@@ -53,7 +53,7 @@ if modeltype == 'ParTevent':
 
     train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
     build_features = df.build_features_and_labels
-    yi,target = ParT_mlp.get_preds(ParTevent_model,train_loader,device,subset,build_features)
+    yi,target = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
 
 
 
