@@ -21,6 +21,8 @@ for i in range(5):
     file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_scores_training_{i}.h5'
     #target_ParTevent = data['evt_score']
     #yi_ParTevent = data['evt_label']
+    with open(file, 'rb') as f:
+        data=np.load(f)
     target_ParTevent = data['Xbb']
     yi_ParTevent = data['X_label']
     fpr_i, tpr_i, threshold_i = roc_curve(target_ParTevent, yi_ParTevent,drop_intermediate=False)
