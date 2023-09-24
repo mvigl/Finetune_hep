@@ -19,7 +19,7 @@ auc_ParTevent=[]
 
 for i in range(5):
 
-    file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_score_training_{i+1}.h5'
+    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_score_training_{i+1}.h5'
     #target_ParTevent = data['evt_score']
     #yi_ParTevent = data['evt_label']
     with h5py.File(filename, 'r') as Data:
@@ -33,7 +33,7 @@ for i in range(5):
     auc_ParTevent.append(auc(fpr_i,tpr_i))
 
 
-    file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpHlXbb/test_mlpHlXbb_score_training_{i+1}.h5'
+    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpHlXbb/test_mlpHlXbb_score_training_{i+1}.h5'
     with h5py.File(filename, 'r') as Data:
         yi_mlpHlXbb = Data['evt_score']
         target_mlpHlXbb = Data['evt_label']
