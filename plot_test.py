@@ -16,7 +16,7 @@ auc_mlpHlXbb=[]
 fpr_ParTevent=[]
 auc_ParTevent=[]
 
-for i in in range(5):
+for i in range(5):
 
     file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_scores_training_{i}.h5'
     #target_ParTevent = data['evt_score']
