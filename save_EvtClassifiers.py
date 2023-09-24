@@ -64,7 +64,7 @@ if modeltype == 'ParTLatent':
     model = ParT_latent.get_model(data_config,for_inference=False)  
     model.to(device)
     Xbb = False
-    model.load_state_dict(torch.load(model_path))
+    model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')  
     model.eval()
 
     idxmap = df.get_idxmap(filelist_test)
