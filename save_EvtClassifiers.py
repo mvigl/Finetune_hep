@@ -100,7 +100,7 @@ else:
 print('device: ', device)
 
 Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
-Data.create_dataset('Xbb', data=yi.reshape(-1,5))
-Data.create_dataset('X_label', data=target.reshape(-1,5),dtype='i4')
+Data.create_dataset('Xbb', data=yi.reshape(-1))
+Data.create_dataset('X_label', data=target.reshape(-1),dtype='i4')
 Data.close()        
 
