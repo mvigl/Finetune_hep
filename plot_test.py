@@ -42,15 +42,15 @@ for i in range(5):
     auc_mlpHlXbb.append(auc(fpr_i,tpr_i))
     
 
-fpr_ParTevent_mean = np.mean(fpr_ParTevent,axis=-1)
-fpr_ParTevent_std = np.std(fpr_ParTevent,axis=-1)
-auc_ParTevent_mean = np.mean(auc_ParTevent,axis=-1)
-auc_ParTevent_std = np.std(auc_ParTevent,axis=-1)
+fpr_ParTevent_mean = np.mean(fpr_ParTevent,axis=0)
+fpr_ParTevent_std = np.std(fpr_ParTevent,axis=0)
+auc_ParTevent_mean = np.mean(auc_ParTevent,axis=0)
+auc_ParTevent_std = np.std(auc_ParTevent,axis=0)
 
-fpr_mlpHlXbb_mean = np.mean(fpr_mlpHlXbb,axis=-1)
-fpr_mlpHlXbb_std = np.std(fpr_mlpHlXbb,axis=-1)
-auc_mlpHlXbb_mean = np.mean(auc_mlpHlXbb,axis=-1)
-auc_mlpHlXbb_std = np.std(auc_mlpHlXbb,axis=-1)
+fpr_mlpHlXbb_mean = np.mean(fpr_mlpHlXbb,axis=0)
+fpr_mlpHlXbb_std = np.std(fpr_mlpHlXbb,axis=0)
+auc_mlpHlXbb_mean = np.mean(auc_mlpHlXbb,axis=0)
+auc_mlpHlXbb_std = np.std(auc_mlpHlXbb,axis=0)
 
 b=np.linspace(0,1,101)
 fig, ax = plt.subplots()
