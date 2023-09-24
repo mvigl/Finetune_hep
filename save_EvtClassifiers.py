@@ -1,5 +1,6 @@
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
+from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
 from torch.utils.data import Dataset, DataLoader
 import os
@@ -100,7 +101,7 @@ else:
 print('device: ', device)
 
 Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
-Data.create_dataset('Xbb', data=yi.reshape(-1))
-Data.create_dataset('X_label', data=target.reshape(-1),dtype='i4')
+Data.create_dataset('evt_score', data=yi.reshape(-1))
+Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
 Data.close()        
 
