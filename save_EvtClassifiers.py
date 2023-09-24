@@ -47,6 +47,8 @@ if modeltype == 'ParTevent':
     model.load_state_dict(torch.load(model_path))
     model.eval()
 
+    idxmap = df.get_idxmap(filelist_test)
+    integer_file_map = df.create_integer_file_map(idxmap)
     Dataset = df.CustomDataset(idxmap,integer_file_map)
 
     train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
