@@ -21,10 +21,9 @@ for i in range(5):
     file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_score_training_{i+1}.h5'
     #target_ParTevent = data['evt_score']
     #yi_ParTevent = data['evt_label']
-    with open(file, 'rb') as f:
-        data=np.load(f,allow_pickle=True)
-    target_ParTevent = data['Xbb']
-    yi_ParTevent = data['X_label']
+    with h5py.File(filename, 'r') as Data:
+        target_ParTevent = Data['Xbb']
+        yi_ParTevent = Data['X_label']
     fpr_i, tpr_i, threshold_i = roc_curve(target_ParTevent, yi_ParTevent,drop_intermediate=False)
 
     if i==0: 
@@ -34,10 +33,9 @@ for i in range(5):
 
 
     file = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpHlXbb/test_mlpHlXbb_score_training_{i+1}.h5'
-    with open(file, 'rb') as f:
-        data=np.load(f,allow_pickle=True)
-    yi_mlpHlXbb = data['evt_score']
-    target_mlpHlXbb = data['evt_label']
+    with h5py.File(filename, 'r') as Data:
+        yi_mlpHlXbb = Data['evt_score']
+        target_mlpHlXbb = Data['evt_label']
     fpr_i, tpr_i, threshold_i = roc_curve(target_mlpHlXbb, yi_mlpHlXbb,drop_intermediate=False)
     fpr_mlpHlXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
     auc_mlpHlXbb.append(auc(fpr_i,tpr_i))
