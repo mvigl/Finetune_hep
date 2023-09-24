@@ -88,7 +88,7 @@ if modeltype == 'ParTLatent':
 
     idxmap_val = df.get_idxmap(filelist_test_val)
     integer_file_map_val = df.create_integer_file_map(idxmap_val)
-    Dataset_val = df.CustomDataset(idxmap,integer_file_map_val)
+    Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
 
     train_loader_val = DataLoader(Dataset_val, batch_size=512, shuffle=True,num_workers=6)
     build_features = df.build_features_and_labels
