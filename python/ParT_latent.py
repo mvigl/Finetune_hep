@@ -82,6 +82,21 @@ def get_model(data_config, **kwargs):
     return model
 
     
+def infer(model,batch,device,isXbb):
+    pf_points = torch.tensor(batch['pf_points']).float().to(device)
+    pf_features = torch.tensor(batch['pf_features']).float().to(device)
+    pf_vectors = torch.tensor(batch['pf_vectors']).float().to(device)
+    pf_mask = torch.tensor(batch['pf_mask']).float().to(device)
+    if isXbb: preds = model(pf_points,pf_features,pf_vectors,pf_mask)
+    else: 
+        jet_mask = torch.tensor(batch['jet_mask']).float().to(device)
+        preds = model(pf_points,pf_features,pf_vectors,pf_mask,jet_mask)
+    return preds
+
+def infer_val(model,batch,device,isXbb=False):
+    with torch.no_grad():
+        return infer(model,batch,device,isXbb)
+            
 def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
 
     with torch.no_grad():
