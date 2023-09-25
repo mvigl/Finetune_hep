@@ -245,7 +245,7 @@ class InvariantModel(nn.Module):
 
     def forward(self, x,jet_mask):
         # compute the representation for each data point
-        x = self.phi(x)*jet_mask[:,:,np.newaxis]
+        x = self.phi(x)*jet_mask#[:,:,np.newaxis]
 
         # sum up the representations
         x = torch.sum(x, dim=1)
