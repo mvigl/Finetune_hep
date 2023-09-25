@@ -43,7 +43,7 @@ if modeltype == 'ParTevent':
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
-    model = ParT_mlp.get_model(data_config,for_inference=False)  
+    model = ParT_mlp.get_model(data_config,for_inference=True)  
     model.to(device)
     Xbb = False
     model.load_state_dict(torch.load(model_path))
@@ -61,7 +61,7 @@ if modeltype == 'ParTLatent':
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
-    model = ParT_latent.get_model(data_config,for_inference=False)  
+    model = ParT_latent.get_model(data_config,for_inference=True)  
     model.to(device)
     Xbb = False
     model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')  

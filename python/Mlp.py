@@ -248,13 +248,17 @@ class InvariantModel(nn.Module):
 
     def forward(self, x,jet_mask):
         # compute the representation for each data point
-        #print(x.shape)
-        #print(jet_mask.shape)
-        #print(self.phi(x).shape)
+        print(x.shape)
+        print(x[:3])
+        print(jet_mask.shape)
+        print(jet_mask[:3].shape)
         x = self.phi(x)*jet_mask[:,:,np.newaxis]
-
+        print(x.shape)
+        print(x[:3])
         # sum up the representations
         x = torch.sum(x, dim=1)
+        print(x.shape)
+        print(x[:3])
 
         # compute the output
         out = self.rho(x)
