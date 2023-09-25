@@ -118,7 +118,7 @@ class CustomDataset_XbbOnly(Dataset):
                     i+=1    
         print('loading Xbb scores from : ',Xbb_scores_path)
         with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-            data = Xbb_scores['Xbb'][:].reshape((-1,5,1))
+            data = Xbb_scores['Xbb'][:].reshape((-1,5))
         print(np.shape(data)) 
         print(np.shape(target))    
         print(np.shape(jet_mask)) 
