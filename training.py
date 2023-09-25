@@ -199,6 +199,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         Xbb_scores_path,
         Xbb_scores_path_val,
         subset,
+        modeltype,
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
