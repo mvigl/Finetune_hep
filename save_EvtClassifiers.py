@@ -69,30 +69,32 @@ if modeltype == 'ParTLatent':
 
     filelist_train = config['data-train']
     filelist_val = config['data-val']
+    sample = config['sample']
 
-    idxmap = df.get_idxmap(filelist_test)
-    integer_file_map = df.create_integer_file_map(idxmap)
-    Dataset = df.CustomDataset(idxmap,integer_file_map)
+    if sample == 'test':
+        idxmap = df.get_idxmap(filelist_test)
+        integer_file_map = df.create_integer_file_map(idxmap)
+        Dataset = df.CustomDataset(idxmap,integer_file_map)
 
-    train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
-    build_features = df.build_features_and_labels
-    yi_test,target_test = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
+        train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
+        build_features = df.build_features_and_labels
+        yi_test,target_test = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
+    elif sample == 'train':
+        idxmap_train = df.get_idxmap(filelist_train)
+        integer_file_map_train = df.create_integer_file_map(idxmap_train)
+        Dataset_train = df.CustomDataset(idxmap_train,integer_file_map_train)
 
-    idxmap_train = df.get_idxmap(filelist_train)
-    integer_file_map_train = df.create_integer_file_map(idxmap_train)
-    Dataset_train = df.CustomDataset(idxmap_train,integer_file_map_train)
+        train_loader_train = DataLoader(Dataset_train, batch_size=512, shuffle=True,num_workers=6)
+        build_features = df.build_features_and_labels
+        yi_train,target_train = ParT_mlp.get_preds(model,train_loader_train,device,subset,build_features)
+    elif sample == 'val':
+        idxmap_val = df.get_idxmap(filelist_test_val)
+        integer_file_map_val = df.create_integer_file_map(idxmap_val)
+        Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
 
-    train_loader_train = DataLoader(Dataset_train, batch_size=512, shuffle=True,num_workers=6)
-    build_features = df.build_features_and_labels
-    yi_train,target_train = ParT_mlp.get_preds(model,train_loader_train,device,subset,build_features)
-
-    idxmap_val = df.get_idxmap(filelist_test_val)
-    integer_file_map_val = df.create_integer_file_map(idxmap_val)
-    Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
-
-    train_loader_val = DataLoader(Dataset_val, batch_size=512, shuffle=True,num_workers=6)
-    build_features = df.build_features_and_labels
-    yi_val,target_val = ParT_mlp.get_preds(model,train_loader_val,device,subset,build_features)
+        train_loader_val = DataLoader(Dataset_val, batch_size=512, shuffle=True,num_workers=6)
+        build_features = df.build_features_and_labels
+        yi_val,target_val = ParT_mlp.get_preds(model,train_loader_val,device,subset,build_features)
 
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
@@ -140,20 +142,21 @@ else:
 print('device: ', device)
 
 if modeltype == 'ParTLatent':
-    Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
-    Data.create_dataset('evt_score', data=yi.reshape(-1,128))
-    Data.create_dataset('evt_label', data=target.reshape(-1,1),dtype='i4')
-    Data.close() 
-
-    Data_train = h5py.File(f'../../Finetune_hep/models/{modeltype}/train_{name}.h5', 'w')
-    Data_train.create_dataset('evt_score', data=yi_train.reshape(-1,128))
-    Data_train.create_dataset('evt_label', data=target_train.reshape(-1,1),dtype='i4')
-    Data_train.close() 
-
-    Data_val = h5py.File(f'../../Finetune_hep/models/{modeltype}/val_{name}.h5', 'w')
-    Data_val.create_dataset('evt_score', data=yi_val.reshape(-1,128))
-    Data_val.create_dataset('evt_label', data=target_val.reshape(-1,1),dtype='i4')
-    Data_val.close()        
+    if sample == 'test':
+        Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
+        Data.create_dataset('evt_score', data=yi.reshape(-1,128))
+        Data.create_dataset('evt_label', data=target.reshape(-1,1),dtype='i4')
+        Data.close() 
+    elif sample == 'train':
+        Data_train = h5py.File(f'../../Finetune_hep/models/{modeltype}/train_{name}.h5', 'w')
+        Data_train.create_dataset('evt_score', data=yi_train.reshape(-1,128))
+        Data_train.create_dataset('evt_label', data=target_train.reshape(-1,1),dtype='i4')
+        Data_train.close() 
+    elif sample == 'val':
+        Data_val = h5py.File(f'../../Finetune_hep/models/{modeltype}/val_{name}.h5', 'w')
+        Data_val.create_dataset('evt_score', data=yi_val.reshape(-1,128))
+        Data_val.create_dataset('evt_label', data=target_val.reshape(-1,1),dtype='i4')
+        Data_val.close()        
 
 else:
     Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
