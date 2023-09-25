@@ -118,13 +118,7 @@ class CustomDataset_XbbOnly(Dataset):
                     i+=1    
         print('loading Xbb scores from : ',Xbb_scores_path)
         with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-            data = Xbb_scores['Xbb'][:].reshape((-1,5,1))
-        print(np.shape(data))
-        print(data[:3]) 
-        print(np.shape(target))    
-        print(target[:3]) 
-        print(np.shape(jet_mask)) 
-        print(jet_mask[:3]) 
+            data = numpy.nan_to_num(Xbb_scores['Xbb'][:].reshape((-1,5,1)))
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
@@ -248,17 +242,10 @@ class InvariantModel(nn.Module):
 
     def forward(self, x,jet_mask):
         # compute the representation for each data point
-        print(x.shape)
-        print(x[:3])
-        print(jet_mask.shape)
-        print(jet_mask[:3].shape)
         x = self.phi(x)*jet_mask[:,:,np.newaxis]
-        print(x.shape)
-        print(x[:3])
+
         # sum up the representations
         x = torch.sum(x, dim=1)
-        print(x.shape)
-        print(x[:3])
 
         # compute the output
         out = self.rho(x)
