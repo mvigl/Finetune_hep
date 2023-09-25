@@ -46,7 +46,8 @@ class ParticleTransformerWrapper(nn.Module):
         features = torch.reshape(features,(-1,17,100))
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
         mask = torch.reshape(mask,(-1,1,100))
-        x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
+        x_cls = self.mod(features, v=lorentz_vectors, mask=mask)
+        output_parT = torch.reshape(x_cls,(-1,5,128))
         #output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
         #output = self.fc(output_parT)
         return output_parT,jet_mask
