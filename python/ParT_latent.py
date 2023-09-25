@@ -47,9 +47,9 @@ class ParticleTransformerWrapper(nn.Module):
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
         mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
-        output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
+        #output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
         #output = self.fc(output_parT)
-        return output_parT
+        return output_parT,jet_mask
 
 def get_model(data_config, **kwargs):
 
@@ -81,3 +81,28 @@ def get_model(data_config, **kwargs):
     return model
 
     
+def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
+
+    with torch.no_grad():
+        model.eval()
+        for i, batch in enumerate( data_loader ):  
+                if (i % 500) == 0: print('batch : ', i)
+                batch['X_jet']=batch['X_jet'].numpy()
+                batch['X_pfo']=batch['X_pfo'].numpy()
+                batch['X_label']=batch['X_label'].numpy()
+                batch['labels']=batch['labels'].numpy()
+                if not isXbb: batch['jet_mask']=batch['jet_mask'].numpy()
+                batch = build_features(batch)  
+                if not isXbb: batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
+                out = infer_val(model,batch,device,isXbb).detach().cpu().numpy()
+                if i==0:
+                    preds = out[0]
+                    mask = out[1]
+                    target = batch['label']
+                else:    
+                    preds = np.concatenate((preds,out[0]),axis=0)
+                    mask = np.concatenate((preds,out[1]),axis=0)
+                    target = np.concatenate((target,batch['label']),axis=0)
+                if (subset and i>5): break    
+
+    return preds,target,mask   

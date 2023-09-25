@@ -78,7 +78,7 @@ if modeltype == 'ParTLatent':
 
         train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
         build_features = df.build_features_and_labels
-        yi_test,target_test = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
+        yi_test,target_test,mask_test = ParT_latent.get_preds(model,train_loader,device,subset,build_features)
     elif sample == 'train':
         idxmap_train = df.get_idxmap(filelist_train)
         integer_file_map_train = df.create_integer_file_map(idxmap_train)
@@ -86,7 +86,7 @@ if modeltype == 'ParTLatent':
 
         train_loader_train = DataLoader(Dataset_train, batch_size=512, shuffle=True,num_workers=6)
         build_features = df.build_features_and_labels
-        yi_train,target_train = ParT_mlp.get_preds(model,train_loader_train,device,subset,build_features)
+        yi_train,target_train,mask_train = ParT_latent.get_preds(model,train_loader_train,device,subset,build_features)
     elif sample == 'val':
         idxmap_val = df.get_idxmap(filelist_val)
         integer_file_map_val = df.create_integer_file_map(idxmap_val)
@@ -94,7 +94,7 @@ if modeltype == 'ParTLatent':
 
         train_loader_val = DataLoader(Dataset_val, batch_size=512, shuffle=True,num_workers=6)
         build_features = df.build_features_and_labels
-        yi_val,target_val = ParT_mlp.get_preds(model,train_loader_val,device,subset,build_features)
+        yi_val,target_val,mask_val = ParT_latent.get_preds(model,train_loader_val,device,subset,build_features)
 
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
@@ -144,17 +144,20 @@ print('device: ', device)
 if modeltype == 'ParTLatent':
     if sample == 'test':
         Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
-        Data.create_dataset('evt_score', data=yi.reshape(-1,128))
-        Data.create_dataset('evt_label', data=target.reshape(-1,1),dtype='i4')
+        Data.create_dataset('evt_score', data=yi_test.reshape(-1,5,128))
+        Data.create_dataset('jet_mask', data=mask_test.reshape(-1,5))
+        Data.create_dataset('evt_label', data=target_test.reshape(-1,1),dtype='i4')
         Data.close() 
     elif sample == 'train':
         Data_train = h5py.File(f'../../Finetune_hep/models/{modeltype}/train_{name}.h5', 'w')
-        Data_train.create_dataset('evt_score', data=yi_train.reshape(-1,128))
+        Data_train.create_dataset('evt_score', data=yi_train.reshape(-1,5,128))
+        Data_train.create_dataset('jet_mask', data=mask_train.reshape(-1,5))
         Data_train.create_dataset('evt_label', data=target_train.reshape(-1,1),dtype='i4')
         Data_train.close() 
     elif sample == 'val':
         Data_val = h5py.File(f'../../Finetune_hep/models/{modeltype}/val_{name}.h5', 'w')
-        Data_val.create_dataset('evt_score', data=yi_val.reshape(-1,128))
+        Data_val.create_dataset('evt_score', data=yi_val.reshape(-1,5,128))
+        Data_val.create_dataset('jet_mask', data=mask_val.reshape(-1,5))
         Data_val.create_dataset('evt_label', data=target_val.reshape(-1,1),dtype='i4')
         Data_val.close()        
 
