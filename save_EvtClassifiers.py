@@ -88,7 +88,7 @@ if modeltype == 'ParTLatent':
         build_features = df.build_features_and_labels
         yi_train,target_train = ParT_mlp.get_preds(model,train_loader_train,device,subset,build_features)
     elif sample == 'val':
-        idxmap_val = df.get_idxmap(filelist_test_val)
+        idxmap_val = df.get_idxmap(filelist_val)
         integer_file_map_val = df.create_integer_file_map(idxmap_val)
         Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
 
