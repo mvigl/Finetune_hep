@@ -97,7 +97,58 @@ class CustomDataset(Dataset):
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx],self.jet_mask[idx]
              
-    
+class CustomDataset_XbbOnly(Dataset):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+        self.device = device
+        self.x=[]
+        self.y=[]
+        self.jet_mask=[]
+        i=0
+        with open(filelist) as f:
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                with h5py.File(filename, 'r') as Data:
+                    if i ==0:
+                        data = Data['X_jet'][:]
+                        target = Data['labels'][:] 
+                        jet_mask = Data['jet_mask'][:]
+                    else:
+                        data = np.concatenate((data,Data['X_jet'][:]),axis=0)
+                        target = np.concatenate((target,Data['labels'][:]),axis=0)
+                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
+                    i+=1    
+        self.scaler = StandardScaler() # this is super useful a scikit learn function
+        data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
+        data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
+        data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
+        if Xbb_scores_path != 'no': 
+            print('loading Xbb scores from : ',Xbb_scores_path)
+            with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
+                data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+        if scaler_path !='no' : 
+            if (test == False): 
+                X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
+                self.x = torch.from_numpy(X_norm).float().to(device)
+                with open(scaler_path,'wb') as f:
+                    pickle.dump(self.scaler, f)
+            else:         
+                with open(scaler_path,'rb') as f:
+                    self.scaler = pickle.load(f)
+                X_norm = transform_without_zeros(data,jet_mask,self.scaler)
+                self.x = torch.from_numpy(X_norm).float().to(device)
+        else:
+            self.x = torch.from_numpy(data).float().to(device)    
+        self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
+        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+        self.length = len(target)
+        print('N data : ',self.length)
+        
+    def __len__(self):
+        return self.length
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx],self.jet_mask[idx]
+
 def train_step(model,data,target,jet_mask,opt,loss_fn):
     model.train()
     preds = model(data,jet_mask)

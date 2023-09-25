@@ -117,7 +117,7 @@ def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
                     target = batch['label']
                 else:    
                     preds = np.concatenate((preds,out[0].detach().cpu().numpy()),axis=0)
-                    mask = np.concatenate((preds,out[1].detach().cpu().numpy()),axis=0)
+                    mask = np.concatenate((mask,out[1].detach().cpu().numpy()),axis=0)
                     target = np.concatenate((target,batch['label']),axis=0)
                 if (subset and i>5): break    
 
