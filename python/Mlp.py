@@ -118,10 +118,13 @@ class CustomDataset_XbbOnly(Dataset):
                     i+=1    
         print('loading Xbb scores from : ',Xbb_scores_path)
         with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-            data = Xbb_scores['Xbb'][:].reshape((-1,5))
-        print(np.shape(data)) 
+            data = Xbb_scores['Xbb'][:].reshape((-1,5,1))
+        print(np.shape(data))
+        print(data[:3]) 
         print(np.shape(target))    
+        print(target[:3]) 
         print(np.shape(jet_mask)) 
+        print(jet_mask[:3]) 
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
