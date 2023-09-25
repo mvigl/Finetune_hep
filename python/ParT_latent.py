@@ -96,7 +96,7 @@ def infer(model,batch,device,isXbb):
 def infer_val(model,batch,device,isXbb=False):
     with torch.no_grad():
         return infer(model,batch,device,isXbb)
-            
+
 def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
 
     with torch.no_grad():
@@ -110,14 +110,14 @@ def get_preds(model,data_loader,device,subset,build_features,isXbb=False):
                 if not isXbb: batch['jet_mask']=batch['jet_mask'].numpy()
                 batch = build_features(batch)  
                 if not isXbb: batch['pf_mask'][:,:,:,:2] += np.abs(batch['jet_mask'][:,:,np.newaxis]-1)
-                out = infer_val(model,batch,device,isXbb).detach().cpu().numpy()
+                out = infer_val(model,batch,device,isXbb)
                 if i==0:
-                    preds = out[0]
-                    mask = out[1]
+                    preds = out[0].detach().cpu().numpy()
+                    mask = out[1].detach().cpu().numpy()
                     target = batch['label']
                 else:    
-                    preds = np.concatenate((preds,out[0]),axis=0)
-                    mask = np.concatenate((preds,out[1]),axis=0)
+                    preds = np.concatenate((preds,out[0].detach().cpu().numpy()),axis=0)
+                    mask = np.concatenate((preds,out[1].detach().cpu().numpy()),axis=0)
                     target = np.concatenate((target,batch['label']),axis=0)
                 if (subset and i>5): break    
 
