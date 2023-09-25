@@ -20,11 +20,9 @@ auc_ParTevent=[]
 for i in range(5):
 
     filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_score_training_{i+1}.h5'
-    #target_ParTevent = data['evt_score']
-    #yi_ParTevent = data['evt_label']
     with h5py.File(filename, 'r') as Data:
-        yi_ParTevent = Data['Xbb'][:].reshape(-1,1)
-        target_ParTevent = Data['X_label'][:].reshape(-1,1)
+        yi_ParTevent = Data['evt_score'][:].reshape(-1,1)
+        target_ParTevent = Data['evt_label'][:].reshape(-1,1)
     fpr_i, tpr_i, threshold_i = roc_curve(target_ParTevent, yi_ParTevent,drop_intermediate=False)
 
     if i==0: 
