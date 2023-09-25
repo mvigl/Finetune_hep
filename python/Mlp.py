@@ -251,7 +251,7 @@ class InvariantModel(nn.Module):
         print(x.shape)
         print(jet_mask.shape)
         print(self.phi(x).shape)
-        x = self.phi(x)*jet_mask#[:,:,np.newaxis]
+        x = self.phi(x)*jet_mask[:,:,np.newaxis]
 
         # sum up the representations
         x = torch.sum(x, dim=1)

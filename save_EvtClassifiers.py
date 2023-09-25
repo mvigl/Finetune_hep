@@ -101,7 +101,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     nodes_mlp = 24
     nlayer_mlp = 3
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
-                                rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp))
+                                rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
     if modeltype == 'mlpXbb': model = Mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
     model.to(device)
     model.load_state_dict(torch.load(model_path))
