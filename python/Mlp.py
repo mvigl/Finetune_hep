@@ -118,7 +118,7 @@ class CustomDataset_XbbOnly(Dataset):
                     i+=1    
         print('loading Xbb scores from : ',Xbb_scores_path)
         with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-            data = numpy.nan_to_num(Xbb_scores['Xbb'][:].reshape((-1,5,1)))
+            data = np.nan_to_num(Xbb_scores['Xbb'][:].reshape((-1,5,1)))
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
