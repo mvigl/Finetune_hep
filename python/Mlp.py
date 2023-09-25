@@ -242,8 +242,8 @@ class InvariantModel(nn.Module):
 
     def forward(self, x,jet_mask):
         # compute the representation for each data point
-        print(x.sahpe())
-        print(jet_mask.sahpe())
+        print(x.shape())
+        print(jet_mask.shape())
         x = self.phi(x)*jet_mask[:,:,np.newaxis]
 
         # sum up the representations
