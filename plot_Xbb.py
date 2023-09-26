@@ -40,13 +40,13 @@ fpr.append(fpr_i)
 tpr.append(tpr_i)
 threshold.append(threshold_i)
 
-
-with h5py.File('../../Finetune_hep/models/ParTXbb/Final_ParTXbb_test.h5', 'r') as test_data:
-    yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1)[jet_mask],test_data['X_label'][:].reshape(-1)[jet_mask]
-fpr_i, tpr_i, threshold_i = roc_curve(target_ParTXbb, yi_ParTXbb,drop_intermediate=False)
-fpr.append(fpr_i)
-tpr.append(tpr_i)
-threshold.append(threshold_i)
+for i in range(5):
+    with h5py.File(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb/train_ParTXbb_score_training_{i+1}.h5', 'r') as test_data:
+        yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1)[jet_mask],test_data['X_label'][:].reshape(-1)[jet_mask]
+    fpr_i, tpr_i, threshold_i = roc_curve(target_ParTXbb, yi_ParTXbb,drop_intermediate=False)
+    fpr.append(fpr_i)
+    tpr.append(tpr_i)
+    threshold.append(threshold_i)
 
 b=np.linspace(0,1,101)
 fig, ax = plt.subplots()
