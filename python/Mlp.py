@@ -279,7 +279,7 @@ class InvariantModel(nn.Module):
         return out
 
 class InvariantModel_Latent(nn.Module):
-    def __init__(rho: nn.Module):
+    def __init__(self, rho: nn.Module):
         super().__init__()
         self.rho = rho
 
