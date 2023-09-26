@@ -163,7 +163,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline','mlpLatent','mlpLatentHl']:
         yi,target = Mlp.get_preds(model,train_loader_mlpHlXbb,subset,device)     
 
     if modeltype == 'mlpXbb': 
-         Dataset_mlpHlXbb = Mlp.CustomDataset_XbbOnly(filelist_test,
+        Dataset_mlpHlXbb = Mlp.CustomDataset_XbbOnly(filelist_test,
                             device,
                             scaler_path=scaler_path,
                             Xbb_scores_path=Xbb_scores_path,
