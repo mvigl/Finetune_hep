@@ -191,7 +191,7 @@ if modeltype in ['ParTevent','ParTXbb']:
         )
     )
 
-elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','LatentXbb_Aux']:
+elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','LatentXbb_Aux','mlpLatentHl']:
     evals_part, model_part = Mlp.train_loop(
         model,
         filelist,
