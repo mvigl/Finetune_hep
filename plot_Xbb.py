@@ -4,7 +4,7 @@ from matplotlib.pyplot import cm
 import numpy as np
 import h5py
 
-filelist = '/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/test_list.txt'
+filelist = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]      
 def get_vars(filelist):
