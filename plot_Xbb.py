@@ -51,7 +51,8 @@ fpr_i, tpr_i, threshold_i = roc_curve(target_doubleb.reshape(-1,1), yi_doubleb.r
 fpr_CMSXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
 auc_CMSXbb.append(auc(fpr_i,tpr_i))
 
-
+fpr_CMSXbb_mean = fpr_CMSXbb[0]
+auc_CMSXbb_mean = auc_CMSXbb[0]
 fpr_ParTXbb_mean = np.mean(fpr_ParTXbb,axis=0)
 fpr_ParTXbb_std = np.std(fpr_ParTXbb,axis=0)
 auc_ParTXbb_mean = np.mean(auc_ParTXbb,axis=0)
@@ -77,7 +78,7 @@ fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
 ax.plot(tpr_common, 1/fpr_ParTXbb_mean, lw=0.8, label=f'ParTXbb AUC = {auc_ParTXbb_mean:.4f}',color='b')
 ax.fill_between(tpr_common, (1/(fpr_ParTXbb_mean-fpr_ParTXbb_std)), (1/(fpr_ParTXbb_mean+fpr_ParTXbb_std)),color='b',alpha=0.2)
-ax.plot(tpr_common, 1/fpr_CMSXbb, lw=0.8, label=(f'CMSXbb AUC = {auc_CMSXbb:.4f}'), color='r')
+ax.plot(tpr_common, 1/fpr_CMSXbb_mean, lw=0.8, label=f'CMSXbb AUC = {auc_CMSXbb_mean:.4f}', color='r')
 ax.set_ylabel(r'Background rejection')
 ax.semilogy()
 ax.set_xlim(0.4,1)
@@ -85,10 +86,10 @@ ax.grid(True)
 ax.legend(loc='lower left')
 plt.setp(ax.get_xticklabels(), visible=False)
 ax = fig.add_subplot(4,1,4)
-ax.plot(tpr_common,(1/fpr_ParTXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='b')
-ax.fill_between( tpr_common, (1/(fpr_ParTXbb_mean-fpr_ParTXbb_std))/(1/fpr_mlpHlXbb_mean),
-                 (1/(fpr_ParTXbb_mean+fpr_ParTXbb_std))/(1/fpr_mlpHlXbb_mean),color='b',alpha=0.2)
-ax.plot(tpr_common,(1/fpr_CMSXbb)/(1/fpr_CMSXbb),lw=0.8,color='r')      
+ax.plot(tpr_common,(1/fpr_ParTXbb_mean)/(1/fpr_CMSXbb_mean),lw=0.8,color='b')
+ax.fill_between( tpr_common, (1/(fpr_ParTXbb_mean-fpr_ParTXbb_std))/(1/fpr_CMSXbb_mean),
+                 (1/(fpr_ParTXbb_mean+fpr_ParTXbb_std))/(1/fpr_CMSXbb_mean),color='b',alpha=0.2)
+ax.plot(tpr_common,(1/fpr_CMSXbb_mean)/(1/fpr_CMSXbb_mean),lw=0.8,color='r')      
 ax.set_ylim(0.5,5)
 ax.set_xlim(0.4,1)
 ax.set_ylabel(r'Ratio')
