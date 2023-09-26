@@ -93,9 +93,9 @@ ax.fill_between( tpr_common, (1/(fpr_ParTevent_mean-fpr_ParTevent_std))/(1/fpr_m
 ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='r')
 ax.fill_between( tpr_common, (1/(fpr_mlpHlXbb_mean-fpr_mlpHlXbb_std))/(1/fpr_mlpHlXbb_mean),
                  (1/(fpr_mlpHlXbb_mean+fpr_mlpHlXbb_std))/(1/fpr_mlpHlXbb_mean),color='r',alpha=0.2)
-ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_baseline_mean),lw=0.8,color='g')
-ax.fill_between( tpr_common, (1/(fpr_baseline_mean-fpr_baseline_std))/(1/fpr_baseline_mean),
-                 (1/(fpr_baseline_mean+fpr_baseline_std))/(1/fpr_baseline_mean),color='g',alpha=0.2)                 
+ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='g')
+ax.fill_between( tpr_common, (1/(fpr_baseline_mean-fpr_baseline_std))/(1/fpr_mlpHlXbb_mean),
+                 (1/(fpr_baseline_mean+fpr_baseline_std))/(1/fpr_mlpHlXbb_mean),color='g',alpha=0.2)                 
 ax.set_ylim(0.5,5)
 ax.set_xlim(0.4,1)
 ax.set_ylabel(r'Ratio')
