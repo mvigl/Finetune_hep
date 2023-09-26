@@ -181,7 +181,7 @@ class CustomDataset_Latent_Hl(Dataset):
         with h5py.File(Xbb_scores_path, 'r') as latent:
             target = latent['evt_label'][:]
             jet_mask = latent['jet_mask'][:]
-            data = np.sum(np.concatenate(np.nan_to_num(data),np.nan_to_num(latent['evt_score'][:]),axis=-1)*jet_mask[:,:,np.newaxis],axis=-1)
+            data = np.sum(np.concatenate(np.nan_to_num(data),np.nan_to_num(latent['evt_score'][:]),axis=-1)*jet_mask[:,:,np.newaxis],axis=1)
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
