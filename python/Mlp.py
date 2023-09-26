@@ -204,7 +204,7 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     if modeltype == 'mlpXbb':
         Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
-    if modeltype == 'mlpLatent':
+    elif modeltype == 'mlpLatent':
         Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
     else:    
