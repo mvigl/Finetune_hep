@@ -33,6 +33,7 @@ fpr_ParTXbb=[]
 auc_ParTXbb=[]
 fpr_CMSXbb=[]
 auc_CMSXbb=[]
+jet_mask = (jet_mask.reshape(-1)).astype(bool)
 
 for i in range(5):
     with h5py.File(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb/test_ParTXbb_score_training_{i+1}.h5', 'r') as test_data:
@@ -44,7 +45,6 @@ for i in range(5):
     fpr_ParTXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
     auc_ParTXbb.append(auc(fpr_i,tpr_i))
 
-jet_mask = (jet_mask.reshape(-1)).astype(bool)
 yi_doubleb = (data[:,:,jVars.index('fj_doubleb')].reshape(-1)[jet_mask]+1)/2
 target_doubleb = target_jet[:,:,labelVars.index('label_H_bb')].reshape(-1)[jet_mask]
 fpr_i, tpr_i, threshold_i = roc_curve(target_doubleb, yi_doubleb,drop_intermediate=False)
