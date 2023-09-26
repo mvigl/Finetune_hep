@@ -32,6 +32,8 @@ name = config['out-name']
 scaler_path = config['scaler-path']
 Xbb_scores_path = config['Xbb-scores-path']
 sample = config['sample']
+nodes_mlp = config['nodes-mlp']
+nlayer_mlp = config['nlayer-mlp']
 
 print('subset: ',subset)
 
@@ -99,8 +101,6 @@ if modeltype == 'ParTLatent':
 
 
 elif modeltype in ['mlpXbb','mlpHlXbb','baseline','mlpLatent','mlpLatentHl']:
-    nodes_mlp = 24
-    nlayer_mlp = 3
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
                                 rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
     if modeltype == 'mlpXbb': 
