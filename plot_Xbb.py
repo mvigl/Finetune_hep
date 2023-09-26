@@ -29,53 +29,71 @@ def get_vars(filelist):
 
 data,target,target_jet,jet_mask = get_vars(filelist)
 
-fpr=[]
-tpr=[]
-threshold=[]
+fpr_ParTXbb=[]
+auc_ParTXbb=[]
+fpr_CMSXbb=[]
+auc_CMSXbb=[]
+
+for i in range(5):
+    with h5py.File(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb/test_ParTXbb_score_training_{i+1}.h5', 'r') as test_data:
+        yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1)[jet_mask],test_data['X_label'][:].reshape(-1)[jet_mask]
+    fpr_i, tpr_i, threshold_i = roc_curve(target_ParTXbb, yi_ParTXbb,drop_intermediate=False)
+
+    if i==0: 
+        tpr_common = tpr_i
+    fpr_ParTXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
+    auc_ParTXbb.append(auc(fpr_i,tpr_i))
+
 jet_mask = (jet_mask.reshape(-1)).astype(bool)
 yi_doubleb = (data[:,:,jVars.index('fj_doubleb')].reshape(-1)[jet_mask]+1)/2
 target_doubleb = target_jet[:,:,labelVars.index('label_H_bb')].reshape(-1)[jet_mask]
 fpr_i, tpr_i, threshold_i = roc_curve(target_doubleb, yi_doubleb,drop_intermediate=False)
-fpr.append(fpr_i)
-tpr.append(tpr_i)
-threshold.append(threshold_i)
+fpr_CMSXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
+auc_CMSXbb.append(auc(fpr_i,tpr_i))
 
-for i in range(5):
-    with h5py.File(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb/train_ParTXbb_score_training_{i+1}.h5', 'r') as test_data:
-        yi_ParTXbb,target_ParTXbb = test_data['Xbb'][:].reshape(-1)[jet_mask],test_data['X_label'][:].reshape(-1)[jet_mask]
-    fpr_i, tpr_i, threshold_i = roc_curve(target_ParTXbb, yi_ParTXbb,drop_intermediate=False)
-    fpr.append(fpr_i)
-    tpr.append(tpr_i)
-    threshold.append(threshold_i)
 
-b=np.linspace(0,1,101)
-fig, ax = plt.subplots()
-ax.hist(yi_ParTXbb, lw=0.8,bins=b, weights=target_ParTXbb, label=('ParTXbb sig'),alpha=0.8,density=True)
-ax.hist(yi_ParTXbb, lw=0.8,bins=b, weights=(target_ParTXbb==0)*1, label=('ParTXbb bkg'),alpha=0.8,density=True)
-ax.hist(yi_doubleb, lw=0.8,bins=b, weights=target_doubleb, label=('fj_doubleb sig'),alpha=0.8,density=True)
-ax.hist(yi_doubleb, lw=0.8,bins=b, weights=(target_doubleb==0)*1, label=('fj_doubleb bkg'),alpha=0.8,density=True)
-ax.set_xlabel(r'Signal Efficiency')
-ax.set_ylabel(r'')
-ax.semilogy()
-ax.set_xlim(0,1)
-ax.grid(True)
-ax.legend(loc='lower left')
-ax.set_title(f"ROC")
-fig.savefig(f"../../Finetune_hep/plots/Full_preds_Xbb.pdf")
+fpr_ParTXbb_mean = np.mean(fpr_ParTXbb,axis=0)
+fpr_ParTXbb_mean = np.std(fpr_ParTXbb,axis=0)
+auc_ParTXbb_mean = np.mean(auc_ParTXbb,axis=0)
+auc_ParTXbb_std = np.std(auc_ParTXbb,axis=0)
+
+#b=np.linspace(0,1,101)
+#fig, ax = plt.subplots()
+#ax.hist(yi_ParTXbb, lw=0.8,bins=b, weights=target_ParTXbb, label=('ParTXbb sig'),alpha=0.8,density=True)
+#ax.hist(yi_ParTXbb, lw=0.8,bins=b, weights=(target_ParTXbb==0)*1, label=('ParTXbb bkg'),alpha=0.8,density=True)
+#ax.hist(yi_doubleb, lw=0.8,bins=b, weights=target_doubleb, label=('fj_doubleb sig'),alpha=0.8,density=True)
+#ax.hist(yi_doubleb, lw=0.8,bins=b, weights=(target_doubleb==0)*1, label=('fj_doubleb bkg'),alpha=0.8,density=True)
+#ax.set_xlabel(r'Signal Efficiency')
+#ax.set_ylabel(r'')
+#ax.semilogy()
+#ax.set_xlim(0,1)
+#ax.grid(True)
+#ax.legend(loc='lower left')
+#ax.set_title(f"ROC")
+#fig.savefig(f"../../Finetune_hep/plots/Full_preds_Xbb.pdf")
 
 # plot ROC curve
-color = iter(cm.rainbow(np.linspace(0, 1, len(tpr))))
-
-fig, ax = plt.subplots()
-ax.plot(tpr[1], 1/fpr[1], lw=0.8, label=('ParTXbb AUC = {:.2f}%'.format(auc(fpr[1],tpr[1])*100)), color=next(color))
-ax.plot(tpr[0], 1/fpr[0], lw=0.8, label=('Xbb AUC = {:.2f}%'.format(auc(fpr[0],tpr[0])*100)), color=next(color))
-ax.set_xlabel(r'Signal Efficiency')
-ax.set_ylabel(r'1/FPR')
+fig = plt.figure()
+ax = fig.add_subplot(4,1,(1,3))
+ax.plot(tpr_common, 1/fpr_ParTXbb_mean, lw=0.8, label=f'ParTXbb AUC = {auc_ParTXbb_mean:.4f}',color='b')
+ax.fill_between(tpr_common, (1/(fpr_ParTXbb_mean-fpr_ParTXbb_std)), (1/(fpr_ParTXbb_mean+fpr_ParTXbb_std)),color='b',alpha=0.2)
+ax.plot(tpr_common, 1/fpr_CMSXbb, lw=0.8, label=(f'CMSXbb AUC = {auc_CMSXbb:.4f}'), color='r')
+ax.set_ylabel(r'Background rejection')
 ax.semilogy()
-ax.set_xlim(0,1)
+ax.set_xlim(0.4,1)
 ax.grid(True)
 ax.legend(loc='lower left')
-ax.set_title(f"ROC")
+plt.setp(ax.get_xticklabels(), visible=False)
+ax = fig.add_subplot(4,1,4)
+ax.plot(tpr_common,(1/fpr_ParTXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='b')
+ax.fill_between( tpr_common, (1/(fpr_ParTXbb_mean-fpr_ParTXbb_std))/(1/fpr_mlpHlXbb_mean),
+                 (1/(fpr_ParTXbb_mean+fpr_ParTXbb_std))/(1/fpr_mlpHlXbb_mean),color='b',alpha=0.2)
+ax.plot(tpr_common,(1/fpr_CMSXbb)/(1/fpr_CMSXbb),lw=0.8,color='r')      
+ax.set_ylim(0.5,5)
+ax.set_xlim(0.4,1)
+ax.set_ylabel(r'Ratio')
+ax.grid(True)
+ax.set_xlabel(r'Signal efficiency',loc="right")
 fig.savefig(f"../../Finetune_hep/plots/Full_ROC_Xbb.pdf")
 
 
