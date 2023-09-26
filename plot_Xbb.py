@@ -53,7 +53,7 @@ auc_CMSXbb.append(auc(fpr_i,tpr_i))
 
 
 fpr_ParTXbb_mean = np.mean(fpr_ParTXbb,axis=0)
-fpr_ParTXbb_mean = np.std(fpr_ParTXbb,axis=0)
+fpr_ParTXbb_std = np.std(fpr_ParTXbb,axis=0)
 auc_ParTXbb_mean = np.mean(auc_ParTXbb,axis=0)
 auc_ParTXbb_std = np.std(auc_ParTXbb,axis=0)
 
