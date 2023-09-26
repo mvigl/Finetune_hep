@@ -138,7 +138,7 @@ class CustomDataset_Latent(Dataset):
         self.jet_mask=[]
         i=0
         print('loading Xbb scores from : ',Xbb_scores_path)
-        with h5py.File(filelist, 'r') as latent:
+        with h5py.File(Xbb_scores_path, 'r') as latent:
             target = latent['evt_label'][:]
             jet_mask = latent['jet_mask'][:]
             data = np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis]
