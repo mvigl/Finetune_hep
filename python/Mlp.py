@@ -152,6 +152,47 @@ class CustomDataset_Latent(Dataset):
         return self.length
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx],self.jet_mask[idx]        
+
+class CustomDataset_Latent_Hl(Dataset):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+        self.device = device
+        self.x=[]
+        self.y=[]
+        self.jet_mask=[]
+        i=0
+        with open(filelist) as f:
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                with h5py.File(filename, 'r') as Data:
+                    if i ==0:
+                        data = Data['X_jet'][:]
+                        target = Data['labels'][:] 
+                        jet_mask = Data['jet_mask'][:]
+                    else:
+                        data = np.concatenate((data,Data['X_jet'][:]),axis=0)
+                        target = np.concatenate((target,Data['labels'][:]),axis=0)
+                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
+                    i+=1    
+        data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
+        data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
+        data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
+        print('loading Xbb scores from : ',Xbb_scores_path)
+        with h5py.File(Xbb_scores_path, 'r') as latent:
+            target = latent['evt_label'][:]
+            jet_mask = latent['jet_mask'][:]
+            data = np.sum(np.concatenate(np.nan_to_num(data),np.nan_to_num(latent['evt_score'][:]),axis=-1)*jet_mask[:,:,np.newaxis],axis=-1)
+        self.x = torch.from_numpy(data).float().to(device)    
+        self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
+        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+        self.length = len(target)
+        print('N data : ',self.length)
+        
+    def __len__(self):
+        return self.length
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx],self.jet_mask[idx]        
+
             
 def train_step(model,data,target,jet_mask,opt,loss_fn):
     model.train()
@@ -207,6 +248,9 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     elif modeltype == 'mlpLatent':
         Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
+    elif modeltype == 'mlpLatentHl':
+        Dataset = CustomDataset_Latent_Hl(filelist,device,scaler_path,Xbb_scores_path)
+        Dataset_val = CustomDataset_Latent_Hl(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
     else:    
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
