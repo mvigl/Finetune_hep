@@ -129,6 +129,29 @@ class CustomDataset_XbbOnly(Dataset):
         return self.length
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx],self.jet_mask[idx]
+
+class CustomDataset_Latent(Dataset):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+        self.device = device
+        self.x=[]
+        self.y=[]
+        self.jet_mask=[]
+        i=0
+        print('loading Xbb scores from : ',Xbb_scores_path)
+        with h5py.File(filelist, 'r') as latent:
+            target = latent['evt_label'][:]
+            jet_mask = latent['jet_mask'][:]
+            data = np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis]
+        self.x = torch.from_numpy(data).float().to(device)    
+        self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
+        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+        self.length = len(target)
+        print('N data : ',self.length)
+        
+    def __len__(self):
+        return self.length
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx],self.jet_mask[idx]        
             
 def train_step(model,data,target,jet_mask,opt,loss_fn):
     model.train()
@@ -181,6 +204,9 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     if modeltype == 'mlpXbb':
         Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
+    if modeltype == 'mlpLatent':
+        Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path)
+        Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
     else:    
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path)
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
@@ -252,4 +278,18 @@ class InvariantModel(nn.Module):
 
         return out
 
+class InvariantModel_latent(nn.Module):
+    def __init__(self, phi: nn.Module, rho: nn.Module):
+        super().__init__()
+        self.phi = phi
+        self.rho = rho
+
+    def forward(self, x,jet_mask):
+        # sum up the representations
+        x = torch.sum(x, dim=1)
+
+        # compute the output
+        out = self.rho(x)
+
+        return out
 
