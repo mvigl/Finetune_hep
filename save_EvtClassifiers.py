@@ -31,6 +31,7 @@ model_path = config['model-path']
 name = config['out-name']
 scaler_path = config['scaler-path']
 Xbb_scores_path = config['Xbb-scores-path']
+sample = config['sample']
 
 print('subset: ',subset)
 
@@ -97,12 +98,22 @@ if modeltype == 'ParTLatent':
         yi_val,target_val,mask_val = ParT_latent.get_preds(model,train_loader_val,device,subset,build_features)
 
 
-elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
+elif modeltype in ['mlpXbb','mlpHlXbb','baseline','mlpLatent','mlpLatentHl']:
     nodes_mlp = 24
     nlayer_mlp = 3
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
                                 rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
-    if modeltype == 'mlpXbb': model = Mlp.make_mlp(2,nodes_mlp,nlayer_mlp)
+    if modeltype == 'mlpXbb': 
+        model = Mlp.InvariantModel( phi=Mlp.make_mlp(1,nodes_mlp,nlayer_mlp,binary=False),
+                                    rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
+
+    if modeltype in ['mlpLatent']:
+        model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp,for_inference=True))
+
+    if modeltype in ['mlpLatentHl']:
+        model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128+6,nodes_mlp,nlayer_mlp,for_inference=True))
+
+    
     model.to(device)
     model.load_state_dict(torch.load(model_path))
     model.eval()
@@ -129,12 +140,38 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
 
         yi,target = Mlp.get_preds(model,train_loader_mlpHlXbb,subset,device)      
 
-elif modeltype in ['mlpLatent']:
-    model = ParT_mlp.make_mlp(256,nodes_mlp,nlayer_mlp)
-    model.to(device)
-    model.load_state_dict(torch.load(model_path))
-    model.eval()
+    if modeltype == 'mlpLatent': 
+        Dataset_mlpHlXbb = Mlp.CustomDataset_Latent(filelist_test,
+                            device,
+                            scaler_path=scaler_path,
+                            Xbb_scores_path=Xbb_scores_path,
+                            test=True)
 
+        train_loader_mlpHlXbb = DataLoader(Dataset_mlpHlXbb, batch_size=512, shuffle=True)
+
+        yi,target = Mlp.get_preds(model,train_loader_mlpHlXbb,subset,device) 
+
+    if modeltype == 'mlpLatentHl': 
+        Dataset_mlpHlXbb = Mlp.CustomDataset_Latent_Hl(filelist_test,
+                            device,
+                            scaler_path=scaler_path,
+                            Xbb_scores_path=Xbb_scores_path,
+                            test=True)
+
+        train_loader_mlpHlXbb = DataLoader(Dataset_mlpHlXbb, batch_size=512, shuffle=True)
+
+        yi,target = Mlp.get_preds(model,train_loader_mlpHlXbb,subset,device)     
+
+    if modeltype == 'mlpXbb': 
+         Dataset_mlpHlXbb = Mlp.CustomDataset_XbbOnly(filelist_test,
+                            device,
+                            scaler_path=scaler_path,
+                            Xbb_scores_path=Xbb_scores_path,
+                            test=True)
+
+        train_loader_mlpHlXbb = DataLoader(Dataset_mlpHlXbb, batch_size=512, shuffle=True)
+
+        yi,target = Mlp.get_preds(model,train_loader_mlpHlXbb,subset,device) 
 
 else:
     print('specify a model (ParTevent,mlpXbb,mlpHlXbb,baseline)')    
@@ -162,7 +199,7 @@ if modeltype == 'ParTLatent':
         Data_val.close()        
 
 else:
-    Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/test_{name}.h5', 'w')
+    Data = h5py.File(f'../../Finetune_hep/models/{modeltype}/{sample}_{name}.h5', 'w')
     Data.create_dataset('evt_score', data=yi.reshape(-1))
     Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
     Data.close()        
