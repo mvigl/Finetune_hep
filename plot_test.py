@@ -82,7 +82,7 @@ ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'baseline AUC = {auc_bas
 ax.fill_between(tpr_common, (1/(fpr_baseline_mean-fpr_baseline_std)), (1/(fpr_baseline_mean+fpr_baseline_std)),color='g',alpha=0.2)
 ax.set_ylabel(r'Background rejection')
 ax.semilogy()
-ax.set_ylim(0.01,10000000)
+ax.set_ylim(1,10000000)
 ax.set_xlim(0.4,1)
 ax.grid(True)
 ax.legend(loc='lower left')

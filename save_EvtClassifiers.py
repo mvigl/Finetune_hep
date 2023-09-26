@@ -76,7 +76,7 @@ if modeltype == 'ParTLatent':
         integer_file_map = df.create_integer_file_map(idxmap)
         Dataset = df.CustomDataset(idxmap,integer_file_map)
 
-        train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
+        train_loader = DataLoader(Dataset, batch_size=2048, shuffle=True,num_workers=24)
         build_features = df.build_features_and_labels
         yi_test,target_test,mask_test = ParT_latent.get_preds(model,train_loader,device,subset,build_features)
     elif sample == 'train':
