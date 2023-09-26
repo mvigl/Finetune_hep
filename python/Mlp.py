@@ -141,7 +141,7 @@ class CustomDataset_Latent(Dataset):
         with h5py.File(Xbb_scores_path, 'r') as latent:
             target = latent['evt_label'][:]
             jet_mask = latent['jet_mask'][:]
-            data = np.sum(np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis],dim=1)
+            data = np.sum(np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis],axis=1)
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
@@ -274,6 +274,16 @@ class InvariantModel(nn.Module):
         x = torch.sum(x, dim=1)
 
         # compute the output
+        out = self.rho(x)
+
+        return out
+
+class InvariantModel_Latent(nn.Module):
+    def __init__(rho: nn.Module):
+        super().__init__()
+        self.rho = rho
+
+    def forward(self, x,jet_mask):
         out = self.rho(x)
 
         return out
