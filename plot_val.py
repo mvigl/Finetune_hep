@@ -81,7 +81,7 @@ ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'Internal+Feats AUC =
 
 ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'Internal AUC = {auc_mlpLatent_mean:.4f}',color='r')
 
-ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Feats+Xbb AUC = {auc_mlpHlXbb_mean:.4f}',color='o')
+ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Feats+Xbb AUC = {auc_mlpHlXbb_mean:.4f}',color='c')
 
 ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'Xbb AUC = {auc_baseline_mean:.4f}',color='g')
 
@@ -95,7 +95,7 @@ plt.setp(ax.get_xticklabels(), visible=False)
 ax = fig.add_subplot(4,1,4)
 ax.plot(tpr_common,(1/fpr_mlpLatentHl_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='b')
 ax.plot(tpr_common,(1/fpr_mlpLatent_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='r')
-ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='o')
+ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='c')
 ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='g')
          
 ax.set_ylim(0.5,5)
