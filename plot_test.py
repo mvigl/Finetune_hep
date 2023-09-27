@@ -74,7 +74,7 @@ fig, ax = plt.subplots()
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(tpr_common, 1/fpr_ParTevent_mean, lw=0.8, label=f'EndToEnd',color='b')
+ax.plot(tpr_common, 1/fpr_ParTevent_mean, lw=0.8, label=f'End-To-end',color='b')
 ax.fill_between(tpr_common, (1/(fpr_ParTevent_mean-fpr_ParTevent_std)), (1/(fpr_ParTevent_mean+fpr_ParTevent_std)),color='b',alpha=0.2)
 ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Feats+Xbb',color='r')
 ax.fill_between(tpr_common, (1/(fpr_mlpHlXbb_mean-fpr_mlpHlXbb_std)), (1/(fpr_mlpHlXbb_mean+fpr_mlpHlXbb_std)),color='r',alpha=0.2)
