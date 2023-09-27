@@ -98,7 +98,7 @@ ax.plot(tpr_common,(1/fpr_mlpLatent_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='r'
 ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='c')
 ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='g')
          
-ax.set_ylim(0.1,2.5)
+ax.set_ylim(0,2)
 ax.set_xlim(0.6,1)
 ax.set_ylabel(r'Ratio')
 ax.grid(True)
