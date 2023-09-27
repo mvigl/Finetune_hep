@@ -77,18 +77,18 @@ fig, ax = plt.subplots()
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'Internal+Feats AUC = {auc_mlpLatentHl_mean:.4f}',color='b')
+ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'Internal+Feats',color='b')
 
-ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'Internal AUC = {auc_mlpLatent_mean:.4f}',color='r')
+ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'Internal',color='r')
 
-ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Feats+Xbb AUC = {auc_mlpHlXbb_mean:.4f}',color='c')
+ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Xbb+Feats',color='c')
 
-ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'Xbb AUC = {auc_baseline_mean:.4f}',color='g')
+ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'Xbb',color='g')
 
 ax.set_ylabel(r'Background rejection')
 ax.semilogy()
-ax.set_ylim(1,10000000)
-ax.set_xlim(0.4,1)
+ax.set_ylim(1,100000)
+ax.set_xlim(0.6,1)
 ax.grid(True)
 ax.legend(loc='lower left')
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -98,8 +98,8 @@ ax.plot(tpr_common,(1/fpr_mlpLatent_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='r'
 ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='c')
 ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='g')
          
-ax.set_ylim(0.5,5)
-ax.set_xlim(0.4,1)
+ax.set_ylim(0.1,2.5)
+ax.set_xlim(0.6,1)
 ax.set_ylabel(r'Ratio')
 ax.grid(True)
 ax.set_xlabel(r'Signal efficiency',loc="right")
