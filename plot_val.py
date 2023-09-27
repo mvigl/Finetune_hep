@@ -28,6 +28,8 @@ for i in range(1):
         yi_mlpHlXbb = Data['evt_score'][:].reshape(-1,1)
         target_mlpHlXbb = Data['evt_label'][:].reshape(-1,1)
     fpr_i, tpr_i, threshold_i = roc_curve(target_mlpHlXbb, yi_mlpHlXbb,drop_intermediate=False)
+    if i==0: 
+        tpr_common = tpr_i
     fpr_mlpHlXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
     auc_mlpHlXbb.append(auc(fpr_i,tpr_i))
 
@@ -75,13 +77,13 @@ fig, ax = plt.subplots()
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'mlpLatentHl AUC = {auc_mlpLatentHl_mean:.4f}',color='b')
+ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'Internal+Feats AUC = {auc_mlpLatentHl_mean:.4f}',color='b')
 
-ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'mlpLatent AUC = {auc_mlpLatent_mean:.4f}',color='r')
+ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'Internal AUC = {auc_mlpLatent_mean:.4f}',color='r')
 
-ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'baseline AUC = {auc_mlpHlXbb_mean:.4f}',color='o')
+ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Feats+Xbb AUC = {auc_mlpHlXbb_mean:.4f}',color='o')
 
-ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'baseline AUC = {auc_baseline_mean:.4f}',color='g')
+ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'Xbb AUC = {auc_baseline_mean:.4f}',color='g')
 
 ax.set_ylabel(r'Background rejection')
 ax.semilogy()
