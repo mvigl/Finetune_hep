@@ -26,6 +26,7 @@ parser.add_argument('--Xbb', help='Xbb_scores_path',default='/home/iwsatlas1/mav
 parser.add_argument('--Xbb_val', help='Xbb_scores_path_val',default='/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/data/ParT_Xbb.npy')
 parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
 parser.add_argument('--subset',  action='store_true', help='subset', default=False)
+parser.add_argument('--subset_batches',  type=int, help='njets_mlp',default=1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--alpha', type=float,  help='alpha',default=0.01)
@@ -60,6 +61,7 @@ checkpoint = args.checkpoint
 check_message = args.check_message
 start_epoch = args.start_epoch
 yaml_file = args.yaml_file
+subset_batches = args.subset_batches
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
@@ -121,6 +123,7 @@ hyper_params = {
    "batch_size": batch_size,
    "alpha": alpha,
    "start_epoch": start_epoch 
+   "subset_batches": subset_batches
 }
 
 
@@ -139,7 +142,7 @@ if checkpoint=='no':
     Experiment.set_name(experiment,experiment_name)
     print(experiment.get_key())
     experiment.log_parameter("exp_key", experiment.get_key())
-    if modeltype in ['ParTevent','ParTXbb','Aux']:
+    if ((modeltype in ['ParTevent','ParTXbb','Aux']) and (subset==False)):
         for i in range(10):
             with open(yaml_file) as file:
                 check_config = yaml.load(file, Loader=yaml.FullLoader)  
@@ -187,7 +190,8 @@ if modeltype in ['ParTevent','ParTXbb']:
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['steps'],
             Xbb = Xbb,
-            start_epoch = hyper_params['start_epoch'] 
+            start_epoch = hyper_params['start_epoch'],
+            subset_batches = hyper_params['subset_batches'] 
         )
     )
 
@@ -207,7 +211,8 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
-            epochs = hyper_params['steps']
+            epochs = hyper_params['steps'],
+            subset_batches = hyper_params['subset_batches']
         )
     )
 

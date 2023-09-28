@@ -203,10 +203,11 @@ def train_step(model,data,target,jet_mask,opt,loss_fn):
     opt.zero_grad()
     return {'loss': float(loss)}
 
-def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
+def eval_fn(model, loss_fn,train_loader,val_loader,subset,device,subset_batches=1):
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ): 
+            if (subset and i >= subset_batches ): break 
             if i==0:
                 data, target, jet_mask = train_batch
                 data = data.cpu().numpy()
@@ -218,6 +219,7 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
                 jet_mask = np.concatenate((jet_mask,train_batch[2].cpu().numpy()),axis=0)
             if (i > 100): break 
         for i, val_batch in enumerate( val_loader ):
+            if (subset and i >= subset_batches ): break 
             if i==0:
                 data_val, target_val, jet_mask_val = val_batch
                 data_val = data_val.cpu().numpy()
@@ -227,7 +229,6 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device):
                 data_val = np.concatenate((data_val,val_batch[0].cpu().numpy()),axis=0)
                 target_val = np.concatenate((target_val,val_batch[1].cpu().numpy()),axis=0)   
                 jet_mask_val = np.concatenate((jet_mask_val,val_batch[2].cpu().numpy()),axis=0)          
-            if (subset and i > 10): break 
 
         train_loss = loss_fn(model( torch.from_numpy(data).float().to(device),torch.from_numpy(jet_mask).float().to(device)).reshape(len(data)),torch.from_numpy(target.reshape(-1)).float().to(device))
         test_loss = loss_fn(model( torch.from_numpy(data_val).float().to(device),torch.from_numpy(jet_mask_val).float().to(device)).reshape(len(data_val)),torch.from_numpy(target_val.reshape(-1)).float().to(device))
@@ -264,10 +265,10 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         print(f'epoch: {epoch+1}') 
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True)
         for i, train_batch in enumerate( train_loader ):
+            if (subset and i >= config['subset_batches'] ): break 
             data, target, jet_mask = train_batch
             report = train_step(model, data, target,jet_mask, opt, loss_fn )
-            if (subset and i > 10): break
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,subset,device) )    
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,subset,device,config['subset_batches']) )         
         val_loss = evals[epoch]['test_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss

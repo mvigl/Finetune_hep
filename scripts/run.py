@@ -182,6 +182,7 @@ def main():
     check_message = config['check-message']
     start_epoch = config['start-epoch']
     Fyaml = config['Fyaml']
+    subset_batches = 1 #not used if subset == false
 
     InitializeOutputDir()
     
@@ -197,8 +198,9 @@ def main():
     workspace = config['ws']
 
     if (config['subset']):
-        subset = ' --subset'
+        subset = ' --subset_batches '+config['subset_batches']+' --subset'
         print('using subset')
+        print('subset batches: ', config['subset_batches'])
     else:
         subset = ''  
     

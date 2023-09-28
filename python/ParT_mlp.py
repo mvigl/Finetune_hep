@@ -109,11 +109,11 @@ def train_step(model,opt,loss_fn,train_batch,device,scheduler,isXbb=False):
     scheduler.step()
     return {'loss': float(loss)}
 
-def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,isXbb=False):
+def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,isXbb=False,subset_batches=1):
     with torch.no_grad():
         model.eval()
-        for i, train_batch in enumerate( train_loader ): 
-            if (subset and i > 1): break    
+        for i, train_batch in enumerate( train_loader ):  
+            if (subset and i >= config['subset_batches'] ): break 
             if (i > 100): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
@@ -132,7 +132,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,i
         target_train = torch.tensor(target_train).float().to(device)
 
         for i, val_batch in enumerate( val_loader ):
-            if (subset and i > 1): break 
+            if (subset and i >= subset_batches): break 
             val_batch['X_jet']=val_batch['X_jet'].numpy()
             val_batch['X_pfo']=val_batch['X_pfo'].numpy()
             val_batch['X_label']=val_batch['X_label'].numpy()
@@ -200,12 +200,13 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
     opt = Lookahead(base_opt, k=6, alpha=0.5)
     scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],50,opt)
 
-    best_model_params_path = path
+    if subset: best_model_params_path = f'{path.replace(".pt", "batches_"+config['subset_batches']".pt")}
+    else: best_model_params_path = f'{path.replace(".pt", "")}
     for epoch in range (0,config['epochs']):
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True,num_workers=12)
         print('Epoch:', epoch+config["start_epoch"],'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
-            if (subset and i > 1): break
+            if (subset and i >= config['subset_batches'] ): break 
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['X_label']=train_batch['X_label'].numpy()
@@ -214,7 +215,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
             train_batch = build_features(train_batch)
             if not config['Xbb']: train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
             report = train_step(model, opt, loss_fn,train_batch ,device,scheduler,config['Xbb'])
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features,config['Xbb']) )    
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,subset,build_features,config['Xbb'],config['subset_batches']) )    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
