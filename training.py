@@ -68,8 +68,10 @@ for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):
         message = m + message
 
 device = df.get_device()
-idxmap = df.get_idxmap(filelist)
-idxmap_val = df.get_idxmap(filelist_val)
+idxmap = df.get_idxmap(filelist,subset_batches)
+subset_batches_val=1
+if subset: subset_batches_val = 0.1
+idxmap_val = df.get_idxmap(filelist_val,subset_batches_val)
 
 if modeltype in ['ParTevent','ParTXbb','Aux']:
     with open(config_path) as file:
@@ -190,8 +192,7 @@ if modeltype in ['ParTevent','ParTXbb']:
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['steps'],
             Xbb = Xbb,
-            start_epoch = hyper_params['start_epoch'],
-            subset_batches = hyper_params['subset_batches'] 
+            start_epoch = hyper_params['start_epoch']
         )
     )
 
@@ -211,8 +212,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
-            epochs = hyper_params['steps'],
-            subset_batches = hyper_params['subset_batches']
+            epochs = hyper_params['steps']
         )
     )
 

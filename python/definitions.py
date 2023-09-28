@@ -434,26 +434,26 @@ def build_features_and_labels_single_Xbb(Data, transform_features=True):
 
     return out
 
-def get_idxmap(filelist):
+def get_idxmap(filelist,subset=1):
     idxmap = {}
     offset = 0 
     with open(filelist) as f:
         for line in f:
             filename = line.strip()
             with h5py.File(filename, 'r') as Data:
-                idxmap[filename] = np.arange(offset,offset+len(Data['labels'][:]))
-                offset += len(Data['labels'][:])
+                idxmap[filename] = np.arange(offset,offset+int(len(Data['labels'][:])*subset))
+                offset += int(len(Data['labels'][:])*subset)
     return idxmap            
 
-def get_idxmap_Xbb(filelist):
+def get_idxmap_Xbb(filelist,subset=1):
     idxmap = {}
     offset = 0 
     with open(filelist) as f:
         for line in f:
             filename = line.strip()
             with h5py.File(filename, 'r') as Data:
-                idxmap[filename] = np.arange(offset,offset+len(Data['X_label_singlejet'][:]))
-                offset += len(Data['X_label_singlejet'][:])
+                idxmap[filename] = np.arange(offset,offset+int(len(Data['X_label_singlejet'][:]))*subset)
+                offset += int(len(Data['X_label_singlejet'][:]))*subset
     return idxmap              
          
 
