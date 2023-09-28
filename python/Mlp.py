@@ -207,7 +207,7 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device,subset_batches=
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ): 
-            if (subset and i >= subset_batches ): break 
+            #if (subset and i >= subset_batches ): break 
             if i==0:
                 data, target, jet_mask = train_batch
                 data = data.cpu().numpy()
@@ -219,7 +219,7 @@ def eval_fn(model, loss_fn,train_loader,val_loader,subset,device,subset_batches=
                 jet_mask = np.concatenate((jet_mask,train_batch[2].cpu().numpy()),axis=0)
             if (i > 100): break 
         for i, val_batch in enumerate( val_loader ):
-            if (subset and i >= subset_batches ): break 
+            #if (subset and i >= subset_batches ): break 
             if i==0:
                 data_val, target_val, jet_mask_val = val_batch
                 data_val = data_val.cpu().numpy()

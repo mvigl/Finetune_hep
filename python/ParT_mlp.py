@@ -113,7 +113,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,i
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ):  
-            if (subset and i >= config['subset_batches'] ): break 
+            #if (subset and i >= config['subset_batches'] ): break 
             if (i > 100): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
@@ -132,7 +132,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,subset,build_features,i
         target_train = torch.tensor(target_train).float().to(device)
 
         for i, val_batch in enumerate( val_loader ):
-            if (subset and i >= subset_batches): break 
+            #if (subset and i >= subset_batches): break 
             val_batch['X_jet']=val_batch['X_jet'].numpy()
             val_batch['X_pfo']=val_batch['X_pfo'].numpy()
             val_batch['X_label']=val_batch['X_label'].numpy()
