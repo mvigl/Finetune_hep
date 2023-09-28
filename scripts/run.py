@@ -198,7 +198,7 @@ def main():
     workspace = config['ws']
 
     if (config['subset']):
-        subset = ' --subset_batches '+config['subset_batches']+' --subset'
+        subset = ' --subset_batches '+str(config['subset_batches'])+' --subset'
         print('using subset')
         print('subset batches: ', config['subset_batches'])
     else:
