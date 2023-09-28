@@ -200,7 +200,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
     opt = Lookahead(base_opt, k=6, alpha=0.5)
     scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],50,opt)
 
-    if subset: best_model_params_path = f'{path.replace(".pt", "batches_"+str(config["subset_batches"])+".pt")}
+    if subset: best_model_params_path = path.replace(".pt", "batches_"+str(config["subset_batches"])+".pt")}
     else: best_model_params_path = f'{path.replace(".pt", "")}
     for epoch in range (0,config['epochs']):
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True,num_workers=12)
