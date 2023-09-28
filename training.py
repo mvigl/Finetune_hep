@@ -26,7 +26,7 @@ parser.add_argument('--Xbb', help='Xbb_scores_path',default='/home/iwsatlas1/mav
 parser.add_argument('--Xbb_val', help='Xbb_scores_path_val',default='/home/iwsatlas1/mavigl/Hbb/ParT/Trained_ParT/data/ParT_Xbb.npy')
 parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
 parser.add_argument('--subset',  action='store_true', help='subset', default=False)
-parser.add_argument('--subset_batches',  type=int, help='njets_mlp',default=1)
+parser.add_argument('--subset_batches',  type=float, help='njets_mlp',default=1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--alpha', type=float,  help='alpha',default=0.01)
