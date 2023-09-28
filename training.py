@@ -122,7 +122,7 @@ hyper_params = {
    "steps": epochs,
    "batch_size": batch_size,
    "alpha": alpha,
-   "start_epoch": start_epoch 
+   "start_epoch": start_epoch, 
    "subset_batches": subset_batches
 }
 
