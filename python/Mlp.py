@@ -88,8 +88,8 @@ class CustomDataset(Dataset):
         print(data[:,:,jVars.index('fj_doubleb')])    
         print(target)    
         if scaler_path !='no' : 
-            if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
             if (test == False): 
+                if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
                 self.x = torch.from_numpy(X_norm).float().to(device)
                 with open(scaler_path,'wb') as f:
@@ -264,6 +264,8 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         Dataset_val = CustomDataset_Latent_Hl(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])    
     else:    
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        num_samples = Dataset.length
+        if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(num_samples)+".pkl")
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
