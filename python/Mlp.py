@@ -46,25 +46,29 @@ def transform_without_zeros(data,jet_mask,scaler):
     return scaled_data.reshape(-1,5,6)
 
 class CustomDataset(Dataset):
-    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False,subset_batches=1):
         self.device = device
         self.x=[]
         self.y=[]
         self.jet_mask=[]
         i=0
+        Xbb_loader=[]
+        subset_offset=0
         with open(filelist) as f:
             for line in f:
                 filename = line.strip()
                 print('reading : ',filename)
                 with h5py.File(filename, 'r') as Data:
+                    subset_array.append(subset_offset+(np.arange(int(len(Data['X_jet'])*subset_batches))))
+                    subset_offset = int(len(Data['X_jet'])*subset_batches)
                     if i ==0:
-                        data = Data['X_jet'][:]
-                        target = Data['labels'][:] 
-                        jet_mask = Data['jet_mask'][:]
+                        data = Data['X_jet'][:subset_offset]
+                        target = Data['labels'][:subset_offset] 
+                        jet_mask = Data['jet_mask'][:subset_offset]
                     else:
-                        data = np.concatenate((data,Data['X_jet'][:]),axis=0)
-                        target = np.concatenate((target,Data['labels'][:]),axis=0)
-                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
+                        data = np.concatenate((data,Data['X_jet'][:subset_offset]),axis=0)
+                        target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
+                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
                     i+=1    
         self.scaler = StandardScaler() # this is super useful a scikit learn function
         data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
@@ -73,7 +77,8 @@ class CustomDataset(Dataset):
         if Xbb_scores_path != 'no': 
             print('loading Xbb scores from : ',Xbb_scores_path)
             with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-                data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+                if subset_batches == 1: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+                else: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][subset_array]
         if scaler_path !='no' : 
             if (test == False): 
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
@@ -98,7 +103,7 @@ class CustomDataset(Dataset):
         return self.x[idx], self.y[idx],self.jet_mask[idx]
              
 class CustomDataset_XbbOnly(Dataset):
-    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False,subset_batches=1):
         self.device = device
         self.x=[]
         self.y=[]
@@ -131,7 +136,7 @@ class CustomDataset_XbbOnly(Dataset):
         return self.x[idx], self.y[idx],self.jet_mask[idx]
 
 class CustomDataset_Latent(Dataset):
-    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False,subset_batches=1):
         self.device = device
         self.x=[]
         self.y=[]
@@ -154,7 +159,7 @@ class CustomDataset_Latent(Dataset):
         return self.x[idx], self.y[idx],self.jet_mask[idx]        
 
 class CustomDataset_Latent_Hl(Dataset):
-    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,test=False,subset_batches=1):
         self.device = device
         self.x=[]
         self.y=[]
@@ -242,17 +247,17 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     with TemporaryDirectory() as tempdir:
         best_model_params_path = path
     if modeltype == 'mlpXbb':
-        Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path)
-        Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
+        Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
     elif modeltype == 'mlpLatent':
-        Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path)
-        Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
+        Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])    
     elif modeltype == 'mlpLatentHl':
-        Dataset = CustomDataset_Latent_Hl(filelist,device,scaler_path,Xbb_scores_path)
-        Dataset_val = CustomDataset_Latent_Hl(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)    
+        Dataset = CustomDataset_Latent_Hl(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        Dataset_val = CustomDataset_Latent_Hl(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])    
     else:    
-        Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path)
-        Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True)
+        Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
     # num_samples = Dataset.length
     # num_train = int(0.80 * num_samples)
