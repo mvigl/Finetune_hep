@@ -54,13 +54,15 @@ class CustomDataset(Dataset):
         i=0
         subset_array=[]
         subset_offset=0
+        Tot_offset=0
         with open(filelist) as f:
             for line in f:
                 filename = line.strip()
                 print('reading : ',filename)
                 with h5py.File(filename, 'r') as Data:
-                    subset_array.append(subset_offset+(np.arange(int(len(Data['X_jet'])*subset_batches))))
+                    subset_array.append(Tot_offset+(np.arange(int(len(Data['X_jet'])*subset_batches))))
                     subset_offset = int(len(Data['X_jet'])*subset_batches)
+                    Tot_offset+=subset_offset
                     if i ==0:
                         data = Data['X_jet'][:subset_offset]
                         target = Data['labels'][:subset_offset] 
