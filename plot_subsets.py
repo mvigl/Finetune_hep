@@ -21,7 +21,7 @@ sizes = [1730,19332,195762,1959955,2704,29145,
 
 for i in range(len(sizes)):
 
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subset/test_{sizes[i]}.h5'
+    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/test_{sizes[i]}.h5'
     with h5py.File(filename, 'r') as Data:
         yi_ParTevent= Data['ParTevent_evt_score'][:].reshape(-1,1)
         target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1,1)
