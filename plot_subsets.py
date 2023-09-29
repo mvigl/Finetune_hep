@@ -4,7 +4,7 @@ from Finetune_hep.python import definitions as df
 import matplotlib.pyplot as plt
 import torch
 import yaml
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, accuracy_score, balanced_accuracy_score
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 import os
@@ -12,98 +12,35 @@ import sys
 import h5py
 
 
-fpr_mlpHlXbb=[]
-auc_mlpHlXbb=[]
-fpr_EtE=[]
-auc_EtE=[]
-fpr_EtE_scratch=[]
-auc_EtE_scratch=[]
+acc_ete=[]
+acc_mlpHlXbb=[]
 
-subsetBatches=(  0.0005, 0.0001, 0.0002, 0.0003, 0.0005, 0.001,
-                 0.002, 0.003, 0.005, 0.01, 0.02, 0.03, 0.05,
-                 0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9 )
+sizes = [1730,19332,195762,1959955,2704,29145,
+293774,2940006,4665,48752,489801,400263,5880252,
+6860297,777,7840400,8820463,9547,97752,979854]
 
-for i in range(len(subsetBatches)):
+for i in range(len(sizes)):
 
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpHlXbb/subset/test_mlpHlXbb_score_{subsetBatches[i]}_training_1.h5'
+    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subset/test_{sizes[i]}.h5'
     with h5py.File(filename, 'r') as Data:
-        yi_mlpHlXbb = Data['evt_score'][:].reshape(-1,1)
-        target_mlpHlXbb = Data['evt_label'][:].reshape(-1,1)
-    fpr_i, tpr_i, threshold_i = roc_curve(target_mlpHlXbb, yi_mlpHlXbb,drop_intermediate=False)
-    if i==0: 
-        tpr_common = tpr_i
-    fpr_mlpHlXbb.append(np.interp(tpr_common, tpr_i, fpr_i))
-    auc_mlpHlXbb.append(auc(fpr_i,tpr_i))
-
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpXbb/val_mlpXbb_score_training_{i+1}.h5'
-    with h5py.File(filename, 'r') as Data:
-        yi_baseline = Data['evt_score'][:].reshape(-1,1)
-        target_baseline = Data['evt_label'][:].reshape(-1,1)
-    fpr_i, tpr_i, threshold_i = roc_curve(target_baseline, yi_baseline,drop_intermediate=False)
-    fpr_baseline.append(np.interp(tpr_common, tpr_i, fpr_i))
-    auc_baseline.append(auc(fpr_i,tpr_i))
-
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpLatent/val_mlpLatent_score_training_{i+1}.h5'
-    with h5py.File(filename, 'r') as Data:
-        yi_mlpLatent = Data['evt_score'][:].reshape(-1,1)
-        target_mlpLatent = Data['evt_label'][:].reshape(-1,1)
-    fpr_i, tpr_i, threshold_i = roc_curve(target_mlpLatent, yi_mlpLatent,drop_intermediate=False)
-    fpr_mlpLatent.append(np.interp(tpr_common, tpr_i, fpr_i))
-    auc_mlpLatent.append(auc(fpr_i,tpr_i))
-
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpLatentHl/val_mlpLatentHl_score_training_{i+1}.h5'
-    with h5py.File(filename, 'r') as Data:
-        yi_mlpLatentHl = Data['evt_score'][:].reshape(-1,1)
-        target_mlpLatentHl = Data['evt_label'][:].reshape(-1,1)
-    fpr_i, tpr_i, threshold_i = roc_curve(target_mlpLatentHl, yi_mlpLatentHl,drop_intermediate=False)
-    fpr_mlpLatentHl.append(np.interp(tpr_common, tpr_i, fpr_i))
-    auc_mlpLatentHl.append(auc(fpr_i,tpr_i))
-    
-
-fpr_mlpLatent_mean = fpr_mlpLatent[0]
-auc_mlpLatent_mean = auc_mlpLatent[0]
-
-fpr_mlpLatentHl_mean = fpr_mlpLatentHl[0]
-auc_mlpLatentHl_mean = auc_mlpLatentHl[0]
-
-fpr_mlpHlXbb_mean = fpr_mlpHlXbb[0]
-auc_mlpHlXbb_mean = auc_mlpHlXbb[0]
-
-fpr_baseline_mean = fpr_baseline[0]
-auc_baseline_mean = auc_baseline[0]
-
-b=np.linspace(0,1,101)
-fig, ax = plt.subplots()
+        yi_ParTevent= Data['ParTevent_evt_score'][:].reshape(-1,1)
+        target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1,1)
+        yi_mlpHlXbb = Data['mlpHlXbb_evt_score'][:].reshape(-1,1)
+        target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1,1)
+    acc_ete.append(balanced_accuracy_score(target_ParTevent,yi_ParTevent))  
+    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,yi_mlpHlXbb))   
 
 # plot ROC curve
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(tpr_common, 1/fpr_mlpLatentHl_mean, lw=0.8, label=f'Internal+Feats',color='b')
-
-ax.plot(tpr_common, 1/fpr_mlpLatent_mean, lw=0.8, label=f'Internal',color='r')
-
-ax.plot(tpr_common, 1/fpr_mlpHlXbb_mean, lw=0.8, label=f'Xbb+Feats',color='c')
-
-ax.plot(tpr_common, 1/fpr_baseline_mean, lw=0.8, label=f'Xbb',color='g')
-
-ax.set_ylabel(r'Background rejection')
-ax.semilogy()
-ax.set_ylim(1,100000)
-ax.set_xlim(0.6,1)
+ax.plot(sizes, acc_ete, lw=0.8, label=f'Internal+Feats',color='b')
+ax.plot(sizes, acc_mlpHlXbb, lw=0.8, label=f'Internal',color='r')
+ax.set_ylabel(r'balanced_accuracy_score')
+ax.semilogx()
+ax.set_ylim(0,1)
 ax.grid(True)
-ax.legend(loc='lower left')
-plt.setp(ax.get_xticklabels(), visible=False)
-ax = fig.add_subplot(4,1,4)
-ax.plot(tpr_common,(1/fpr_mlpLatentHl_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='b')
-ax.plot(tpr_common,(1/fpr_mlpLatent_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='r')
-ax.plot(tpr_common,(1/fpr_mlpHlXbb_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='c')
-ax.plot(tpr_common,(1/fpr_baseline_mean)/(1/fpr_mlpHlXbb_mean),lw=0.8,color='g')
-         
-ax.set_ylim(0,2)
-ax.set_xlim(0.6,1)
-ax.set_ylabel(r'Ratio')
-ax.grid(True)
+ax.legend(loc='upper left')
 ax.set_xlabel(r'Signal efficiency',loc="right")
-fig.savefig(f"../../Finetune_hep/plots/Final_ROC_val.pdf")
+fig.savefig(f"../../Finetune_hep/plots/Subsets.pdf")
 
