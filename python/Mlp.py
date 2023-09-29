@@ -267,7 +267,7 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
 
     num_samples = Dataset.length
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
-    best_model_params_path = path
+    else : best_model_params_path = path
     # num_samples = Dataset.length
     # num_train = int(0.80 * num_samples)
     # num_val = num_samples - num_train
