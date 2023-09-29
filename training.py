@@ -125,7 +125,7 @@ hyper_params = {
    "batch_size": batch_size,
    "alpha": alpha,
    "start_epoch": start_epoch, 
-   "subset_batches": subset_batches
+   "subset_batches": subset_batches,
    "subset_batches_val": subset_batches_val
 }
 
@@ -213,8 +213,8 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         config = dict(    
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
-            epochs = hyper_params['steps']
-            subset_batches = hyper_params['subset_batches']
+            epochs = hyper_params['steps'],
+            subset_batches = hyper_params['subset_batches'],
             subset_batches_val = hyper_params['subset_batches_val']
         )
     )
