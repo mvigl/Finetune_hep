@@ -62,7 +62,7 @@ class CustomDataset(Dataset):
                 with h5py.File(filename, 'r') as Data:
                     subset_array.append(Tot_offset+(np.arange(int(len(Data['X_jet'])*subset_batches))))
                     subset_offset = int(len(Data['X_jet'])*subset_batches)
-                    Tot_offset+=subset_offset
+                    Tot_offset+=int(len(Data['X_jet']))
                     if i ==0:
                         data = Data['X_jet'][:subset_offset]
                         target = Data['labels'][:subset_offset] 
@@ -85,7 +85,7 @@ class CustomDataset(Dataset):
             with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
                 if subset_batches == 1: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
                 else: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][subset_array]
-        print(ldata[:,:,jVars.index('fj_doubleb')])    
+        print(data[:,:,jVars.index('fj_doubleb')])    
         print(target)    
         if scaler_path !='no' : 
             if (test == False): 
