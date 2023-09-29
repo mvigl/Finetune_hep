@@ -89,6 +89,7 @@ class CustomDataset(Dataset):
         print(target)    
         if scaler_path !='no' : 
             if (test == False): 
+                if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
                 self.x = torch.from_numpy(X_norm).float().to(device)
                 with open(scaler_path,'wb') as f:
@@ -252,7 +253,6 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(device))
     evals = []
     best_val_loss = float('inf')
-    if subset: scaler_path = scaler_path.replace(".pkl", "subset_"+str(num_samples)+".pkl")
     if modeltype == 'mlpXbb':
         Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
         Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
@@ -266,7 +266,6 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
-    num_samples = Dataset.length
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
     else : best_model_params_path = path
     # num_samples = Dataset.length
