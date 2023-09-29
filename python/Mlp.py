@@ -269,11 +269,7 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
-    else : best_model_params_path = path
-    # num_samples = Dataset.length
-    # num_train = int(0.80 * num_samples)
-    # num_val = num_samples - num_train
-    # train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])    
+    else : best_model_params_path = path   
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True)
     for epoch in range (0,config['epochs']):
         print(f'epoch: {epoch+1}') 
