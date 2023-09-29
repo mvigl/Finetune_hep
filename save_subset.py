@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--size', type=int, help='size',default=100)
 args = parser.parse_args()
 size = args.size
-subset = True
+subset = False
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 config_path = '../../Finetune_hep/config/myJetClass_full.yaml'
 Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb/test_ParTXbb_score_training_1.h5'
