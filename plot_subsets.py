@@ -18,7 +18,7 @@ acc_mlpHlXbb=[]
 sizes = [1730,19332,195762,1959955,2704,29145,
 293774,2940006,4665,48752,489801,400263,5880252,
 6860297,777,7840400,8820463,9547,97752,979854]
-
+thr = 0.5
 for i in range(len(sizes)):
 
     filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/test_{sizes[i]}.h5'
@@ -27,6 +27,8 @@ for i in range(len(sizes)):
         target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1)
         yi_mlpHlXbb = Data['mlpHlXbb_evt_score'][:].reshape(-1)
         target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1)
+        yi_ParTevent = (yi_ParTevent >= thr).astype(int)
+        yi_mlpHlXbb = (yi_mlpHlXbb >= thr).astype(int)
     print(yi_ParTevent)   
     print(target_ParTevent)    
     print(np.max(yi_ParTevent)) 
