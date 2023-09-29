@@ -29,6 +29,8 @@ for i in range(len(sizes)):
         target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1)
     print(yi_ParTevent)   
     print(target_ParTevent)    
+    print(np.max(yi_ParTevent)) 
+    print(np.min(yi_ParTevent)) 
     acc_ete.append(balanced_accuracy_score(target_ParTevent,yi_ParTevent))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,yi_mlpHlXbb))   
 
