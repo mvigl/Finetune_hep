@@ -23,10 +23,12 @@ for i in range(len(sizes)):
 
     filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/test_{sizes[i]}.h5'
     with h5py.File(filename, 'r') as Data:
-        yi_ParTevent= Data['ParTevent_evt_score'][:].reshape(-1,1)
-        target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1,1)
-        yi_mlpHlXbb = Data['mlpHlXbb_evt_score'][:].reshape(-1,1)
-        target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1,1)
+        yi_ParTevent= Data['ParTevent_evt_score'][:].reshape(-1)
+        target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1)
+        yi_mlpHlXbb = Data['mlpHlXbb_evt_score'][:].reshape(-1)
+        target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1)
+    print(yi_ParTevent)   
+    print(target_ParTevent)    
     acc_ete.append(balanced_accuracy_score(target_ParTevent,yi_ParTevent))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,yi_mlpHlXbb))   
 
