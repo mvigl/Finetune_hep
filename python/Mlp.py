@@ -88,8 +88,8 @@ class CustomDataset(Dataset):
         print(data[:,:,jVars.index('fj_doubleb')])    
         print(target)    
         if scaler_path !='no' : 
+            if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
             if (test == False): 
-                if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
                 self.x = torch.from_numpy(X_norm).float().to(device)
                 with open(scaler_path,'wb') as f:
