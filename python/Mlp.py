@@ -74,7 +74,7 @@ class CustomDataset(Dataset):
         data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
         data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
         data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
-        subset_array = subset_array.flatten()
+        subset_array = np.concatenate(subset_array,axis=None)
         if Xbb_scores_path != 'no': 
             print('loading Xbb scores from : ',Xbb_scores_path)
             with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
