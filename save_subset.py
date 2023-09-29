@@ -13,6 +13,7 @@ import argparse
 
 
 print('start')
+parser = argparse.ArgumentParser(description='')
 parser.add_argument('--size', type=int, help='size',default=100)
 args = parser.parse_args()
 size = args.size
