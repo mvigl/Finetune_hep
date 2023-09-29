@@ -77,11 +77,16 @@ class CustomDataset(Dataset):
         data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
         data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
         subset_array = np.concatenate(subset_array,axis=None)
+        print(subset_array)
+        print(len(subset_array))
+        print(len(data))
         if Xbb_scores_path != 'no': 
             print('loading Xbb scores from : ',Xbb_scores_path)
             with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
                 if subset_batches == 1: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
                 else: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][subset_array]
+        print(ldata[:,:,jVars.index('fj_doubleb')])    
+        print(target)    
         if scaler_path !='no' : 
             if (test == False): 
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
