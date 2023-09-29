@@ -52,7 +52,7 @@ class CustomDataset(Dataset):
         self.y=[]
         self.jet_mask=[]
         i=0
-        Xbb_loader=[]
+        subset_array=[]
         subset_offset=0
         with open(filelist) as f:
             for line in f:
