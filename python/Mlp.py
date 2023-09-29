@@ -252,8 +252,6 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(device))
     evals = []
     best_val_loss = float('inf')
-    with TemporaryDirectory() as tempdir:
-        best_model_params_path = path
     if modeltype == 'mlpXbb':
         Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
         Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
@@ -267,6 +265,9 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
+    num_samples = Dataset.length
+    if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
+    best_model_params_path = path
     # num_samples = Dataset.length
     # num_train = int(0.80 * num_samples)
     # num_val = num_samples - num_train
@@ -283,7 +284,6 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
-            
         experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, epoch=(epoch))
     model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
