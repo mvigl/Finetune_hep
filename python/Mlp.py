@@ -265,7 +265,7 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     else:    
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
         num_samples = Dataset.length
-        if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(num_samples)+".pkl")
+        if config['subset_batches'] !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(num_samples)+".pkl")
         Dataset_val = CustomDataset(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
