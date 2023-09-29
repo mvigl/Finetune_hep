@@ -26,7 +26,12 @@ jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]  
 device = df.get_device()
 
-models_ParTevent = ['ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1_epoch_9_Val_loss_1.2764809131622314.pt',
+sizes = [1730,19332,195762,1959955,2704,29145,
+293774,2940006,4665,48752,489801.,400263,5880252,
+6860297,777,7840400,8820463,9547,97752,979854
+]
+
+models_ParTevent = [
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_1730.pt',
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_19332.pt',
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_195762.pt',
@@ -46,11 +51,12 @@ models_ParTevent = ['ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1_e
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_8820463.pt',
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_9547.pt',
 'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_97752.pt',
-'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_979854.pt']
+'ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_979854.pt'
+]
 
 yParT = []
 targetParT = []
-for model_name in models_ParTevent:
+for model_name, in models_ParTevent:
     model_path = '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_1/models/' + model_name
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
