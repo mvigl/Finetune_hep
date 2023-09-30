@@ -36,6 +36,7 @@ sizes = [
 9547,
 97752,
 979854]
+sizes = umpy.sort(sizes)
 thr = 0.5
 for i in range(len(sizes)):
     print(sizes[i])
