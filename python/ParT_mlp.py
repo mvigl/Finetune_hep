@@ -304,6 +304,8 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
                             data['X_jet'] = Data['X_jet'][batches[j]]
                             data['X_pfo'] = Data['X_pfo'][batches[j]]
                             data['labels'] = Data['labels'][batches[j]]
+                            data['jet_mask'] = Data['jet_mask'][batches[j]]
+                            data['pf_mask'][:,:,:,:2] += np.abs(data['jet_mask'][:,:,np.newaxis]-1)
                             data = build_features(data) 
                         if (i ==0 and j==0):
                             preds = infer_val(model,data,device,Xbb).detach().cpu().numpy()
