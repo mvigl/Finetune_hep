@@ -14,13 +14,13 @@ import h5py
 
 acc_ete=[]
 acc_mlpHlXbb=[]
-
+filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 sizes = [1730,19332,195762,1959955,2704,29145,
 293774,2940006,4665,48752,489801,400263,5880252,
 6860297,777,7840400,8820463,9547,97752,979854]
 thr = 0.5
 for i in range(len(sizes)):
-    with open(filelist) as f:
+    with open(filelist_test) as f:
         for line in f:
             filename = line.strip()
             print('reading : ',filename)
@@ -29,13 +29,14 @@ for i in range(len(sizes)):
             filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{sizes[i]}/{filename}.h5'
             with h5py.File(filename, 'r') as Data:
                 yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
+                thresholded_array = (bumpy_array >= 0.5).astype(int)
                 target_ParTevent.append(Data['evt_label'][:].reshape(-1))
             filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlHlXbb/{sizes[i]}/{filename}.h5'
             with h5py.File(filename, 'r') as Data:    
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
                 target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
-    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),yi_ParTevent.reshape(-1)))  
-    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),yi_mlpHlXbb.reshape(-1)))   
+    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),(yi_ParTevent.reshape(-1)>= 0.5).astype(int)))  
+    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),(yi_mlpHlXbb.reshape(-1)>= 0.5).astype(int)))   
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
