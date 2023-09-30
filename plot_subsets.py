@@ -18,7 +18,7 @@ yi_ParTevent=[]
 target_ParTevent=[]
 yi_mlpHlXbb=[]
 target_mlpHlXbb=[]
-filelist_test = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/test_list_check.txt'
+filelist_test = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/subset_config/test_list_check.txt'
 sizes = [1730,19332,195762,1959955,2704,29145,
 293774,2940006,4665,48752,489801,400263,5880252,
 6860297,777,7840400,8820463,9547,97752,979854]
