@@ -33,7 +33,6 @@ for i in range(len(sizes)):
             filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{sizes[i]}/{filename}'
             with h5py.File(filename, 'r') as Data:
                 yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
-                thresholded_array = (bumpy_array >= 0.5).astype(int)
                 target_ParTevent.append(Data['evt_label'][:].reshape(-1))
             filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlHlXbb/{sizes[i]}/{filename}'
             with h5py.File(filename, 'r') as Data:    
