@@ -44,8 +44,8 @@ for i in range(len(sizes)):
     yi_ParTevent = [item for sublist in yi_ParTevent for item in sublist] 
     target_mlpHlXbb = [item for sublist in target_mlpHlXbb for item in sublist] 
     yi_mlpHlXbb = [item for sublist in yi_mlpHlXbb for item in sublist]            
-    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),(yi_ParTevent>= 0.5).astype(int)))  
-    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),(yi_mlpHlXbb>= 0.5).astype(int)))   
+    acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= 0.5).astype(int)))  
+    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= 0.5).astype(int)))   
 
 acc_ete = [item for sublist in acc_ete for item in sublist] 
 acc_mlpHlXbb = [item for sublist in acc_mlpHlXbb for item in sublist] 
