@@ -38,6 +38,7 @@ sizes = [
 979854]
 thr = 0.5
 for i in range(len(sizes)):
+    print(sizes[i])
     yi_ParTevent=[]
     target_ParTevent=[]
     yi_mlpHlXbb=[]
@@ -45,22 +46,24 @@ for i in range(len(sizes)):
     with open(filelist_test) as f:
         for line in f:
             filename = line.strip()
-            print('reading : ',filename)
+            #print('reading : ',filename)
             data_index = filename.index("Data")
             sample_name = filename[data_index:]
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{sizes[i]}/{sample_name}'
-            print('loading : ',name)
+            #print('loading : ',name)
             with h5py.File(name, 'r') as Data:
                 yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
                 target_ParTevent.append(Data['evt_label'][:].reshape(-1))
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{sizes[i]}/{sample_name}'
-            print('loading : ',name)
+            #print('loading : ',name)
             with h5py.File(name, 'r') as Data:    
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
                 target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
+    target_ParTevent[-1] = 1
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
     target_mlpHlXbb = np.concatenate(target_mlpHlXbb).reshape(-1)
+    target_mlpHlXbb[-1] = 1
     yi_mlpHlXbb = np.concatenate(yi_mlpHlXbb).reshape(-1)    
     acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= 0.5).astype(int)))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= 0.5).astype(int)))   
