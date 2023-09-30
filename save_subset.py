@@ -66,7 +66,7 @@ Xbb = False
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/{name}/ParTevent'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/{name}/ParTevent/'
 
 yParT,targetParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
 
