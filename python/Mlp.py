@@ -304,6 +304,45 @@ def get_preds(model,loader,subset,device):
     return yi,target
 
 
+def get_Mlp_preds(model,filelist,device,subset,out_dir):
+
+    with torch.no_grad():
+        model.eval()
+        print('opening file..')
+        with open(filelist) as f:
+            print('..done')
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                data_index = filename.index("Data")
+                out_dir_i = out_dir + filename[data_index:]
+                with h5py.File(filename, 'r') as Data:
+                    data = Data['X_jet'][:]
+                    target = Data['labels'][:] 
+                    jet_mask = Data['jet_mask'][:] 
+                scaler = StandardScaler() # this is super useful a scikit learn function
+                data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
+                data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
+                data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
+                if Xbb_scores_path != 'no': 
+                    print('loading Xbb scores from : ',Xbb_scores_path)
+                    with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
+                        data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+                if scaler_path !='no' : 
+                    with open(scaler_path,'rb') as f:
+                        scaler = pickle.load(f)
+                    X_norm = transform_without_zeros(data,jet_mask,self.scaler)
+                    x = torch.from_numpy(X_norm).float().to(device)
+                else:
+                    x = torch.from_numpy(data).float().to(device)    
+                jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+                preds = model(x,jet_mask).detach().cpu().numpy()
+                Data = h5py.File(out_dir_i, 'w')
+                Data.create_dataset('evt_score', data=preds.reshape(-1))
+                Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                Data.close()     
+    return 0
+
 
 
 import torch
