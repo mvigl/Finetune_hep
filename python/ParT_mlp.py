@@ -271,7 +271,7 @@ def get_latent_preds(model,data_loader,device,subset,build_features,isXbb=False)
 
     return preds,target    
 
-def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
+def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False):
 
     with torch.no_grad():
         model.eval()
@@ -282,6 +282,8 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
             for line in f:
                 filename = line.strip()
                 print('reading : ',filename)
+                data_index = filename.index("Data")
+                out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
                     if len(Data['X_label']) > 3000: size = 512
                     else : 
@@ -307,13 +309,17 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
                             data['jet_mask'] = Data['jet_mask'][batches[j]]
                             data = build_features(data) 
                             data['pf_mask'][:,:,:,:2] += np.abs(data['jet_mask'][:,:,np.newaxis]-1)
-                        if (i ==0 and j==0):
+                        if (j==0):
                             preds = infer_val(model,data,device,Xbb).detach().cpu().numpy()
                             target = data['label']
                         else:
                             preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
                             target = np.concatenate((target,data['label']),axis=0)
                 #if (subset and i>5): break
-    return preds,target
+                    Data = h5py.File(out_dir_i, 'w')
+                    Data.create_dataset('evt_score', data=preds.reshape(-1))
+                    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                    Data.close()     
+    return 0
 
 
