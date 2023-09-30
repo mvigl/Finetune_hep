@@ -20,28 +20,27 @@ sizes = [1730,19332,195762,1959955,2704,29145,
 6860297,777,7840400,8820463,9547,97752,979854]
 thr = 0.5
 for i in range(len(sizes)):
-
-    filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/test_{sizes[i]}.h5'
-    with h5py.File(filename, 'r') as Data:
-        yi_ParTevent= Data['ParTevent_evt_score'][:].reshape(-1)
-        target_ParTevent = Data['ParTevent_evt_label'][:].reshape(-1)
-        yi_mlpHlXbb = Data['mlpHlXbb_evt_score'][:].reshape(-1)
-        target_mlpHlXbb = Data['mlpHlXbb_evt_label'][:].reshape(-1)
-        yi_ParTevent = (yi_ParTevent >= thr).astype(int)
-        yi_mlpHlXbb = (yi_mlpHlXbb >= thr).astype(int)
-    print(yi_ParTevent)   
-    print(target_ParTevent)    
-    print(np.max(yi_ParTevent)) 
-    print(np.min(yi_ParTevent)) 
-    acc_ete.append(balanced_accuracy_score(target_ParTevent,yi_ParTevent))  
-    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,yi_mlpHlXbb))   
-
-# plot ROC curve
+    with open(filelist) as f:
+        for line in f:
+            filename = line.strip()
+            print('reading : ',filename)
+            data_index = filename.index("Data")
+            filename = filename[data_index:]
+            filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{sizes[i]}/{filename}.h5'
+            with h5py.File(filename, 'r') as Data:
+                yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
+                target_ParTevent.append(Data['evt_label'][:].reshape(-1))
+            filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlHlXbb/{sizes[i]}/{filename}.h5'
+            with h5py.File(filename, 'r') as Data:    
+                yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
+                target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
+    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),yi_ParTevent.reshape(-1)))  
+    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),yi_mlpHlXbb.reshape(-1)))   
 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(sizes, acc_ete, lw=0.8, label=f'Internal+Feats',color='b')
-ax.plot(sizes, acc_mlpHlXbb, lw=0.8, label=f'Internal',color='r')
+ax.plot(sizes, acc_ete.reshape(-1), lw=0.8, label=f'E2e',color='b')
+ax.plot(sizes, acc_mlpHlXbb.reshape(-1), lw=0.8, label=f'mlpHlXbb',color='r')
 ax.set_ylabel(r'balanced_accuracy_score')
 ax.semilogx()
 ax.set_ylim(0,1)
