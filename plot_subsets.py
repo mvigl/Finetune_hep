@@ -14,16 +14,16 @@ import h5py
 
 acc_ete=[]
 acc_mlpHlXbb=[]
-yi_ParTevent=[]
-target_ParTevent=[]
-yi_mlpHlXbb=[]
-target_mlpHlXbb=[]
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/subset_config/test_list_check.txt'
 sizes = [1730,19332,195762,1959955,2704,29145,
 293774,2940006,4665,48752,489801,400263,5880252,
 6860297,777,7840400,8820463,9547,97752,979854]
 thr = 0.5
 for i in range(len(sizes)):
+    yi_ParTevent=[]
+    target_ParTevent=[]
+    yi_mlpHlXbb=[]
+    target_mlpHlXbb=[]
     with open(filelist_test) as f:
         for line in f:
             filename = line.strip()
@@ -40,9 +40,15 @@ for i in range(len(sizes)):
             with h5py.File(name, 'r') as Data:    
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
                 target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
+    target_ParTevent = [item for sublist in target_ParTevent for item in sublist] 
+    yi_ParTevent = [item for sublist in yi_ParTevent for item in sublist] 
+    target_mlpHlXbb = [item for sublist in target_mlpHlXbb for item in sublist] 
+    yi_mlpHlXbb = [item for sublist in yi_mlpHlXbb for item in sublist]            
     acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),(yi_ParTevent.reshape(-1)>= 0.5).astype(int)))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),(yi_mlpHlXbb.reshape(-1)>= 0.5).astype(int)))   
 
+acc_ete = [item for sublist in acc_ete for item in sublist] 
+acc_mlpHlXbb = [item for sublist in acc_mlpHlXbb for item in sublist] 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
 ax.plot(sizes, acc_ete.reshape(-1), lw=0.8, label=f'E2e',color='b')
