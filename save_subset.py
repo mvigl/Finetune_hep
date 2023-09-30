@@ -66,14 +66,7 @@ Xbb = False
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-idxmap = df.get_idxmap(filelist_test)
-integer_file_map = df.create_integer_file_map(idxmap)
-Dataset = df.CustomDataset(idxmap,integer_file_map)
-
-train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
-build_features = df.build_features_and_labels
-yParT,targetParT = ParT_mlp.get_Xbb_preds(model,train_loader,device,subset,build_features)
-
+yParT,targetParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset)
 
 #for size in sizes:
 model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
