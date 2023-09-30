@@ -35,7 +35,7 @@ for i in range(len(sizes)):
             with h5py.File(name, 'r') as Data:
                 yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
                 target_ParTevent.append(Data['evt_label'][:].reshape(-1))
-            name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlHlXbb/{sizes[i]}/{sample_name}'
+            name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{sizes[i]}/{sample_name}'
             print('loading : ',name)
             with h5py.File(name, 'r') as Data:    
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
