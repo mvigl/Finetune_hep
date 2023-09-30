@@ -311,5 +311,7 @@ def get_Xbb_preds(model,filelist,device,subset,Xbb=False):
                         else:
                             preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
                             target = np.concatenate((target,data['label']),axis=0)
-                if (subset and i>5): break
+                #if (subset and i>5): break
     return preds,target
+
+

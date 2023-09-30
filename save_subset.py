@@ -29,11 +29,29 @@ jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]  
 device = df.get_device()
 
-#sizes = [1730,19332,195762,1959955,2704,29145,
-#293774,2940006,4665,48752,489801,400263,5880252,
-#6860297,777,7840400,8820463,9547,97752,979854]
+sizes = [
+1730,
+19332,
+195762,
+1959955,
+2704,
+29145,
+293774,
+2940006,
+4665,
+48752,
+489801,
+4900263,
+5880252,
+6860297,
+777,
+7840400,
+8820463,
+9547,
+97752,
+979854]
 
-#(1730 19332 195762 1959955 2704 29145 293774 2940006 4665 48752 489801 400263 5880252 6860297 777 7840400 8820463 9547 97752 979854)
+#(1730 19332 195762 1959955 2704 29145 293774 2940006 4665 48752 489801 4900263 5880252 6860297 777 7840400 8820463 9547 97752 979854)
 
 name = str(size)
 
@@ -54,7 +72,7 @@ Dataset = df.CustomDataset(idxmap,integer_file_map)
 
 train_loader = DataLoader(Dataset, batch_size=512, shuffle=True,num_workers=6)
 build_features = df.build_features_and_labels
-yParT,targetParT = ParT_mlp.get_preds(model,train_loader,device,subset,build_features)
+yParT,targetParT = ParT_mlp.get_Xbb_preds(model,train_loader,device,subset,build_features)
 
 
 #for size in sizes:
