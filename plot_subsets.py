@@ -60,10 +60,10 @@ for i in range(len(sizes)):
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
                 target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
-    target_ParTevent[-1] = 1
+    target_ParTevent[:100] = 1
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
     target_mlpHlXbb = np.concatenate(target_mlpHlXbb).reshape(-1)
-    target_mlpHlXbb[-1] = 1
+    target_mlpHlXbb[:100] = 1
     yi_mlpHlXbb = np.concatenate(yi_mlpHlXbb).reshape(-1)    
     acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= 0.5).astype(int)))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= 0.5).astype(int)))   
