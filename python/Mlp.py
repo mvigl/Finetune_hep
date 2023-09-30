@@ -304,7 +304,7 @@ def get_preds(model,loader,subset,device):
     return yi,target
 
 
-def get_Mlp_preds(model,filelist,device,subset,out_dir):
+def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
 
     with torch.no_grad():
         model.eval()
