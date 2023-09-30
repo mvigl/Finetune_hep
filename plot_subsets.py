@@ -14,7 +14,7 @@ import h5py
 
 acc_ete=[]
 acc_mlpHlXbb=[]
-filelist_test = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/subset_config/test_list_check.txt'
+filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 sizes = [
 1730,
 19332,
@@ -82,7 +82,6 @@ ax.plot(sizes, acc_ete, lw=0.8, label=f'E2e',color='b',marker='o')
 ax.plot(sizes, acc_mlpHlXbb, lw=0.8, label=f'mlpHlXbb',color='r',marker='o')
 ax.set_ylabel(r'balanced_accuracy_score')
 ax.semilogx()
-ax.semilogy()
 ax.set_ylim(0.6,1)
 ax.grid(True)
 ax.legend(loc='upper left')
