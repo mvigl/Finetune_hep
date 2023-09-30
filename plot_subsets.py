@@ -63,11 +63,16 @@ for i in range(len(sizes)):
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
     target_ParTevent[:100] = 1
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
+    fpr, tpr, thresholds = metrics.roc_curve(target_mlpHlXbb,yi_mlpHlXbb)
+    optimal_threshold = thresholds[np.argmax(tpr - fpr)]
+    acc_ete.append(accuracy_score(target_ParTevent,(yi_ParTevent>= optimal_threshold).astype(int)))  
+
     target_mlpHlXbb = np.concatenate(target_mlpHlXbb).reshape(-1)
     target_mlpHlXbb[:100] = 1
     yi_mlpHlXbb = np.concatenate(yi_mlpHlXbb).reshape(-1)    
-    acc_ete.append(accuracy_score(target_ParTevent,(yi_ParTevent>= 0.5).astype(int)))  
-    acc_mlpHlXbb.append(accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= 0.5).astype(int)))   
+    fpr, tpr, thresholds = metrics.roc_curve(target_mlpHlXbb,yi_mlpHlXbb)
+    optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
+    acc_mlpHlXbb.append(accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= optimal_threshold).astype(int)))   
 
 acc_ete = np.array(acc_ete).reshape(-1)
 acc_mlpHlXbb = np.array(acc_mlpHlXbb).reshape(-1)
