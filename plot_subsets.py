@@ -44,15 +44,15 @@ for i in range(len(sizes)):
     yi_ParTevent = [item for sublist in yi_ParTevent for item in sublist] 
     target_mlpHlXbb = [item for sublist in target_mlpHlXbb for item in sublist] 
     yi_mlpHlXbb = [item for sublist in yi_mlpHlXbb for item in sublist]            
-    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),(yi_ParTevent.reshape(-1)>= 0.5).astype(int)))  
-    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),(yi_mlpHlXbb.reshape(-1)>= 0.5).astype(int)))   
+    acc_ete.append(balanced_accuracy_score(target_ParTevent.reshape(-1),(yi_ParTevent>= 0.5).astype(int)))  
+    acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb.reshape(-1),(yi_mlpHlXbb>= 0.5).astype(int)))   
 
 acc_ete = [item for sublist in acc_ete for item in sublist] 
 acc_mlpHlXbb = [item for sublist in acc_mlpHlXbb for item in sublist] 
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
-ax.plot(sizes, acc_ete.reshape(-1), lw=0.8, label=f'E2e',color='b')
-ax.plot(sizes, acc_mlpHlXbb.reshape(-1), lw=0.8, label=f'mlpHlXbb',color='r')
+ax.plot(sizes, acc_ete, lw=0.8, label=f'E2e',color='b')
+ax.plot(sizes, acc_mlpHlXbb, lw=0.8, label=f'mlpHlXbb',color='r')
 ax.set_ylabel(r'balanced_accuracy_score')
 ax.semilogx()
 ax.set_ylim(0,1)
