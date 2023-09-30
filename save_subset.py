@@ -51,8 +51,7 @@ sizes = [
 9547,
 97752,
 979854]
-
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/{name}/ParTevent/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{name}/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
 #(1730 19332 195762 1959955 2704 29145 293774 2940006 4665 48752 489801 4900263 5880252 6860297 777 7840400 8820463 9547 97752 979854)
