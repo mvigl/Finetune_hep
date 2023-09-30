@@ -305,7 +305,7 @@ def get_preds(model,loader,subset,device):
 
 
 def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
-
+    Tot_offset = 0
     with torch.no_grad():
         model.eval()
         print('opening file..')
@@ -317,6 +317,7 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
                 data_index = filename.index("Data")
                 out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
+                    subset_offset = int(len(Data['X_jet']))
                     data = Data['X_jet'][:]
                     target = Data['labels'][:] 
                     jet_mask = Data['jet_mask'][:] 
@@ -327,7 +328,7 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
                 if Xbb_scores_path != 'no': 
                     print('loading Xbb scores from : ',Xbb_scores_path)
                     with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-                        data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
+                        data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][Tot_offset:(Tot_offset+subset_offset)]
                 if scaler_path !='no' : 
                     with open(scaler_path,'rb') as f:
                         scaler = pickle.load(f)
@@ -340,7 +341,8 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
                 Data = h5py.File(out_dir_i, 'w')
                 Data.create_dataset('evt_score', data=preds.reshape(-1))
                 Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-                Data.close()     
+                Data.close()   
+                Tot_offset+=subset_offset
     return 0
 
 
