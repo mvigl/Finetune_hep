@@ -68,8 +68,8 @@ for i in range(len(sizes)):
     acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= 0.5).astype(int)))  
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= 0.5).astype(int)))   
 
-acc_ete = np.concatenate(acc_ete).reshape(-1)
-acc_mlpHlXbb = np.concatenate(acc_mlpHlXbb).reshape(-1)
+acc_ete = np.array(acc_ete).reshape(-1)
+acc_mlpHlXbb = np.array(acc_mlpHlXbb).reshape(-1)
 fig = plt.figure()
 ax = fig.add_subplot(4,1,(1,3))
 ax.plot(sizes, acc_ete, lw=0.8, label=f'E2e',color='b')
