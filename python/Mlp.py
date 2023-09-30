@@ -332,7 +332,7 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
                 if scaler_path !='no' : 
                     with open(scaler_path,'rb') as f:
                         scaler = pickle.load(f)
-                    X_norm = transform_without_zeros(data,jet_mask,self.scaler)
+                    X_norm = transform_without_zeros(data,jet_mask,scaler)
                     x = torch.from_numpy(X_norm).float().to(device)
                 else:
                     x = torch.from_numpy(data).float().to(device)    
