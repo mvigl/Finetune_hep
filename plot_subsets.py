@@ -14,6 +14,10 @@ import h5py
 
 acc_ete=[]
 acc_mlpHlXbb=[]
+yi_ParTevent=[]
+target_ParTevent=[]
+yi_mlpHlXbb=[]
+target_mlpHlXbb=[]
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 sizes = [1730,19332,195762,1959955,2704,29145,
 293774,2940006,4665,48752,489801,400263,5880252,
