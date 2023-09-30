@@ -63,7 +63,7 @@ for i in range(len(sizes)):
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
     target_ParTevent[:100] = 1
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
-    fpr, tpr, thresholds = roc_curve(target_mlpHlXbb,yi_mlpHlXbb)
+    fpr, tpr, thresholds = roc_curve(target_ParTevent,yi_ParTevent)
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]
     acc_ete.append(accuracy_score(target_ParTevent,(yi_ParTevent>= optimal_threshold).astype(int)))  
 
