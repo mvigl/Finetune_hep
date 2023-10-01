@@ -113,7 +113,7 @@ sizes_latent = [
 out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{name}/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_scratch_subset_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
+model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_scratch_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
 with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
