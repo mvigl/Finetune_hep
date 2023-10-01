@@ -453,7 +453,7 @@ def get_idxmap_Xbb(filelist,subset=1):
             filename = line.strip()
             with h5py.File(filename, 'r') as Data:
                 idxmap[filename] = np.arange(offset,offset+int(len(Data['X_label_singlejet'][:]))*subset)
-                offset += int(len(Data['X_label_singlejet'][:]))*subset
+                offset += int(len(Data['X_label_singlejet'][:])*subset)
     return idxmap              
          
 
