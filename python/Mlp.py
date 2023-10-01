@@ -319,7 +319,7 @@ def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,sca
             x = torch.from_numpy(data).float().to(device)    
             jet_mask = torch.from_numpy(jet_mask).float().to(device)    
             preds = model(x,jet_mask).detach().cpu().numpy()
-            Data = h5py.File(out_dir+'/test_mlpLatent.h5', 'w')
+            Data = h5py.File(out_dir+'test_mlpLatent.h5', 'w')
             Data.create_dataset('evt_score', data=preds.reshape(-1))
             Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
             Data.close()   
