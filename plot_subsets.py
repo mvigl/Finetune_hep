@@ -37,8 +37,7 @@ sizes = [
 8820463,
 9547,
 97752,
-979854,
-1089208]
+979854]
 
 sizes_latent = [
 1960151,
@@ -64,7 +63,7 @@ sizes_latent = [
 
 sizes_latent = np.sort(sizes_latent)
 sizes = np.sort(sizes)
-for i in range(len(sizes)-1):
+for i in range(len(sizes)):
     print(sizes[i])
     yi_ParTevent=[]
     target_ParTevent=[]
@@ -124,23 +123,6 @@ for i in range(len(sizes)-1):
     fpr, tpr, thresholds = roc_curve(target_mlpHlXbb,yi_mlpHlXbb)
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= optimal_threshold).astype(int)))   
-
-
-filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent/test_ParTevent_score_training_1.h5'
-with h5py.File(filename, 'r') as Data:
-    yi_ParTevent_full = Data['evt_score'][:].reshape(-1,1)
-    target_ParTevent_full = Data['evt_label'][:].reshape(-1,1)
-fpr_ParTevent_full, tpr_ParTevent_full, thresholds_ParTevent_full = roc_curve(target_ParTevent_full, yi_ParTevent_full,drop_intermediate=False)
-optimal_threshold = thresholds_ParTevent_full[np.argmax(tpr_ParTevent_full - fpr_ParTevent_full)]    
-acc_ete_full = (balanced_accuracy_score(target_ParTevent_full,(yi_ParTevent_full>= optimal_threshold).astype(int)))   
-
-filename = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/mlpHlXbb/test_mlpHlXbb_score_training_1.h5'
-with h5py.File(filename, 'r') as Data:
-    yi_mlpHlXbb_full = Data['evt_score'][:].reshape(-1,1)
-    target_mlpHlXbb_full = Data['evt_label'][:].reshape(-1,1)
-fpr_mlpHlXbb_full, tpr_mlpHlXbb_full, thresholds_mlpHlXbb_full = roc_curve(target_mlpHlXbb_full, yi_mlpHlXbb_full,drop_intermediate=False)
-optimal_threshold = thresholds_mlpHlXbb_full[np.argmax(tpr_mlpHlXbb_full - fpr_mlpHlXbb_full)]    
-acc_mlpHlXbb_full = (balanced_accuracy_score(target_mlpHlXbb_full,(yi_mlpHlXbb_full>= optimal_threshold).astype(int))) 
 
 acc_ete = np.array(acc_ete).reshape(-1)
 acc_mlpHlXbb = np.array(acc_mlpHlXbb).reshape(-1)
