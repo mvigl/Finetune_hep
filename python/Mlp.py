@@ -153,9 +153,10 @@ class CustomDataset_Latent(Dataset):
         i=0
         print('loading Xbb scores from : ',Xbb_scores_path)
         with h5py.File(Xbb_scores_path, 'r') as latent:
-            target = latent['evt_label'][:]
-            jet_mask = latent['jet_mask'][:]
-            data = np.sum(np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis],axis=1)
+            subset_offset = int(len(latent['evt_label'][:])*subset_batches)
+            target = latent['evt_label'][:subset_offset]
+            jet_mask = latent['jet_mask'][:subset_offset]
+            data = np.sum(np.nan_to_num(latent['evt_score'][:subset_offset])*jet_mask[:,:,np.newaxis],axis=1)
         self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
