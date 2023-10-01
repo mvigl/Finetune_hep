@@ -127,7 +127,7 @@ sizes_latent = [
 ####==============
 size_latent = sizes_latent[sizes.index(size)]
 name = str(size_latent) 
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
+model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size_latent}.pt'
 scaler_path = 'no'
 
 model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,128,nlayer_mlp))
