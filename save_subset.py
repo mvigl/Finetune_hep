@@ -138,7 +138,7 @@ model.eval()
 out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{name}/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
-ymlpHlXbb = Mlp.get_Mlp_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
+ymlpHlXbb = Mlp.get_MlpLatent_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
 
 ###==============
 
