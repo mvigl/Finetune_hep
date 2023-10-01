@@ -54,26 +54,43 @@ sizes = [
 
 #(1730 19332 195762 1959955 2704 29145 293774 2940006 4665 48752 489801 4900263 5880252 6860297 777 7840400 8820463 9547 97752 979854)
 
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
-scaler_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pkl'
+#model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
+#scaler_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pkl'
+#
+#model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
+#                                rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
+#model.to(device)
+#model.load_state_dict(torch.load(model_path))
+#model.eval()
+#
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{name}/'
+#if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+#
+#ymlpHlXbb = Mlp.get_Mlp_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
+#
+###==============
+#
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{name}/'
+#if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+#
+#model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
+#with open(config_path) as file:
+#    data_config = yaml.load(file, Loader=yaml.FullLoader)  
+#
+#model = ParT_mlp.get_model(data_config,for_inference=True)  
+#model.to(device)
+#Xbb = False
+#model.load_state_dict(torch.load(model_path))
+#model.eval()
+#
+#yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
+#
+###==============
 
-model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,nodes_mlp,nlayer_mlp,binary=False),
-                                rho=Mlp.make_mlp(nodes_mlp,nodes_mlp*2,nlayer_mlp,for_inference=True))
-model.to(device)
-model.load_state_dict(torch.load(model_path))
-model.eval()
-
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{name}/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{name}/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
-ymlpHlXbb = Mlp.get_Mlp_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
-
-#for size in sizes:
-
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{name}/'
-if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
-
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
+model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_scratch_subset_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
 with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
@@ -85,8 +102,7 @@ model.eval()
 
 yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
 
-#for size in sizes:
-
+###==============
 
 
 

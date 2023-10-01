@@ -255,12 +255,15 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
     best_val_loss = float('inf')
     if modeltype == 'mlpXbb':
         Dataset = CustomDataset_XbbOnly(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        num_samples = Dataset.length
         Dataset_val = CustomDataset_XbbOnly(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])
     elif modeltype == 'mlpLatent':
         Dataset = CustomDataset_Latent(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        num_samples = Dataset.length
         Dataset_val = CustomDataset_Latent(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])    
     elif modeltype == 'mlpLatentHl':
         Dataset = CustomDataset_Latent_Hl(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
+        num_samples = Dataset.length
         Dataset_val = CustomDataset_Latent_Hl(filelist_val,device,scaler_path,Xbb_scores_path_val,test=True,subset_batches=config['subset_batches_val'])    
     else:    
         Dataset = CustomDataset(filelist,device,scaler_path,Xbb_scores_path,subset_batches=config['subset_batches'])
