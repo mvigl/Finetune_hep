@@ -506,10 +506,10 @@ class Xbb_CustomDataset(Dataset):
         offset = np.min(self.idxmap[file_path])
         data = {}
         with h5py.File(file_path, 'r') as f:
-            data['X_jet'] = f['X_jet_singlejet'][index-offset]
-            data['X_pfo'] = f['X_pfo_singlejet'][index-offset]
-            data['X_label'] = f['X_label_singlejet'][index-offset]
-            data['labels'] = f['X_label_singlejet'][index-offset]
+            data['X_jet'] = f['X_jet_singlejet'][int(index-offset)]
+            data['X_pfo'] = f['X_pfo_singlejet'][int(index-offset)]
+            data['X_label'] = f['X_label_singlejet'][int(index-offset)]
+            data['labels'] = f['X_label_singlejet'][int(index-offset)]
         return data
     
     def __len__(self):
