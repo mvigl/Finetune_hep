@@ -84,8 +84,8 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
         Xbb = False
 
     elif modeltype == 'ParTXbb':
-        idxmap = df.get_idxmap_Xbb(filelist)
-        idxmap_val = df.get_idxmap_Xbb(filelist_val)
+        idxmap = df.get_idxmap_Xbb(filelist,subset_batches)
+        idxmap_val = df.get_idxmap_Xbb(filelist_val,subset_batches_val)
         model = ParT_Xbb.get_model(data_config,for_inference=False) 
         model.to(device)
         Xbb = True

@@ -109,24 +109,24 @@ sizes_latent = [
 #
 ###==============
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{name}/'
-if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{name}/'
+#if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+#
+#model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_scratch_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
+#with open(config_path) as file:
+#    data_config = yaml.load(file, Loader=yaml.FullLoader)  
+#
+#model = ParT_mlp.get_model(data_config,for_inference=True)  
+#model.to(device)
+#Xbb = False
+#model.load_state_dict(torch.load(model_path))
+#model.eval()
+#
+#yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
+#
+####==============
 
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_scratch_1/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
-with open(config_path) as file:
-    data_config = yaml.load(file, Loader=yaml.FullLoader)  
-
-model = ParT_mlp.get_model(data_config,for_inference=True)  
-model.to(device)
-Xbb = False
-model.load_state_dict(torch.load(model_path))
-model.eval()
-
-yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
-
-###==============
-
-name = str(sizes_latent[sizes[sizes.index(size)]]) 
+name = str(sizes_latent[sizes.index(size)]) 
 model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
 scaler_path = 'no'
 
