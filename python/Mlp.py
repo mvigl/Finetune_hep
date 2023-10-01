@@ -308,7 +308,7 @@ def get_preds(model,loader,subset,device):
     return yi,target
 
 
-def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
+def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
     with torch.no_grad():
         model.eval()
         print('loading Xbb Latent scores from : ',Xbb_scores_path)
@@ -319,14 +319,14 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
             x = torch.from_numpy(data).float().to(device)    
             jet_mask = torch.from_numpy(jet_mask).float().to(device)    
             preds = model(x,jet_mask).detach().cpu().numpy()
-            Data = h5py.File(out_dir, 'w')
+            Data = h5py.File(out_dir+'/test_mlpLatent.h5', 'w')
             Data.create_dataset('evt_score', data=preds.reshape(-1))
             Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
             Data.close()   
     return 0
 
 
-def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
+def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
     Tot_offset = 0
     with torch.no_grad():
         model.eval()

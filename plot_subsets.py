@@ -38,6 +38,31 @@ sizes = [
 9547,
 97752,
 979854]
+
+sizes_latent = [
+1960151,
+196015,
+19601,
+2940227,
+294022,
+29402,
+2940,
+4900379,
+490037,
+49003,
+4900,
+5880454,
+6860530,
+7840606,
+8820682,
+9800758,
+980075,
+98007,
+9800,
+980,
+]
+
+sizes_latent = np.sort(sizes_latent)
 sizes = np.sort(sizes)
 thr = 0.5
 for i in range(len(sizes)):
@@ -69,6 +94,11 @@ for i in range(len(sizes)):
             with h5py.File(name, 'r') as Data:    
                 yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
                 target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
+        name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{sizes_latent[i]}/{sample_name}'
+        #print('loading : ',name)
+        with h5py.File(name, 'r') as Data:    
+            yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
+            target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))    
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
     fpr, tpr, thresholds = roc_curve(target_ParTevent,yi_ParTevent)
