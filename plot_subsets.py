@@ -14,6 +14,8 @@ import h5py
 
 acc_ete=[]
 acc_mlpHlXbb=[]
+acc_ete_scratch=[]
+acc_mlpLatent=[]
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 sizes = [
 1730,
@@ -42,6 +44,8 @@ for i in range(len(sizes)):
     print(sizes[i])
     yi_ParTevent=[]
     target_ParTevent=[]
+    yi_ParTevent_scratch=[]
+    target_ParTevent_scratch=[]
     yi_mlpHlXbb=[]
     target_mlpHlXbb=[]
     with open(filelist_test) as f:
@@ -55,6 +59,11 @@ for i in range(len(sizes)):
             with h5py.File(name, 'r') as Data:
                 yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
                 target_ParTevent.append(Data['evt_label'][:].reshape(-1))
+            name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{sizes[i]}/{sample_name}'
+            #print('loading : ',name)
+            with h5py.File(name, 'r') as Data:
+                yi_ParTevent_scratch.append(Data['evt_score'][:].reshape(-1))
+                target_ParTevent_scratch.append(Data['evt_label'][:].reshape(-1))        
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{sizes[i]}/{sample_name}'
             #print('loading : ',name)
             with h5py.File(name, 'r') as Data:    
@@ -64,7 +73,13 @@ for i in range(len(sizes)):
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
     fpr, tpr, thresholds = roc_curve(target_ParTevent,yi_ParTevent)
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]
-    acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= optimal_threshold).astype(int)))  
+    acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= optimal_threshold).astype(int)))
+
+    target_ParTevent_scratch = np.concatenate(target_ParTevent_scratch).reshape(-1)
+    yi_ParTevent_scratch = np.concatenate(yi_ParTevent_scratch).reshape(-1)
+    fpr, tpr, thresholds = roc_curve(target_ParTevent_scratch,yi_ParTevent_scratch)
+    optimal_threshold = thresholds[np.argmax(tpr - fpr)]
+    acc_ete_scratch.append(balanced_accuracy_score(target_ParTevent_scratch,(yi_ParTevent_scratch>= optimal_threshold).astype(int)))  
 
     target_mlpHlXbb = np.concatenate(target_mlpHlXbb).reshape(-1)
     yi_mlpHlXbb = np.concatenate(yi_mlpHlXbb).reshape(-1)    

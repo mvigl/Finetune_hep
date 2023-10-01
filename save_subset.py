@@ -52,6 +52,29 @@ sizes = [
 97752,
 979854]
 
+sizes_latent = [
+1960151,
+196015,
+19601,
+2940227,
+294022,
+29402,
+2940,
+4900379,
+490037,
+49003,
+4900,
+5880454,
+6860530,
+7840606,
+8820682,
+9800758,
+980075,
+98007,
+9800,
+980,
+]
+
 #(1730 19332 195762 1959955 2704 29145 293774 2940006 4665 48752 489801 4900263 5880252 6860297 777 7840400 8820463 9547 97752 979854)
 
 #model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_1/models/mlpHlXbb_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
@@ -101,6 +124,22 @@ model.load_state_dict(torch.load(model_path))
 model.eval()
 
 yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
+
+###==============
+
+name = str(sizes_latent[sizes[sizes.index(size)]]) 
+model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
+scaler_path = 'no'
+
+model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,128,nlayer_mlp))
+model.to(device)
+model.load_state_dict(torch.load(model_path))
+model.eval()
+
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{name}/'
+if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+
+ymlpHlXbb = Mlp.get_Mlp_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
 
 ###==============
 
