@@ -323,3 +323,56 @@ def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False):
     return 0
 
 
+def get_Latent_preds(model,filelist,device,subset,out_dir,Xbb=False):
+
+    with torch.no_grad():
+        model.eval()
+        print('opening file..')
+        with open(filelist) as f:
+            i=-1
+            print('..done')
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                data_index = filename.index("Data")
+                out_dir_i = out_dir + filename[data_index:]
+                with h5py.File(filename, 'r') as Data:
+                    if len(Data['X_label']) > 3000: size = 512
+                    else : 
+                        size = len(Data['X_label'])/10
+                        if len(Data['X_label']) == 0: 
+                            print('no data')
+                            continue
+                    i+=1    
+                    batches = np.array_split(np.arange(len(Data['X_label'])),int(len(Data['X_label'])/size))
+                    for j in range(len(batches)):
+                        data = {}
+                        if Xbb:
+                            build_features = df.build_features_and_labels_Xbb
+                            data['X_jet'] = Data['X_jet'][batches[j]].reshape(-1,6)
+                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,100, 15)
+                            data['X_label'] = Data['X_label'][batches[j]].reshape(-1,6)
+                            data = build_features(data)
+                        else:   
+                            build_features = df.build_features_and_labels
+                            data['X_jet'] = Data['X_jet'][batches[j]]
+                            data['X_pfo'] = Data['X_pfo'][batches[j]]
+                            data['labels'] = Data['labels'][batches[j]]
+                            data['jet_mask'] = Data['jet_mask'][batches[j]]
+                            data = build_features(data) 
+                            data['pf_mask'][:,:,:,:2] += np.abs(data['jet_mask'][:,:,np.newaxis]-1)
+                        if (j==0):
+                            preds = infer_val(model,data,device,Xbb).detach().cpu().numpy()
+                            target = data['label']
+                            jet_mask = data['jet_mask']
+                        else:
+                            preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
+                            target = np.concatenate((target,data['label']),axis=0)
+                            jet_mask = np.concatenate((jet_mask,data['jet_mask']),axis=0)
+                #if (subset and i>5): break
+                    Data = h5py.File(out_dir_i, 'w')
+                    Data.create_dataset('evt_score', data=preds.reshape(-1,5,128))
+                    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                    Data.create_dataset('jet_mask', data=jet_mask.reshape(-1,5),dtype='i4')
+                    Data.close()     
+    return 0

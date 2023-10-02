@@ -125,22 +125,38 @@ sizes_latent = [
 #yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
 #
 ####==============
-size_latent = sizes_latent[sizes.index(size)]
-name = str(size_latent) 
-model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size_latent}.pt'
-scaler_path = 'no'
+#size_latent = sizes_latent[sizes.index(size)]
+#name = str(size_latent) 
+#model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size_latent}.pt'
+#scaler_path = 'no'
+#
+#model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp))
+#model.to(device)
+#model.load_state_dict(torch.load(model_path))
+#model.eval()
+#
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{name}/'
+#if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+#
+#ymlpHlXbb = Mlp.get_MlpLatent_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
 
-model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp))
+###==============
+
+
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTLatent/test/'
+if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
+
+model_path = '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_1_epoch_5_Val_loss_0.14304769039154053.pt'
+with open(config_path) as file:
+    data_config = yaml.load(file, Loader=yaml.FullLoader)  
+
+model = ParT_latent.get_model(data_config,for_inference=True)  
 model.to(device)
+Xbb = False
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{name}/'
-if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
-
-ymlpHlXbb = Mlp.get_MlpLatent_preds(model,filelist_test,device,subset,out_dir,Xbb_scores_path,scaler_path)
-
-###==============
+yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
 
 
 
