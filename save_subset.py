@@ -146,7 +146,7 @@ sizes_latent = [
 out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTLatent/test/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
-model_path = '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_1_epoch_5_Val_loss_0.14304769039154053.pt'
+model_path = '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1_epoch_1_Val_loss_0.08823145180940628.pt'
 with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
