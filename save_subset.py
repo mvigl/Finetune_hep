@@ -156,7 +156,7 @@ Xbb = False
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
-yParT = ParT_mlp.get_Xbb_preds(model,filelist_test,device,subset,out_dir)
+yParT = ParT_mlp.get_Latent_preds(model,filelist_test,device,subset,out_dir)
 
 
 

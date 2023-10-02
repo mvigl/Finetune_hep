@@ -362,11 +362,13 @@ def get_Latent_preds(model,filelist,device,subset,out_dir,Xbb=False):
                             data = build_features(data) 
                             data['pf_mask'][:,:,:,:2] += np.abs(data['jet_mask'][:,:,np.newaxis]-1)
                         if (j==0):
-                            preds = infer_val(model,data,device,Xbb).detach().cpu().numpy()
+                            out = infer_val(model,batch,device,isXbb)
+                            preds = out[0].detach().cpu().numpy()
                             target = data['label']
                             jet_mask = data['jet_mask']
                         else:
-                            preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
+                            out = infer_val(model,batch,device,isXbb)
+                            preds = np.concatenate((preds,out[0].detach().cpu().numpy()),axis=0)
                             target = np.concatenate((target,data['label']),axis=0)
                             jet_mask = np.concatenate((jet_mask,data['jet_mask']),axis=0)
                 #if (subset and i>5): break
