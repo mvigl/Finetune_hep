@@ -332,7 +332,6 @@ def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,sca
                 Data.close()   
     return 0
 
-
 def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
     Tot_offset = 0
     with torch.no_grad():
