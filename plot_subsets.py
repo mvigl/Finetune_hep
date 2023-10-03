@@ -98,8 +98,8 @@ for i in range(len(sizes)):
             if i < len(sizes_latent):
                 name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{sizes_latent[i]}/{sample_name}'
                 with h5py.File(name, 'r') as Data:
-                    yi_ParTevent_scratch.append(Data['evt_score'][:].reshape(-1))
-                    target_ParTevent_scratch.append(Data['evt_label'][:].reshape(-1))          
+                    yi_mlpLatent.append(Data['evt_score'][:].reshape(-1))
+                    target_mlpLatent.append(Data['evt_label'][:].reshape(-1))          
 
     target_mlpLatent = np.concatenate(target_mlpLatent).reshape(-1)
     yi_mlpLatent = np.concatenate(yi_mlpLatent).reshape(-1)    
