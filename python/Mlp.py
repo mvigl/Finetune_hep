@@ -312,17 +312,24 @@ def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,sca
     with torch.no_grad():
         model.eval()
         print('loading Xbb Latent scores from : ',Xbb_scores_path)
-        with h5py.File(Xbb_scores_path, 'r') as latent:
-            target = latent['evt_label'][:]
-            jet_mask = latent['jet_mask'][:]
-            data = np.sum(np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis],axis=1)
-            x = torch.from_numpy(data).float().to(device)    
-            jet_mask = torch.from_numpy(jet_mask).float().to(device)    
-            preds = model(x,jet_mask).detach().cpu().numpy()
-            Data = h5py.File(out_dir+'test_mlpLatent.h5', 'w')
-            Data.create_dataset('evt_score', data=preds.reshape(-1))
-            Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-            Data.close()   
+        with open(Xbb_scores_path) as f:
+            print('..done')
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                data_index = filename.index("Data")
+                out_dir_i = out_dir + filename[data_index:]
+                with h5py.File(filename, 'r') as latent:
+                    target = latent['evt_label'][:]
+                    jet_mask = latent['jet_mask'][:]
+                    data = np.sum(np.nan_to_num(latent['evt_score'][:])*jet_mask[:,:,np.newaxis],axis=1)
+                    x = torch.from_numpy(data).float().to(device)    
+                    jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+                    preds = model(x,jet_mask).detach().cpu().numpy()
+                Data = h5py.File(out_dir_i, 'w')
+                Data.create_dataset('evt_score', data=preds.reshape(-1))
+                Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                Data.close()   
     return 0
 
 

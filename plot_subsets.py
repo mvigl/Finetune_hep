@@ -140,6 +140,6 @@ ax.semilogx()
 ax.set_ylim(np.min(acc_ete_scratch)-0.001,1)
 ax.grid(True)
 ax.legend(loc='upper left')
-ax.set_xlabel(r'Signal efficiency',loc="right")
+ax.set_xlabel(r'# Training Data',loc="right")
 fig.savefig(f"../../Finetune_hep/plots/Subsets.pdf")
 
