@@ -136,7 +136,7 @@ with open(config_path) as file:
 model = ParT_latent.get_model(data_config,for_inference=True)  
 model.to(device)
 Xbb = False
-model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no') 
+model = df.load_weights_ParT_mlp(model,'ParTLatent',mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no') 
 model.eval()
 
 yParT = ParT_mlp.get_Latent_preds(model,filelist_test,device,subset,out_dir)
