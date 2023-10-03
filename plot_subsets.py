@@ -100,12 +100,12 @@ for i in range(len(sizes)):
                 with h5py.File(name, 'r') as Data:
                     yi_mlpLatent.append(Data['evt_score'][:].reshape(-1))
                     target_mlpLatent.append(Data['evt_label'][:].reshape(-1))          
-
-    target_mlpLatent = np.concatenate(target_mlpLatent).reshape(-1)
-    yi_mlpLatent = np.concatenate(yi_mlpLatent).reshape(-1)    
-    fpr, tpr, thresholds = roc_curve(target_mlpLatent,yi_mlpLatent)
-    optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
-    acc_mlpLatent.append(balanced_accuracy_score(target_mlpLatent,(yi_mlpLatent>= optimal_threshold).astype(int)))   
+    if i < len(sizes_latent):
+        target_mlpLatent = np.concatenate(target_mlpLatent).reshape(-1)
+        yi_mlpLatent = np.concatenate(yi_mlpLatent).reshape(-1)    
+        fpr, tpr, thresholds = roc_curve(target_mlpLatent,yi_mlpLatent)
+        optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
+        acc_mlpLatent.append(balanced_accuracy_score(target_mlpLatent,(yi_mlpLatent>= optimal_threshold).astype(int)))   
 
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
