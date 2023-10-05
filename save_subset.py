@@ -148,7 +148,7 @@ name = str(size_latent)
 model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_1/models/mlpLatent_hl3_nodes24_nj5_lr0.001_bs512_training_1subset_{size_latent}.pt'
 scaler_path = 'no'
 
-model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp))
+model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp,for_inference=True))
 model.to(device)
 model.load_state_dict(torch.load(model_path))
 model.eval()
