@@ -182,7 +182,7 @@ for i in range(len(sizes)):
     fpr, tpr, thresholds = roc_curve(target_mlpHlXbb,yi_mlpHlXbb)
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= optimal_threshold).astype(int)))   
-    auc_mlpHlXbbappend(auc(fpr,tpr))
+    auc_mlpHlXbb.append(auc(fpr,tpr))
     thresholds_mlpHlXbb.append(thresholds)
     fpr_mlpHlXbb.append(fpr)
     tpr_mlpHlXbb.append(tpr)
