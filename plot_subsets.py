@@ -183,11 +183,6 @@ optimal_threshold_mlpHlXbb = np.array(optimal_threshold_mlpHlXbb).reshape(-1)
 optimal_threshold_ete_scratch = np.array(optimal_threshold_ete_scratch).reshape(-1)
 optimal_threshold_mlpLatent = np.array(optimal_threshold_mlpLatent).reshape(-1)
 
-thresholds_ete = np.array(thresholds_ete)
-thresholds_mlpHlXbb = np.array(thresholds_mlpHlXbb)
-thresholds_ete_scratch = np.array(thresholds_ete_scratch)
-thresholds_mlpLatent = np.array(thresholds_mlpLatent)
-
 fpr_ete = np.array(fpr_ete)
 fpr_mlpHlXbb = np.array(fpr_mlpHlXbb)
 fpr_ete_scratch = np.array(fpr_ete_scratch)
@@ -203,7 +198,6 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5'
         model_group.create_dataset('acc', data=acc_ete)
         model_group.create_dataset('auc', data=auc_ete)
         model_group.create_dataset('optimal_threshold', data=optimal_threshold_ete)
-        model_group.create_dataset('thresholds', data=thresholds_ete)
         model_group.create_dataset('fpr', data=fpr_ete)
         model_group.create_dataset('tpr', data=tpr_ete)
 
@@ -211,7 +205,6 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5'
         model_group.create_dataset('acc', data=acc_ete_scratch)
         model_group.create_dataset('auc', data=auc_ete_scratch)
         model_group.create_dataset('optimal_threshold', data=optimal_threshold_ete_scratch)
-        model_group.create_dataset('thresholds', data=thresholds_ete_scratch)
         model_group.create_dataset('fpr', data=fpr_ete_scratch)
         model_group.create_dataset('tpr', data=tpr_ete_scratch)
 
@@ -219,7 +212,6 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5'
         model_group.create_dataset('acc', data=acc_mlpLatent)
         model_group.create_dataset('auc', data=auc_mlpLatent)
         model_group.create_dataset('optimal_threshold', data=optimal_threshold_mlpLatent)
-        model_group.create_dataset('thresholds', data=thresholds_mlpLatent)
         model_group.create_dataset('fpr', data=fpr_mlpLatent)
         model_group.create_dataset('tpr', data=tpr_mlpLatent)
 
@@ -227,7 +219,6 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5'
         model_group.create_dataset('acc', data=acc_mlpHlXbb)
         model_group.create_dataset('auc', data=auc_mlpHlXbb)
         model_group.create_dataset('optimal_threshold', data=optimal_threshold_mlpHlXbb)
-        model_group.create_dataset('thresholds', data=thresholds_mlpHlXbb)
         model_group.create_dataset('fpr', data=fpr_mlpHlXbb)
         model_group.create_dataset('tpr', data=tpr_mlpHlXbb)
 
