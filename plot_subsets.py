@@ -193,7 +193,7 @@ tpr_mlpHlXbb = np.array(tpr_mlpHlXbb)
 tpr_ete_scratch = np.array(tpr_ete_scratch)
 tpr_mlpLatent = np.array(tpr_mlpLatent)
 
-with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5', 'w') as Data:
+with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/subsets.h5', 'w') as data:
         model_group = data.create_group('ete')
         model_group.create_dataset('acc', data=acc_ete)
         model_group.create_dataset('auc', data=auc_ete)
