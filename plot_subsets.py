@@ -40,7 +40,7 @@ auc_mlpLatent=[]
 fpr_mlpLatent=[]
 tpr_mlpLatent=[]
 thresholds_mlpLatent=[]
-optimal_threshold_ete_mlpLatent=[]
+optimal_threshold_mlpLatent=[]
 
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 sizes = [
