@@ -11,35 +11,28 @@ import os
 import sys
 import h5py
 
-debug=True
-debug_samples = 100
-
 acc_ete=[]
 auc_ete=[]
 fpr_ete=[]
 tpr_ete=[]
-thresholds_ete=[]
 optimal_threshold_ete=[]
 
 acc_mlpHlXbb=[]
 auc_mlpHlXbb=[]
 fpr_mlpHlXbb=[]
 tpr_mlpHlXbb=[]
-thresholds_mlpHlXbb=[]
 optimal_threshold_mlpHlXbb=[]
 
 acc_ete_scratch=[]
 auc_ete_scratch=[]
 fpr_ete_scratch=[]
 tpr_ete_scratch=[]
-thresholds_ete_scratch=[]
 optimal_threshold_ete_scratch=[]
 
 acc_mlpLatent=[]
 auc_mlpLatent=[]
 fpr_mlpLatent=[]
 tpr_mlpLatent=[]
-thresholds_mlpLatent=[]
 optimal_threshold_mlpLatent=[]
 
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
@@ -108,51 +101,38 @@ for i in range(len(sizes)):
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent/{sizes[i]}/{sample_name}'
 
             with h5py.File(name, 'r') as Data:
-                if debug:
-                    yi_ParTevent.append(Data['evt_score'][:debug_samples].reshape(-1))
-                    target_ParTevent.append(Data['evt_label'][:debug_samples].reshape(-1)) 
-                else:    
-                    yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
-                    target_ParTevent.append(Data['evt_label'][:].reshape(-1))      
+                yi_ParTevent.append(Data['evt_score'][:].reshape(-1))
+                target_ParTevent.append(Data['evt_label'][:].reshape(-1))      
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpHlXbb/{sizes[i]}/{sample_name}'
 
             with h5py.File(name, 'r') as Data:    
-                if debug:
-                    yi_mlpHlXbb.append(Data['evt_score'][:debug_samples].reshape(-1))
-                    target_mlpHlXbb.append(Data['evt_label'][:debug_samples].reshape(-1)) 
-                else:
-                    yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
-                    target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
+                yi_mlpHlXbb.append(Data['evt_score'][:].reshape(-1))
+                target_mlpHlXbb.append(Data['evt_label'][:].reshape(-1))
 
             name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/ParTevent_scratch/{sizes[i]}/{sample_name}'
             with h5py.File(name, 'r') as Data:
-                if debug:
-                    yi_ParTevent_scratch.append(Data['evt_score'][:debug_samples].reshape(-1))
-                    target_ParTevent_scratch.append(Data['evt_label'][:debug_samples].reshape(-1)) 
-                else:
-                    yi_ParTevent_scratch.append(Data['evt_score'][:].reshape(-1))
-                    target_ParTevent_scratch.append(Data['evt_label'][:].reshape(-1))
+                yi_ParTevent_scratch.append(Data['evt_score'][:].reshape(-1))
+                target_ParTevent_scratch.append(Data['evt_label'][:].reshape(-1))
 
             if i < len(sizes_latent):
                 name = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/subsets/mlpLatent/{sizes_latent[i]}/{sample_name}'
                 with h5py.File(name, 'r') as Data:
-                    if debug:
-                        yi_mlpLatent.append(Data['evt_score'][:debug_samples].reshape(-1))
-                        target_mlpLatent.append(Data['evt_label'][:debug_samples].reshape(-1)) 
-                    else:
-                        yi_mlpLatent.append(Data['evt_score'][:].reshape(-1))
-                        target_mlpLatent.append(Data['evt_label'][:].reshape(-1))       
+                    yi_mlpLatent.append(Data['evt_score'][:].reshape(-1))
+                    target_mlpLatent.append(Data['evt_label'][:].reshape(-1))       
 
     target_ParTevent = np.concatenate(target_ParTevent).reshape(-1)
     yi_ParTevent = np.concatenate(yi_ParTevent).reshape(-1)
     fpr, tpr, thresholds = roc_curve(target_ParTevent,yi_ParTevent)
+    if i==0: 
+        tpr_common = tpr  
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]
     acc_ete.append(balanced_accuracy_score(target_ParTevent,(yi_ParTevent>= optimal_threshold).astype(int)))
     auc_ete.append(auc(fpr,tpr))
-    thresholds_ete.append(thresholds)
+    fpr = np.interp(tpr_common, tpr, fpr)
     fpr_ete.append(fpr)
-    tpr_ete.append(tpr)
+    tpr_ete.append(tpr_common)
     optimal_threshold_ete.append(optimal_threshold)
+
                        
     if i < len(sizes_latent):
         target_mlpLatent = np.concatenate(target_mlpLatent).reshape(-1)
@@ -161,9 +141,9 @@ for i in range(len(sizes)):
         optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
         acc_mlpLatent.append(balanced_accuracy_score(target_mlpLatent,(yi_mlpLatent>= optimal_threshold).astype(int)))   
         auc_mlpLatent.append(auc(fpr,tpr))
-        thresholds_mlpLatent.append(thresholds)
+        fpr = np.interp(tpr_common, tpr, fpr)
         fpr_mlpLatent.append(fpr)
-        tpr_mlpLatent.append(tpr)
+        tpr_mlpLatent.append(tpr_common)
         optimal_threshold_mlpLatent.append(optimal_threshold)
 
     target_ParTevent_scratch = np.concatenate(target_ParTevent_scratch).reshape(-1)
@@ -172,9 +152,9 @@ for i in range(len(sizes)):
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]
     acc_ete_scratch.append(balanced_accuracy_score(target_ParTevent_scratch,(yi_ParTevent_scratch>= optimal_threshold).astype(int)))  
     auc_ete_scratch.append(auc(fpr,tpr))
-    thresholds_ete_scratch.append(thresholds)
+    fpr = np.interp(tpr_common, tpr, fpr)
     fpr_ete_scratch.append(fpr)
-    tpr_ete_scratch.append(tpr)
+    tpr_ete_scratch.append(tpr_common)
     optimal_threshold_ete_scratch.append(optimal_threshold)
 
     target_mlpHlXbb = np.concatenate(target_mlpHlXbb).reshape(-1)
@@ -183,9 +163,9 @@ for i in range(len(sizes)):
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]    
     acc_mlpHlXbb.append(balanced_accuracy_score(target_mlpHlXbb,(yi_mlpHlXbb>= optimal_threshold).astype(int)))   
     auc_mlpHlXbb.append(auc(fpr,tpr))
-    thresholds_mlpHlXbb.append(thresholds)
+    fpr = np.interp(tpr_common, tpr, fpr)
     fpr_mlpHlXbb.append(fpr)
-    tpr_mlpHlXbb.append(tpr)
+    tpr_mlpHlXbb.append(tpr_common)
     optimal_threshold_mlpHlXbb.append(optimal_threshold)
 
 acc_ete = np.array(acc_ete).reshape(-1)
