@@ -62,7 +62,6 @@ check_message = args.check_message
 start_epoch = args.start_epoch
 yaml_file = args.yaml_file
 subset_batches = args.subset_batches
-freeze_backbone = args.freeze_backbone
 
 for m,w in zip(['Wmlp_','WparT_'],[mlp_weights,ParT_weights]):  
     if w != 'no':
@@ -74,16 +73,16 @@ subset_batches_val=1
 if subset: subset_batches_val = 0.1
 idxmap_val = df.get_idxmap(filelist_val,subset_batches_val)
 
-if modeltype in ['ParTevent','ParTXbb','Aux']:
+if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen']:
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
-    if modeltype == 'ParTevent':
+    if modeltype in['ParTevent','ParTevent_frozen']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
         Xbb = False
-        if freeze_backbone:
+        if modeltype == 'ParTevent_frozen':
             # Freeze all the weights except for layers containing 'fc' exactly
             for name, param in model.named_parameters():
                 if 'fc' in name and not any(exclude_layer in name for exclude_layer in ['fc1', 'fc2']):
@@ -138,7 +137,6 @@ hyper_params = {
    "start_epoch": start_epoch, 
    "subset_batches": subset_batches,
    "subset_batches_val": subset_batches_val,
-   "freeze_backbone":freeze_backbone
 }
 
 
@@ -191,7 +189,7 @@ if checkpoint!= 'no': model.load_state_dict(torch.load(checkpoint))
 
 print(model)
 
-if modeltype in ['ParTevent','ParTXbb']:
+if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
         idxmap,
