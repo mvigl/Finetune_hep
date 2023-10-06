@@ -68,7 +68,6 @@ if modeltype == 'ParTLatent':
     model.to(device)
     Xbb = False
     model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')  
-    model.eval()
 
     filelist_train = config['data-train']
     filelist_val = config['data-val']
