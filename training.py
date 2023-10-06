@@ -78,7 +78,7 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
     if modeltype == 'ParTevent':
-        model = ParT_mlp.get_model(data_config,for_inference=False)  
+        model = ParT_mlp.get_model(data_config,for_inference=True)  
         model.to(device)
         print(model)
         print(model.state_dict())
