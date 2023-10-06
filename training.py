@@ -80,8 +80,7 @@ if modeltype in ['ParTevent','ParTXbb','Aux']:
     if modeltype == 'ParTevent':
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         model.to(device)
-        if mlp_weights != 'no': model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=nlayer_mlp,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
-        else: model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
+        model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
         Xbb = False
 
     elif modeltype == 'ParTXbb':

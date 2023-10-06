@@ -568,11 +568,14 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
                 if i > (mlp_layers*2-1):
                     model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
+                    print(layer)
         if (mlp_params_path != 'no'):
             for i, layer in enumerate(torch.load(mlp_params_path).keys()):
                 #if i <= (mlp_layers*2-1):
+                    print(layer)
                     layer_parT = layer.replace("rho","fc")
-                    model.state_dict()[layer_parT].copy_(torch.load(mlp_params_path)[layer])                
+                    print(layer_parT)
+                    model.state_dict()[layer_parT].copy_(torch.load(mlp_params_path)[layer])               
 
     return model    
 
