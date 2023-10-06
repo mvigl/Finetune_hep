@@ -85,7 +85,7 @@ if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen']:
         if modeltype == 'ParTevent_frozen':
             # Freeze all the weights except for layers containing 'fc' exactly
             for name, param in model.named_parameters():
-                if 'fc' in name and not any(exclude_layer in name for exclude_layer in ['fc1', 'fc2']):
+                if 'fc.' in name:
                     param.requires_grad = True
                 else:
                     param.requires_grad = False
