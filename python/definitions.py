@@ -566,7 +566,9 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
     else:
         if (ParT_params_path != 'no'):
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
+                print(layer)
                 if i > (mlp_layers*2-1):
+                    print('loaded')
                     model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
                     print(layer)
         if (mlp_params_path != 'no'):

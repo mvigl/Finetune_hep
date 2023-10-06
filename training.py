@@ -177,6 +177,8 @@ integer_file_map_val = df.create_integer_file_map(idxmap_val)
 
 if checkpoint!= 'no': model.load_state_dict(torch.load(checkpoint))
 
+print(model)
+
 if modeltype in ['ParTevent','ParTXbb']:
     evals_part, model_part = ParT_mlp.train_loop(
         model,
