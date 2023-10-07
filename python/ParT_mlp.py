@@ -98,8 +98,11 @@ def infer_val(model,batch,device,isXbb=False):
         return infer(model,batch,device,isXbb)
     
 
-def train_step(model,opt,loss_fn,train_batch,device,scheduler,isXbb=False):
-    model.train()
+def train_step(model,opt,loss_fn,train_batch,device,scheduler,config,isXbb=False):
+    if config['modeltype'] == 'ParTevent_frozen':
+        model.eval()
+    else: 
+        model.train()
     opt.zero_grad()
     preds = infer(model,train_batch,device,isXbb)
     target = torch.tensor(train_batch['label']).float().to(device)
@@ -211,7 +214,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
             if not config['Xbb']: train_batch['jet_mask']=train_batch['jet_mask'].numpy()
             train_batch = build_features(train_batch)
             if not config['Xbb']: train_batch['pf_mask'][:,:,:,:2] += np.abs(train_batch['jet_mask'][:,:,np.newaxis]-1)
-            report = train_step(model, opt, loss_fn,train_batch ,device,scheduler,config['Xbb'])
+            report = train_step(model, opt, loss_fn,train_batch ,device,scheduler,config,config['Xbb'])
         evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device,build_features,config['Xbb']) )    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:

@@ -205,7 +205,8 @@ if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['steps'],
             Xbb = Xbb,
-            start_epoch = hyper_params['start_epoch']
+            start_epoch = hyper_params['start_epoch'],
+            modeltype = modeltype
         )
     )
 
