@@ -203,8 +203,12 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
     else: best_model_params_path = path
+
     for epoch in range (0,config['epochs']):
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True,num_workers=12)
+        if (epoch == 0) and (config['load_val_loss']) : 
+            print('loading last best loss')
+            best_val_loss = eval_fn(model, loss_fn,train_loader,val_loader,device,build_features,config['Xbb'])['validation_loss']
         print('Epoch:', epoch+config["start_epoch"],'LR:',opt.param_groups[0]["lr"])
         for i, train_batch in enumerate( train_loader ):
             train_batch['X_jet']=train_batch['X_jet'].numpy()

@@ -185,7 +185,10 @@ else:
 integer_file_map = df.create_integer_file_map(idxmap)
 integer_file_map_val = df.create_integer_file_map(idxmap_val)
 
-if checkpoint!= 'no': model.load_state_dict(torch.load(checkpoint))
+load_val_loss = False
+if checkpoint!= 'no': 
+    model.load_state_dict(torch.load(checkpoint))
+    load_val_loss = True
 
 print(model)
 
@@ -206,7 +209,8 @@ if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
             epochs = hyper_params['steps'],
             Xbb = Xbb,
             start_epoch = hyper_params['start_epoch'],
-            modeltype = modeltype
+            modeltype = modeltype,
+            load_val_loss = load_val_loss
         )
     )
 
