@@ -144,7 +144,7 @@ hyper_params = {
 experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_{message}'
 if modeltype == 'Aux': experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_alpha{hyper_params["alpha"]}_{message}'
 
-if (checkpoint=='no') or subset: 
+if (checkpoint=='no') or (subset) or (check_message=='no'): 
     experiment = Experiment(
     api_key = api_key,
     project_name = project_name,
@@ -167,7 +167,6 @@ if (checkpoint=='no') or subset:
                 yaml.dump(check_config, file)
 else:
     experiment_check_name = f'{check_message}'
-    if experiment_check_name == 'no': experiment_check_name = experiment_name
     experiment = ExistingExperiment(api_key=api_key, 
                                     previous_experiment=experiment_check_name,
                                     log_env_details=True,
