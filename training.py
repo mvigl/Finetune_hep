@@ -167,6 +167,7 @@ if (checkpoint=='no') or subset:
                 yaml.dump(check_config, file)
 else:
     experiment_check_name = f'{check_message}'
+    if experiment_check_name == 'no': experiment_check_name = experiment_name
     experiment = ExistingExperiment(api_key=api_key, 
                                     previous_experiment=experiment_check_name,
                                     log_env_details=True,
@@ -238,7 +239,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','mlpLatent','baseline','LatentXbb','Laten
         )
     )
 
-if checkpoint == 'no':
+if checkpoint == 'no' or subset:
     log_model(experiment, model, model_name = experiment_name )
 else:
     log_model(experiment, model, model_name = experiment_check_name )
