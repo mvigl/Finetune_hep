@@ -191,6 +191,8 @@ if checkpoint!= 'no':
     if subset: load_val_loss = True
 
 print(model)
+num_params = sum(p.numel() for p in model.parameters())
+print(f"Number of parameters in the model: {num_params}")
 
 if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
     evals_part, model_part = ParT_mlp.train_loop(
