@@ -144,7 +144,7 @@ hyper_params = {
 experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_{message}'
 if modeltype == 'Aux': experiment_name = f'{modeltype}_hl{nlayer_mlp}_nodes{nodes_mlp}_nj{njets_mlp}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_alpha{hyper_params["alpha"]}_{message}'
 
-if checkpoint=='no': 
+if (checkpoint=='no') or subset: 
     experiment = Experiment(
     api_key = api_key,
     project_name = project_name,
@@ -188,7 +188,7 @@ integer_file_map_val = df.create_integer_file_map(idxmap_val)
 load_val_loss = False
 if checkpoint!= 'no': 
     model.load_state_dict(torch.load(checkpoint))
-    load_val_loss = True
+    if subset: load_val_loss = True
 
 print(model)
 
