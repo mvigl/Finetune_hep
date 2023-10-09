@@ -52,17 +52,13 @@ class CustomDataset(Dataset):
         self.y=[]
         self.jet_mask=[]
         i=0
-        subset_array=[]
         subset_offset=0
-        Tot_offset=0
         with open(filelist) as f:
             for line in f:
                 filename = line.strip()
                 print('reading : ',filename)
                 with h5py.File(filename, 'r') as Data:
-                    subset_array.append(Tot_offset+(np.arange(int(len(Data['X_jet'])*subset_batches))))
                     subset_offset = int(len(Data['X_jet'])*subset_batches)
-                    Tot_offset+=int(len(Data['X_jet']))
                     if i ==0:
                         data = Data['X_jet'][:subset_offset]
                         target = Data['labels'][:subset_offset] 
@@ -76,17 +72,22 @@ class CustomDataset(Dataset):
         data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
         data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
         data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
-        subset_array = np.concatenate(subset_array,axis=None)
-        print(subset_array)
-        print(len(subset_array))
-        print(len(data))
+   
         if Xbb_scores_path != 'no': 
-            print('loading Xbb scores from : ',Xbb_scores_path)
-            with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-                if subset_batches == 1: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][:]
-                else: data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][subset_array]
-        print(data[:,:,jVars.index('fj_doubleb')])    
-        print(target)    
+            subset_offset=0
+            i=0
+            with open(Xbb_scores_path) as f:
+                for line in f:
+                    filename = line.strip()
+                    print('loading Xbb scores from : ',filename)
+                    with h5py.File(filename, 'r') as Xbb_scores:
+                        subset_offset = int(len(Xbb_scores['Xbb'])*subset_batches)
+                        if i ==0:
+                            Xbb = Xbb_scores['Xbb'][:subset_offset]
+                        else:
+                            data = np.concatenate((Xbb,Xbb_scores['Xbb'][:subset_offset]),axis=0)
+                        i+=1    
+            data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb']
         if scaler_path !='no' : 
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
