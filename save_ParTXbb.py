@@ -53,13 +53,13 @@ ParTXbb_model.load_state_dict(torch.load(model_path))
 
 print('device: ', device)
 
-out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/train/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/train/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,out_dir,Xbb=True)
 
-out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/test/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/test/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,out_dir,Xbb=True)
 
-out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/val/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/val/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,subset,out_dir,Xbb=True)
 
 
