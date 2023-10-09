@@ -1,4 +1,4 @@
-subset_batches: '0.00005'
+subset_batches: '0.5'
 model: 'mlpHlXbb'
 lr: 0.001
 bs: 512
@@ -11,8 +11,8 @@ ParT-weights: 'no'
 mlp-weights: 'no'
 data: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
 data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
-Xbb: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/train_ParTXbb_score_training_1.h5' 
-Xbb-val: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/val_ParTXbb_score_training_1.h5' 
+Xbb: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/ParTXbb_scratch/Xbb_scratch_train_list_2.txt' 
+Xbb-val: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/ParTXbb_scratch/Xbb_scratch_val_list_2.txt' 
 Ntrainings: 1
 alpha: 0
 project-name: 'Finetuning_hep'

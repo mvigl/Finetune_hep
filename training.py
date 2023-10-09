@@ -155,7 +155,7 @@ if (checkpoint=='no') or (subset) or (check_message=='no'):
     Experiment.set_name(experiment,experiment_name)
     print(experiment.get_key())
     experiment.log_parameter("exp_key", experiment.get_key())
-    if ((modeltype in ['ParTevent','ParTXbb','Aux']) and (subset==False)):
+    if ((modeltype in ['ParTevent','ParTevent_frozen','ParTXbb','Aux']) and (subset==False)):
         for i in range(10):
             with open(yaml_file) as file:
                 check_config = yaml.load(file, Loader=yaml.FullLoader)  

@@ -7,7 +7,7 @@ nlayer-mlp: 3
 nodes-mlp: 128
 njets-mlp: 5
 config: '../../Finetune_hep/config/myJetClass_full.yaml'
-ParT-weights: '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_WparT_training_1_epoch_5_Val_loss_0.14304769039154053.pt'
+ParT-weights: '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb_scratch/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_training_3_epoch_8_Val_loss_0.1555812805891037.pt'
 mlp-weights: 'no'
 data: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
 data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
