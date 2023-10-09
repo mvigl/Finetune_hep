@@ -323,10 +323,16 @@ def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False):
                             preds = np.concatenate((preds,infer_val(model,data,device,Xbb).detach().cpu().numpy()),axis=0)
                             target = np.concatenate((target,data['label']),axis=0)
                 #if (subset and i>5): break
-                    Data = h5py.File(out_dir_i, 'w')
-                    Data.create_dataset('evt_score', data=preds.reshape(-1))
-                    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-                    Data.close()     
+                    if Xbb:
+                        Data = h5py.File(out_dir_i, 'w')
+                        Data.create_dataset('evt_score', data=preds.reshape(-1,5))
+                        Data.create_dataset('evt_label', data=target.reshape(-1,5),dtype='i4')
+                        Data.close()   
+                    else:    
+                        Data = h5py.File(out_dir_i, 'w')
+                        Data.create_dataset('evt_score', data=preds.reshape(-1))
+                        Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                        Data.close()     
     return 0
 
 

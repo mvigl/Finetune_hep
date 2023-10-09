@@ -53,22 +53,15 @@ ParTXbb_model.load_state_dict(torch.load(model_path))
 
 print('device: ', device)
 
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,Xbb=True)
-Data_train = h5py.File(f'../../Finetune_hep/models/ParTXbb_scratch/train_{name}.h5', 'w')
-Data_train.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
-Data_train.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
-Data_train.close()        
+out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/train/'
+yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,out_dir,Xbb=True)
 
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,Xbb=True)
-Data_test = h5py.File(f'../../Finetune_hep/models/ParTXbb_scratch/test_{name}.h5', 'w')
-Data_test.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
-Data_test.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
-Data_test.close()      
+out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/test/'
+yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,out_dir,Xbb=True)
 
-yi_ParTXbb,target_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,subset,Xbb=True)
-Data_val = h5py.File(f'../../Finetune_hep/models/ParTXbb_scratch/val_{name}.h5', 'w')
-Data_val.create_dataset('Xbb', data=yi_ParTXbb.reshape(-1,5))
-Data_val.create_dataset('X_label', data=target_ParTXbb.reshape(-1,5),dtype='i4')
-Data_val.close()
+out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/val/'
+yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,subset,out_dir,Xbb=True)
+
+
 
       
