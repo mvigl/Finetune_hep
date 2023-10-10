@@ -283,7 +283,7 @@ def get_latent_preds(model,data_loader,device,subset,build_features,isXbb=False)
 
     return preds,target    
 
-def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False):
+def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False,Latent=False):
 
     with torch.no_grad():
         model.eval()
@@ -333,6 +333,11 @@ def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False):
                         Data.create_dataset('evt_score', data=preds.reshape(-1,5))
                         Data.create_dataset('evt_label', data=target.reshape(-1,5),dtype='i4')
                         Data.close()   
+                    elif Latent:
+                        Data = h5py.File(out_dir_i, 'w')
+                        Data.create_dataset('evt_score', data=preds.reshape(-1,5,128))
+                        Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                        Data.close()     
                     else:    
                         Data = h5py.File(out_dir_i, 'w')
                         Data.create_dataset('evt_score', data=preds.reshape(-1))

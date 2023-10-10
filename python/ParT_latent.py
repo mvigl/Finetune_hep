@@ -11,13 +11,13 @@ import h5py
 from torch_optimizer import Lookahead
 
 
-def make_mlp(in_features,out_features,nlayer,for_inference=False):
+def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
     layers = []
     for i in range(nlayer):
         layers.append(torch.nn.Linear(in_features, out_features))
         layers.append(torch.nn.ReLU())
         in_features = out_features
-    layers.append(torch.nn.Linear(in_features, 1))
+    if binary: layers.append(torch.nn.Linear(in_features, 1))
     if for_inference: layers.append(torch.nn.Sigmoid())
     model = torch.nn.Sequential(*layers)
     return model
@@ -32,7 +32,8 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = make_mlp(in_dim,out_features=128,nlayer = 3,for_inference=self.for_inference)
+        self.phi_fc = make_mlp(in_features=in_dim,out_features=64,nlayer = 3,for_inference=False,binary=False)
+        self.rho_fc = make_mlp(in_features=64,out_features=64,nlayer = 3,for_inference=self.for_inference,binary=True)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -46,11 +47,9 @@ class ParticleTransformerWrapper(nn.Module):
         features = torch.reshape(features,(-1,17,100))
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
         mask = torch.reshape(mask,(-1,1,100))
-        x_cls = self.mod(features, v=lorentz_vectors, mask=mask)
-        output_parT = torch.reshape(x_cls,(-1,5,128))
-        #output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
-        #output = self.fc(output_parT)
-        return output_parT,jet_mask
+        x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
+        output = torch.reshape(x_cls,(-1,5,128))
+        return output
 
 def get_model(data_config, **kwargs):
 
