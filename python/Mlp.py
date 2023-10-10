@@ -83,9 +83,9 @@ class CustomDataset(Dataset):
                     with h5py.File(filename, 'r') as Xbb_scores:
                         subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
                         if i ==0:
-                            Xbb = Xbb_scores['evt_score'][:subset_offset].reshape((-1,5,1))
+                            Xbb = Xbb_scores['evt_score'][:subset_offset]
                         else:
-                            Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset].reshape((-1,5,1))),axis=0)
+                            Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                         i+=1    
             print(Xbb.shape)  
             print(Xbb[:2])            
@@ -93,6 +93,7 @@ class CustomDataset(Dataset):
             print(data[:,:,jVars.index('fj_doubleb')][:2])
             print(jet_mask[:2]) 
             data[:,:,jVars.index('fj_doubleb')] = Xbb
+            print(data[:,:,jVars.index('fj_doubleb')][:2])
         if scaler_path !='no' : 
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
