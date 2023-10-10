@@ -200,6 +200,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
 
     base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
     opt = Lookahead(base_opt, k=6, alpha=0.5)
+    scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)
         
     if config['modeltype'] == 'ParTevent_frozen': 
         opt = torch.optim.Adam(model.parameters(), config['LR'])
