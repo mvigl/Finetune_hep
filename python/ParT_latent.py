@@ -32,8 +32,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.phi_fc = make_mlp(in_features=in_dim,out_features=64,nlayer = 3,for_inference=False,binary=False)
-        self.rho_fc = make_mlp(in_features=64,out_features=64,nlayer = 3,for_inference=self.for_inference,binary=True)
+        self.fc = make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=self.for_inference)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
