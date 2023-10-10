@@ -203,7 +203,7 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
     scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)
         
     if config['modeltype'] == 'ParTevent_frozen': 
-        opt = torch.optim.Adam(model.parameters(), config['LR'])
+        opt = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=config['LR'])
         scheduler = False
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
