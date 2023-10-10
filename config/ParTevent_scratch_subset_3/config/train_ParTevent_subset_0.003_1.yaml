@@ -1,7 +1,7 @@
 model: 'ParTevent'
 subset_batches: 0.003  
 lr: 0.001
-bs: 512
+bs: 256
 ep: 30
 nlayer-mlp: 3
 nodes-mlp: 128
