@@ -98,6 +98,7 @@ class CustomDataset(Dataset):
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
+                print(X_norm[:,:,jVars.index('fj_doubleb')][:2])
                 self.x = torch.from_numpy(X_norm).float().to(device)
                 with open(scaler_path,'wb') as f:
                     pickle.dump(self.scaler, f)
@@ -105,6 +106,7 @@ class CustomDataset(Dataset):
                 with open(scaler_path,'rb') as f:
                     self.scaler = pickle.load(f)
                 X_norm = transform_without_zeros(data,jet_mask,self.scaler)
+                print(X_norm[:,:,jVars.index('fj_doubleb')][:2])
                 self.x = torch.from_numpy(X_norm).float().to(device)
         else:
             self.x = torch.from_numpy(data).float().to(device)    
