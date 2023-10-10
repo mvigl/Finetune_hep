@@ -152,13 +152,35 @@ class CustomDataset_Latent(Dataset):
         self.y=[]
         self.jet_mask=[]
         i=0
-        print('loading Xbb scores from : ',Xbb_scores_path)
-        with h5py.File(Xbb_scores_path, 'r') as latent:
-            subset_offset = int(len(latent['evt_label'][:])*subset_batches)
-            target = latent['evt_label'][:subset_offset]
-            jet_mask = latent['jet_mask'][:subset_offset]
-            data = np.sum(np.nan_to_num(latent['evt_score'][:subset_offset])*jet_mask[:,:,np.newaxis],axis=1)
-        self.x = torch.from_numpy(data).float().to(device)    
+        subset_offset=0
+        with open(filelist) as f:
+            for line in f:
+                filename = line.strip()
+                print('reading : ',filename)
+                with h5py.File(filename, 'r') as Data:
+                    subset_offset = int(len(Data['X_jet'])*subset_batches)
+                    if i ==0:
+                        target = Data['labels'][:subset_offset] 
+                        jet_mask = Data['jet_mask'][:subset_offset]
+                    else:
+                        target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
+                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
+                    i+=1    
+   
+        subset_offset=0
+        i=0
+        with open(Xbb_scores_path) as f:
+            for line in f:
+                filename = line.strip()
+                print('loading Xbb scores from : ',filename)
+                with h5py.File(filename, 'r') as Xbb_scores:
+                    subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
+                    if i ==0:
+                        Xbb = Xbb_scores['evt_score'][:subset_offset]
+                    else:
+                        Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
+                    i+=1    
+        self.x = torch.from_numpy(Xbb).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
         self.length = len(target)
@@ -400,12 +422,12 @@ class InvariantModel(nn.Module):
 
         return out
 
-class InvariantModel_Latent(nn.Module):
-    def __init__(self, rho: nn.Module):
-        super().__init__()
-        self.rho = rho
+#class InvariantModel_Latent(nn.Module):
+#    def __init__(self, rho: nn.Module):
+#        super().__init__()
+#        self.rho = rho
 
-    def forward(self, x,jet_mask):
-        out = self.rho(x)
+#    def forward(self, x,jet_mask):
+#        out = self.rho(x)
 
-        return out
+#        return out
