@@ -11,24 +11,6 @@ import h5py
 from torch_optimizer import Lookahead
 # from torch.optim.lr_scheduler import ExponentialLR
 # from ignite.handlers import create_lr_scheduler_with_warmup
-
-class InvariantModel(nn.Module):
-    def __init__(self, phi: nn.Module, rho: nn.Module):
-        super().__init__()
-        self.phi = phi
-        self.rho = rho
-
-    def forward(self, x,jet_mask):
-        # compute the representation for each data point
-        x = self.phi(x)*jet_mask[:,:,np.newaxis]
-
-        # sum up the representations
-        x = torch.sum(x, dim=1)
-
-        # compute the output
-        out = self.rho(x)
-
-        return out
     
 
 def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
@@ -52,8 +34,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.head = InvariantModel( phi=make_mlp(128,64,3,for_inference=False,binary=False),
-                                    rho=make_mlp(64,64,3,for_inference=self.for_inference,binary=True))
+        self.fc = make_mlp(in_dim,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -68,7 +49,8 @@ class ParticleTransformerWrapper(nn.Module):
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
         mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
-        output_head = self.head(torch.reshape(x_cls,(-1,5,128)),jet_mask)
+        output_parT = torch.sum(torch.reshape(x_cls,(-1,5,128))*jet_mask,dim=1)
+        output_head = self.fc(output_parT)
         return output_head
 
 def get_model(data_config, **kwargs):
