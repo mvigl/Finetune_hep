@@ -81,13 +81,13 @@ class CustomDataset(Dataset):
                     filename = line.strip()
                     print('loading Xbb scores from : ',filename)
                     with h5py.File(filename, 'r') as Xbb_scores:
-                        subset_offset = int(len(Xbb_scores['Xbb'])*subset_batches)
+                        subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
                         if i ==0:
-                            Xbb = Xbb_scores['Xbb'][:subset_offset]
+                            Xbb = Xbb_scores['evt_score'][:subset_offset]
                         else:
-                            data = np.concatenate((Xbb,Xbb_scores['Xbb'][:subset_offset]),axis=0)
+                            Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                         i+=1    
-            data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb']
+            data[:,:,jVars.index('fj_doubleb')] = Xbb
         if scaler_path !='no' : 
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
