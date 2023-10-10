@@ -33,8 +33,8 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.phi_fc = make_mlp(in_features=in_dim,out_features=128,nlayer = 3,for_inference=False,binary=False)
-        self.rho_fc = make_mlp(in_features=128,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
+        self.phi_fc = make_mlp(in_features=in_dim,out_features=64,nlayer = 3,for_inference=False,binary=False)
+        self.rho_fc = make_mlp(in_features=64,out_features=64,nlayer = 3,for_inference=self.for_inference,binary=True)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -110,7 +110,7 @@ def train_step(model,opt,loss_fn,train_batch,device,scheduler,config,isXbb=False
     loss = loss_fn(preds,target)
     loss.backward()
     opt.step()
-    scheduler.step()
+    if scheduler!=False: scheduler.step()
     return {'loss': float(loss)}
 
 def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features,isXbb=False):
@@ -200,7 +200,10 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
 
     base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
     opt = Lookahead(base_opt, k=6, alpha=0.5)
-    scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],50,opt)
+        
+    if config['modeltype'] == 'ParTevent_frozen': 
+        opt = torch.optim.Adam(model.parameters(), config['LR'])
+        scheduler = False
 
     if subset: best_model_params_path = path.replace(".pt", "subset_"+str(num_samples)+".pt")
     else: best_model_params_path = path
