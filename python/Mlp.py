@@ -87,6 +87,8 @@ class CustomDataset(Dataset):
                         else:
                             Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                         i+=1    
+            print(Xbb.shape)            
+            print(data[:,:,jVars.index('fj_doubleb')].shape)
             data[:,:,jVars.index('fj_doubleb')] = Xbb
         if scaler_path !='no' : 
             if (test == False): 
