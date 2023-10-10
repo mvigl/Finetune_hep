@@ -88,17 +88,17 @@ class CustomDataset(Dataset):
                             Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                         i+=1    
             print(Xbb.shape)  
-            print(Xbb[:2])            
+            print(Xbb[100:200])            
             print(data[:,:,jVars.index('fj_doubleb')].shape)
-            print(data[:,:,jVars.index('fj_doubleb')][:2])
-            print(jet_mask[:2]) 
+            print(data[:,:,jVars.index('fj_doubleb')][100:200])
+            print(jet_mask[100:200]) 
             data[:,:,jVars.index('fj_doubleb')] = Xbb
-            print(data[:,:,jVars.index('fj_doubleb')][:2])
+            print(data[:,:,jVars.index('fj_doubleb')][100:200])
         if scaler_path !='no' : 
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
                 X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
-                print(X_norm[:,:,jVars.index('fj_doubleb')][:2])
+                print(X_norm[:,:,jVars.index('fj_doubleb')][100:200])
                 self.x = torch.from_numpy(X_norm).float().to(device)
                 with open(scaler_path,'wb') as f:
                     pickle.dump(self.scaler, f)
