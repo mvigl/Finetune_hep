@@ -83,9 +83,9 @@ class CustomDataset(Dataset):
                     with h5py.File(filename, 'r') as Xbb_scores:
                         subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
                         if i ==0:
-                            Xbb = Xbb_scores['evt_score'][:subset_offset]
+                            Xbb = Xbb_scores['evt_score'][:subset_offset].reshape((-1,5,1))
                         else:
-                            Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
+                            Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset].reshape((-1,5,1))),axis=0)
                         i+=1    
             print(Xbb.shape)  
             print(Xbb[:2])            
@@ -293,7 +293,7 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
             best_val_loss = val_loss
             torch.save(model.state_dict(), best_model_params_path)
         experiment.log_metrics({"train_loss": evals[epoch]['train_loss'], "val_loss": val_loss}, epoch=(epoch))
-    model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
+    #model.load_state_dict(torch.load(best_model_params_path)) # load best model states    
 
     return evals, model
 
