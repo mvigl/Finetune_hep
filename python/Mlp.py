@@ -233,16 +233,19 @@ class CustomDataset_Latent_Hl(Dataset):
         return self.x[idx], self.y[idx],self.jet_mask[idx]        
 
             
-def train_step(model,data,target,jet_mask,opt,loss_fn):
+def train_step(model,data,target,jet_mask,opt,loss_fn,modeltype):
     model.train()
-    preds = model(data,jet_mask)
+    if modeltype == 'mlpLatent':
+        preds = model(data,jet_mask)
+    else: 
+        preds = model(data,jet_mask)    
     loss = loss_fn(preds,target)
     loss.backward()
     opt.step()
     opt.zero_grad()
     return {'loss': float(loss)}
 
-def eval_fn(model, loss_fn,train_loader,val_loader,device):
+def eval_fn(model, loss_fn,train_loader,val_loader,device,modeltype):
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ): 
@@ -267,8 +270,12 @@ def eval_fn(model, loss_fn,train_loader,val_loader,device):
                 target_val = np.concatenate((target_val,val_batch[1].cpu().numpy()),axis=0)   
                 jet_mask_val = np.concatenate((jet_mask_val,val_batch[2].cpu().numpy()),axis=0)          
 
-        train_loss = loss_fn(model( torch.from_numpy(data).float().to(device),torch.from_numpy(jet_mask).float().to(device)).reshape(len(data)),torch.from_numpy(target.reshape(-1)).float().to(device))
-        test_loss = loss_fn(model( torch.from_numpy(data_val).float().to(device),torch.from_numpy(jet_mask_val).float().to(device)).reshape(len(data_val)),torch.from_numpy(target_val.reshape(-1)).float().to(device))
+        if modeltype == 'mlpLatent':
+            train_loss = loss_fn(model( torch.from_numpy(data).float().to(device) ).reshape(len(data)),torch.from_numpy(target.reshape(-1)).float().to(device))
+            test_loss = loss_fn(model( torch.from_numpy(data_val).float().to(device) ).reshape(len(data_val)),torch.from_numpy(target_val.reshape(-1)).float().to(device))
+        else: 
+            train_loss = loss_fn(model( torch.from_numpy(data).float().to(device),torch.from_numpy(jet_mask).float().to(device)).reshape(len(data)),torch.from_numpy(target.reshape(-1)).float().to(device))
+            test_loss = loss_fn(model( torch.from_numpy(data_val).float().to(device),torch.from_numpy(jet_mask_val).float().to(device)).reshape(len(data_val)),torch.from_numpy(target_val.reshape(-1)).float().to(device))
         print(f'train_loss: {float(train_loss)} | test_loss: {float(test_loss)}')
         return {'test_loss': float(test_loss), 'train_loss': float(train_loss)}
     
@@ -304,8 +311,8 @@ def train_loop(model,filelist,filelist_val, device, experiment, path, scaler_pat
         train_loader = DataLoader(Dataset, batch_size=config['batch_size'], shuffle=True)
         for i, train_batch in enumerate( train_loader ):
             data, target, jet_mask = train_batch
-            report = train_step(model, data, target,jet_mask, opt, loss_fn )
-        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device) )         
+            report = train_step(model, data, target,jet_mask, opt, loss_fn, modeltype )
+        evals.append(eval_fn(model, loss_fn,train_loader,val_loader,device, modeltype) )         
         val_loss = evals[epoch]['test_loss']
         if val_loss < best_val_loss:
             best_val_loss = val_loss
