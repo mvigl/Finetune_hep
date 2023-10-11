@@ -182,7 +182,8 @@ class CustomDataset_Latent(Dataset):
                     i+=1    
         self.x = torch.from_numpy(Xbb).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
-        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)   
+        self.x = torch.sum(torch.reshape(self.x,(-1,5,128))*self.jet_mask,dim=1) 
         self.length = len(target)
         print('N data : ',self.length)
         
