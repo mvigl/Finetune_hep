@@ -293,7 +293,6 @@ def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False,Latent=False):
             print('..done')
             for line in f:
                 filename = line.strip()
-                if 'bkg' in filename: continue
                 print('reading : ',filename)
                 data_index = filename.index("Data")
                 out_dir_i = out_dir + filename[data_index:]
