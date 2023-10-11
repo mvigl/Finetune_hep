@@ -236,7 +236,7 @@ class CustomDataset_Latent_Hl(Dataset):
 def train_step(model,data,target,jet_mask,opt,loss_fn,modeltype):
     model.train()
     if modeltype == 'mlpLatent':
-        preds = model(data,jet_mask)
+        preds = model(data)
     else: 
         preds = model(data,jet_mask)    
     loss = loss_fn(preds,target)
