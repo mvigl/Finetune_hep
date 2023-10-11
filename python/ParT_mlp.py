@@ -299,6 +299,7 @@ def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False,Latent=False):
                 out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
                     if len(Data['X_label']) > 3000: size = 512
+                    elif len(Data['X_label']) < 512: size = len(Data['X_label'])/2
                     else : 
                         size = len(Data['X_label'])/10
                         if len(Data['X_label']) == 0: 
