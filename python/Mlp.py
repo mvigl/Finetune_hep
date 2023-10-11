@@ -216,7 +216,6 @@ class CustomDataset_Latent_Hl(Dataset):
                         target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
                         jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
                     i+=1    
-        self.scaler = StandardScaler() # this is super useful a scikit learn function
         data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
         data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
         data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
@@ -234,8 +233,12 @@ class CustomDataset_Latent_Hl(Dataset):
                     else:
                         Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                     i+=1    
-        data = np.concatenate((data,Xbb),axis=-1) 
-        self.x = torch.from_numpy(data).float().to(device)              
+        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_pt')]),axis=-1)  
+        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_mass')]),axis=-1)
+        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_sdmass')]),axis=-1)
+        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_eta')]),axis=-1)
+        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_phi')]),axis=-1)
+        self.x = torch.from_numpy(Xbb).float().to(device)              
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)   
         self.length = len(target)
