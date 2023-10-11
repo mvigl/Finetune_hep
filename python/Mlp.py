@@ -183,7 +183,7 @@ class CustomDataset_Latent(Dataset):
         self.x = torch.from_numpy(Xbb).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)   
-        self.x = torch.sum(torch.reshape(self.x,(-1,5,128))*self.jet_mask[:,:,np.newaxis],dim=1) 
+        #self.x = torch.sum(torch.reshape(self.x,(-1,5,128))*self.jet_mask[:,:,np.newaxis],dim=1) 
         self.length = len(target)
         print('N data : ',self.length)
         
@@ -258,7 +258,7 @@ class CustomDataset_Latent_Hl(Dataset):
             
 def train_step(model,data,target,jet_mask,opt,loss_fn,modeltype):
     model.train()
-    if modeltype == 'mlpLatent':
+    if modeltype == 'mlpLatent_':
         preds = model(data)
     else: 
         preds = model(data,jet_mask)    
@@ -293,7 +293,7 @@ def eval_fn(model, loss_fn,train_loader,val_loader,device,modeltype):
                 target_val = np.concatenate((target_val,val_batch[1].cpu().numpy()),axis=0)   
                 jet_mask_val = np.concatenate((jet_mask_val,val_batch[2].cpu().numpy()),axis=0)          
 
-        if modeltype == 'mlpLatent':
+        if modeltype == 'mlpLatent_':
             train_loss = loss_fn(model( torch.from_numpy(data).float().to(device) ).reshape(len(data)),torch.from_numpy(target.reshape(-1)).float().to(device))
             test_loss = loss_fn(model( torch.from_numpy(data_val).float().to(device) ).reshape(len(data_val)),torch.from_numpy(target_val.reshape(-1)).float().to(device))
         else: 

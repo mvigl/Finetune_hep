@@ -111,13 +111,16 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
 elif modeltype in ['mlpLatent']:
-    model = ParT_mlp.make_mlp(128,out_features=128,nlayer = 6,for_inference=False,binary=True)
+    model = Mlp.InvariantModel( phi=Mlp.make_mlp(128,128,3,binary=False),
+                                rho=Mlp.make_mlp(128,128,nlayer_mlp))
+    #model = ParT_mlp.make_mlp(128,out_features=128,nlayer = 6,for_inference=False,binary=True)
     #model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp))
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
 elif modeltype in ['mlpLatentHl']:
-    model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128+6,nodes_mlp,nlayer_mlp))
+    model = Mlp.InvariantModel( phi=Mlp.make_mlp(128,128,3,binary=False),
+                                rho=Mlp.make_mlp(128,128,nlayer_mlp))
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))    
 
