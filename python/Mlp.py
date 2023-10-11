@@ -233,11 +233,8 @@ class CustomDataset_Latent_Hl(Dataset):
                     else:
                         Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                     i+=1    
-        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_pt')]),axis=-1)  
-        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_mass')]),axis=-1)
-        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_sdmass')]),axis=-1)
-        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_eta')]),axis=-1)
-        Xbb = np.concatenate((Xbb,data[:,:,jVars.index('fj_phi')]),axis=-1)
+        hlfeats = [jVars.index('fj_pt'),jVars.index('fj_eta'),jVars.index('fj_phi'),jVars.index('fj_mass'),jVars.index('fj_sdmass')]            
+        Xbb = np.concatenate((Xbb,data[:,:,hlfeats]),axis=-1)  
         self.x = torch.from_numpy(Xbb).float().to(device)              
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)   
