@@ -111,7 +111,7 @@ elif modeltype in ['mlpXbb','mlpHlXbb','baseline']:
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
 
 elif modeltype in ['mlpLatent']:
-    model = ParT_mlp.make_mlp(128,out_features=128,nlayer = 3,for_inference=False,binary=True)
+    model = ParT_mlp.make_mlp(128,out_features=128,nlayer = 6,for_inference=False,binary=True)
     #model = Mlp.InvariantModel_Latent(rho=Mlp.make_mlp(128,nodes_mlp,nlayer_mlp))
     model.to(device)
     if mlp_weights != 'no' : model.load_state_dict(torch.load(mlp_weights))
@@ -178,7 +178,7 @@ experiment.log_parameters(hyper_params)
 
 model_path = (f'models/{experiment_name}.pt' )
 
-if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux','mlpXbb','mlpLatentHl']:
+if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux','mlpXbb']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
     scaler_path = 'no'  
