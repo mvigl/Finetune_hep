@@ -181,7 +181,7 @@ experiment.log_parameters(hyper_params)
 
 model_path = (f'models/{experiment_name}.pt' )
 
-if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux','mlpXbb']:
+if modeltype not in ['mlpLatent','LatentXbb','LatentXbb_Aux','mlpXbb','mlpLatentHl']:
     scaler_path = (f'models/{experiment_name}.pkl' )
 else:
     scaler_path = 'no'  

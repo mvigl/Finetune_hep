@@ -220,7 +220,7 @@ class CustomDataset_Latent_Hl(Dataset):
         data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
         data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
         data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
-        
+
         subset_offset=0
         i=0
         with open(Xbb_scores_path) as f:
@@ -235,20 +235,7 @@ class CustomDataset_Latent_Hl(Dataset):
                         Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                     i+=1    
         data = np.concatenate((data,Xbb),axis=-1) 
-        if scaler_path !='no' : 
-            if (test == False): 
-                if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
-                X_norm,self.scaler = fit_transform_without_zeros(data,jet_mask,self.scaler)
-                self.x = torch.from_numpy(X_norm).float().to(device)
-                with open(scaler_path,'wb') as f:
-                    pickle.dump(self.scaler, f)
-            else:         
-                with open(scaler_path,'rb') as f:
-                    self.scaler = pickle.load(f)
-                X_norm = transform_without_zeros(data,jet_mask,self.scaler)
-                self.x = torch.from_numpy(X_norm).float().to(device)
-        else:
-            self.x = torch.from_numpy(data).float().to(device)              
+        self.x = torch.from_numpy(data).float().to(device)              
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask).float().to(device)   
         self.length = len(target)
