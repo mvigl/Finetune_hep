@@ -166,7 +166,7 @@ class CustomDataset_Latent(Dataset):
                         target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
                         jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
                     i+=1    
-   
+    
         subset_offset=0
         i=0
         with open(Xbb_scores_path) as f:
@@ -216,7 +216,11 @@ class CustomDataset_Latent_Hl(Dataset):
                         target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
                         jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
                     i+=1    
-   
+        self.scaler = StandardScaler() # this is super useful a scikit learn function
+        data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
+        data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
+        data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
+        
         subset_offset=0
         i=0
         with open(Xbb_scores_path) as f:
