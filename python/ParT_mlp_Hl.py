@@ -34,7 +34,8 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = make_mlp(in_dim,out_features=128+5,nlayer = 3,for_inference=self.for_inference,binary=True)
+        self.fc = InvariantModel(   phi=make_mlp(128+5,128,3,for_inference=False,binary=False),
+                                    rho=make_mlp(128,128,3,for_inference=self.for_inference))
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -49,8 +50,8 @@ class ParticleTransformerWrapper(nn.Module):
         lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
         mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
-        output_parT = torch.sum( torch.cat( ( torch.reshape(x_cls,(-1,5,128)) , hl_feats ) ,axis=-1 )*jet_mask,dim=1)
-        output_head = self.fc(output_parT)
+        output_parT = torch.cat( ( torch.reshape(x_cls,(-1,5,128)) , hl_feats ) ,axis=-1 )
+        output_head = self.fc(output_parT,jet_mask)
         return output_head
 
 def get_model(data_config, **kwargs):
@@ -404,3 +405,21 @@ def get_Latent_preds(model,filelist,device,subset,out_dir,Xbb=False):
                     Data.create_dataset('jet_mask', data=jet_mask.reshape(-1,5),dtype='i4')
                     Data.close()     
     return 0
+
+class InvariantModel(nn.Module):
+    def __init__(self, phi: nn.Module, rho: nn.Module):
+        super().__init__()
+        self.phi = phi
+        self.rho = rho
+
+    def forward(self, x,jet_mask):
+        # compute the representation for each data point
+        x = self.phi(x)*jet_mask
+
+        # sum up the representations
+        x = torch.sum(x, dim=1)
+
+        # compute the output
+        out = self.rho(x)
+
+        return out

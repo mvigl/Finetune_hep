@@ -1,5 +1,5 @@
-model: 'ParTevent'
-subset_batches: 0.5  
+model: 'ParTevent_Hl'
+subset_batches: 0.8  
 lr: 0.001
 bs: 256
 ep: 30
@@ -7,7 +7,7 @@ nlayer-mlp: 3
 nodes-mlp: 128
 njets-mlp: 5
 config: '../../Finetune_hep/config/myJetClass_full.yaml'
-ParT-weights: '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb_scratch/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_training_3_epoch_9_Val_loss_0.1548030525445938.pt'
+ParT-weights: '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb_scratch/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_training_1_epoch_9_Val_loss_0.15493161976337433.pt'
 mlp-weights: 'no'
 data: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
 data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
@@ -20,7 +20,7 @@ default: False
 subset: True
 api-key: 'r1SBLyPzovxoWBPDLx3TAE02O'
 ws: 'mvigl'
-checkpoint: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_3/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_3subset_4900263.pt'
+checkpoint: 'no'
 check-message: 'no'
 start-epoch: 0
 Fyaml: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset/config/train_ParTevent_1.yaml'

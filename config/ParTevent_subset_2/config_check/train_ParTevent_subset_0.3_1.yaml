@@ -1,4 +1,4 @@
-model: 'ParTevent_frozen'
+model: 'ParTevent'
 subset_batches: 0.3  
 lr: 0.001
 bs: 256

@@ -1,6 +1,7 @@
 from comet_ml import Experiment,ExistingExperiment
 from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import ParT_mlp
+from Finetune_hep.python import ParT_mlp_Hl
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -73,12 +74,13 @@ subset_batches_val=1
 if subset: subset_batches_val = 0.1
 idxmap_val = df.get_idxmap(filelist_val,subset_batches_val)
 
-if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen']:
+if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen','ParTevent_Hl']:
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
-    if modeltype in['ParTevent','ParTevent_frozen']:
+    if modeltype in['ParTevent','ParTevent_frozen','ParTevent_Hl']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
+        if modeltype == 'ParTevent_Hl': model = ParT_mlp_Hl.get_model(data_config,for_inference=False)  
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
         Xbb = False
@@ -159,7 +161,7 @@ if (checkpoint=='no') or (subset) or (check_message=='no'):
     Experiment.set_name(experiment,experiment_name)
     print(experiment.get_key())
     experiment.log_parameter("exp_key", experiment.get_key())
-    if ((modeltype in ['ParTevent','ParTevent_frozen','ParTXbb','Aux']) and (subset==False)):
+    if ((modeltype in ['ParTevent','ParTevent_frozen','ParTXbb','Aux','ParTevent_Hl']) and (subset==False)):
         for i in range(10):
             with open(yaml_file) as file:
                 check_config = yaml.load(file, Loader=yaml.FullLoader)  
@@ -200,6 +202,28 @@ print(f"Number of parameters in the model: {num_params}")
 
 if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
     evals_part, model_part = ParT_mlp.train_loop(
+        model,
+        idxmap,
+        integer_file_map,
+        idxmap_val,
+        integer_file_map_val,
+        device,
+        experiment,
+        model_path,
+        subset,
+        config = dict(    
+            LR = hyper_params['learning_rate'],
+            batch_size = hyper_params['batch_size'],
+            epochs = hyper_params['steps'],
+            Xbb = Xbb,
+            start_epoch = hyper_params['start_epoch'],
+            modeltype = modeltype,
+            load_val_loss = load_val_loss
+        )
+    )
+
+elif modeltype == 'ParTevent_Hl':    
+        evals_part, model_part = ParT_mlp_Hl.train_loop(
         model,
         idxmap,
         integer_file_map,
