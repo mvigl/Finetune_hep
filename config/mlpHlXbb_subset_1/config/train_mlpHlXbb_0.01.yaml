@@ -1,5 +1,5 @@
 subset_batches: '0.01'
-model: 'mlpLatentb'
+model: 'mlpHlXbb'
 lr: 0.001
 bs: 512
 ep: 100
