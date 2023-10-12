@@ -36,7 +36,7 @@ class ParticleTransformerWrapper(nn.Module):
         fcs = []
         #self.fc = InvariantModel(   phi=make_mlp(128+5,128,3,for_inference=False,binary=False),
         #                            rho=make_mlp(128,128,3,for_inference=self.for_inference))
-        self.fc = make_mlp(in_dim,out_features=128+5,nlayer = 3,for_inference=self.for_inference,binary=True)
+        self.fc = make_mlp(in_features=128+5,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
         self.mod = ParticleTransformer(**kwargs)
