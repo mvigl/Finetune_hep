@@ -34,9 +34,9 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = InvariantModel(   phi=make_mlp(128+5,128,3,for_inference=False,binary=False),
-                                    rho=make_mlp(128,128,3,for_inference=self.for_inference))
-
+        #self.fc = InvariantModel(   phi=make_mlp(128+5,128,3,for_inference=False,binary=False),
+        #                            rho=make_mlp(128,128,3,for_inference=self.for_inference))
+        self.fc = make_mlp(in_dim,out_features=128+5,nlayer = 3,for_inference=self.for_inference,binary=True)
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
         self.mod = ParticleTransformer(**kwargs)
@@ -51,7 +51,9 @@ class ParticleTransformerWrapper(nn.Module):
         mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
         output_parT = torch.cat( ( torch.reshape(x_cls,(-1,5,128)) , hl_feats ) ,axis=-1 )
-        output_head = self.fc(output_parT,jet_mask)
+        output_parT = torch.sum(output_parT*jet_mask,dim=1)
+        #output_head = self.fc(output_parT,jet_mask)
+        output_head = self.fc(output_parT)
         return output_head
 
 def get_model(data_config, **kwargs):
