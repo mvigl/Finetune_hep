@@ -526,6 +526,9 @@ def build_features_and_labels_hl(Data, transform_features=True):
     evt_label_list = ['label_sig']
     out['label'] = np.stack([a[n].astype('int') for n in evt_label_list], axis=1)
 
+    Data['X_jet'][:,:,jVars.index('fj_pt')] = log(Data['X_jet'][:,:,jVars.index('fj_pt')])
+    Data['X_jet'][:,:,jVars.index('fj_mass')] = log(Data['X_jet'][:,:,jVars.index('fj_mass')])
+    Data['X_jet'][:,:,jVars.index('fj_sdmass')] = log(Data['X_jet'][:,:,jVars.index('fj_sdmass')])
     hlfeats_ix = [jVars.index('fj_pt'),jVars.index('fj_eta'),jVars.index('fj_phi'),jVars.index('fj_mass'),jVars.index('fj_sdmass')]            
     out['hl_feats'] = Data['X_jet'][:,:,hlfeats_ix]
 
