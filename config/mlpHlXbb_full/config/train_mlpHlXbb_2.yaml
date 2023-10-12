@@ -2,7 +2,7 @@ model: 'mlpHlXbb'
 lr: 0.001
 bs: 512
 ep: 100
-nlayer-mlp: 3
+nlayer-mlp: 4
 nodes-mlp: 24
 njets-mlp: 5
 config: 'no'
