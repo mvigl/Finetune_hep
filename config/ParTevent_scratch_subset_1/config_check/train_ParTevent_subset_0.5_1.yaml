@@ -1,4 +1,4 @@
-model: 'ParTevent_froz'
+model: 'ParTevent'
 subset_batches: 0.5  
 lr: 0.001
 bs: 256
