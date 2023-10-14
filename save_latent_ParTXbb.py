@@ -36,7 +36,7 @@ labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_other
 device = df.get_device()
 with open(config_path) as file:
     data_config = yaml.load(file, Loader=yaml.FullLoader)  
-ParTXbb_model = ParT_latent.get_model(data_config,for_inference=False)  
+ParTXbb_model = ParT_latent.get_model(data_config,for_inference=True)  
 
 print('get model')
 
@@ -52,13 +52,13 @@ ParTXbb_model.load_state_dict(torch.load(model_path))
 
 print('device: ', device)
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch/{name}/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_for_inf/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,subset,out_dir,Latent=True)
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch/{name}/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_for_inf/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,subset,out_dir,Latent=True)
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch/{name}/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_for_inf/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,subset,out_dir,Latent=True)
 
 
