@@ -1,5 +1,4 @@
-modeltype: 'mlpLatent'
-size: 777
+modeltype: 'mlpLatentHl'
 Ntraining: 1
 filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 config-path: '../../Finetune_hep/config/myJetClass_full.yaml'

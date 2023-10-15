@@ -14,12 +14,13 @@ import argparse
 def GetParser():
     parser = argparse.ArgumentParser(description='params')
     parser.add_argument('--config', dest='config_file', required=True, help='YAML configuration file')
+    parser.add_argument('--size', dest='size', required=True, help='data size')
     return parser.parse_args()
 args=GetParser()
 with open(args.config_file, 'r') as config_file:
     config = yaml.safe_load(config_file)
 
-size = config['size']
+size = args.size
 modeltype = config['modeltype']
 Ntraining = config['Ntraining']
 filelist_test = config['filelist-test']

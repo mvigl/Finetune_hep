@@ -1,0 +1,5 @@
+modeltype: 'mlpLatent'
+Ntraining: 4
+filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
+config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
+Xbb-scores-path: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_scratch/Xbb_scratch_test_list_4.txt' 
