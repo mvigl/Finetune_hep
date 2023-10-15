@@ -388,6 +388,7 @@ def get_Mlp_preds(model,filelist,device,out_dir,Xbb_scores_path,scaler_path,mode
                 filename = line.strip()
                 filenamexbb = linexbb.strip()
                 print('reading : ',filename)
+                print('reading : ',filenamexbb)
                 data_index = filename.index("Data")
                 out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
