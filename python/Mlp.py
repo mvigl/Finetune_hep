@@ -399,7 +399,7 @@ def get_Mlp_preds(model,filelist,device,out_dir,Xbb_scores_path,scaler_path,mode
                 data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
                 data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
                 with h5py.File(filenamexbb, 'r') as Xbb_scores:
-                        if modeltype == ['mlpHlXbb']:
+                        if modeltype == 'mlpHlXbb':
                             data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['evt_score'][:]
                             if scaler_path !='no' : 
                                 with open(scaler_path,'rb') as f:
@@ -410,9 +410,9 @@ def get_Mlp_preds(model,filelist,device,out_dir,Xbb_scores_path,scaler_path,mode
                                 x = torch.from_numpy(data).float().to(device) 
                         else: 
                             Xbb = Xbb_scores['evt_score'][:]    
-                            if modeltype == ['mlpLatent']:
+                            if modeltype == 'mlpLatent':
                                 x = torch.from_numpy(Xbb).float().to(device)   
-                            elif modeltype == ['mlpLatentHl']:          
+                            elif modeltype == 'mlpLatentHl':          
                                 hlfeats = [jVars.index('fj_pt'),jVars.index('fj_eta'),jVars.index('fj_phi'),jVars.index('fj_mass'),jVars.index('fj_sdmass')]          
                                 Xbb = np.concatenate((Xbb,data[:,:,hlfeats]),axis=-1)
                                 x = torch.from_numpy(Xbb).float().to(device)              
