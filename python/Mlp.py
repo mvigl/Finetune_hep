@@ -377,20 +377,20 @@ def get_MlpLatent_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,sca
                 Data.close()   
     return 0
 
-def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_path):
+def get_Mlp_preds(model,filelist,device,out_dir,Xbb_scores_path,scaler_path,modeltype):
     Tot_offset = 0
     with torch.no_grad():
         model.eval()
         print('opening file..')
-        with open(filelist) as f:
+        with open(filelist) as f, open(Xbb_scores_path) as fxbb:
             print('..done')
-            for line in f:
+            for line, linexbb in zip(f, fxbb):
                 filename = line.strip()
+                filenamexbb = linexbb.strip()
                 print('reading : ',filename)
                 data_index = filename.index("Data")
                 out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
-                    subset_offset = int(len(Data['X_jet']))
                     data = Data['X_jet'][:]
                     target = Data['labels'][:] 
                     jet_mask = Data['jet_mask'][:] 
@@ -398,24 +398,30 @@ def get_Mlp_preds(model,filelist,device,subset,out_dir,Xbb_scores_path,scaler_pa
                 data[:,:,jVars.index('fj_pt')] = log(data[:,:,jVars.index('fj_pt')])
                 data[:,:,jVars.index('fj_mass')] = log(data[:,:,jVars.index('fj_mass')])
                 data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
-                if Xbb_scores_path != 'no': 
-                    print('loading Xbb scores from : ',Xbb_scores_path)
-                    with h5py.File(Xbb_scores_path, 'r') as Xbb_scores:
-                        data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['Xbb'][Tot_offset:(Tot_offset+subset_offset)]
-                if scaler_path !='no' : 
-                    with open(scaler_path,'rb') as f:
-                        scaler = pickle.load(f)
-                    X_norm = transform_without_zeros(data,jet_mask,scaler)
-                    x = torch.from_numpy(X_norm).float().to(device)
-                else:
-                    x = torch.from_numpy(data).float().to(device)    
-                jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+                with h5py.File(filenamexbb, 'r') as Xbb_scores:
+                        if modeltype == ['mlpHlXbb']:
+                            data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['evt_score'][:]
+                            if scaler_path !='no' : 
+                                with open(scaler_path,'rb') as f:
+                                    scaler = pickle.load(f)
+                                    X_norm = transform_without_zeros(data,jet_mask,scaler)
+                                    x = torch.from_numpy(X_norm).float().to(device)
+                            else:
+                                x = torch.from_numpy(data).float().to(device) 
+                        else: 
+                            Xbb = Xbb_scores['evt_score'][:]    
+                            if modeltype == ['mlpLatent']:
+                                x = torch.from_numpy(Xbb).float().to(device)   
+                            elif modeltype == ['mlpLatentHl']:          
+                                hlfeats = [jVars.index('fj_pt'),jVars.index('fj_eta'),jVars.index('fj_phi'),jVars.index('fj_mass'),jVars.index('fj_sdmass')]          
+                                Xbb = np.concatenate((Xbb,data[:,:,hlfeats]),axis=-1)
+                                x = torch.from_numpy(Xbb).float().to(device)              
+                jet_mask = torch.from_numpy(jet_mask).float().to(device)
                 preds = model(x,jet_mask).detach().cpu().numpy()
                 Data = h5py.File(out_dir_i, 'w')
                 Data.create_dataset('evt_score', data=preds.reshape(-1))
                 Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-                Data.close()   
-                Tot_offset+=subset_offset
+                Data.close()
     return 0
 
 

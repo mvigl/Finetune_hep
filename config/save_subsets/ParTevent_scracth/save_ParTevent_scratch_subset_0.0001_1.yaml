@@ -1,0 +1,6 @@
+modeltype: 'ParTevent_scratch'
+size: 777
+Ntraining: 1
+filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
+config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
+Xbb-scores-path: 'no'
