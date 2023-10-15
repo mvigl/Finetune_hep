@@ -34,33 +34,33 @@ jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]  
 device = df.get_device()
 
-if modeltype == ['mlpHlXbb']:
+if modeltype == 'mlpHlXbb':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_{Ntraining}/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
     scaler_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_{Ntraining}/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pkl'
 
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,24,4,for_inference=False,binary=False),
                                 rho=Mlp.make_mlp(24,24*2,4,for_inference=True,binary=True))
     
-elif modeltype == ['mlpLatent']:
+elif modeltype == 'mlpLatent':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatent_subset_{Ntraining}/models/mlpLatent_hl3_nodes128_nj5_lr0.001_bs512_training_1subset_{size}.pt'
     scaler_path = 'no'
 
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(128,128,3,for_inference=False,binary=False),
                                 rho=Mlp.make_mlp(128,128,3,for_inference=True,binary=True)) 
 
-elif modeltype == ['mlpLatentHl']:
+elif modeltype == 'mlpLatentHl':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpLatentHl_subset_{Ntraining}/models/mlpLatentHl_hl3_nodes128_nj5_lr0.001_bs512_training_1subset_{size}.pt'
     scaler_path = 'no'
 
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(128+5,128,3,for_inference=False,binary=False),
                                 rho=Mlp.make_mlp(128,128,3,for_inference=True,binary=True))     
 
-elif modeltype == ['ParTevent']:
+elif modeltype == 'ParTevent':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_{Ntraining}/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
     model = ParT_mlp.get_model(data_config,for_inference=True)  
     Xbb = False
 
-elif modeltype == ['ParTevent_scratch']:
+elif modeltype == 'ParTevent_scratch':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_scratch_subset_{Ntraining}/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
     model = ParT_mlp.get_model(data_config,for_inference=True)  
     Xbb = False
