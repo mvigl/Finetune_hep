@@ -1,6 +1,4 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_0.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_1.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_10.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_100.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_101.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_102.h5
@@ -11,7 +9,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_107.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_108.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_109.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_11.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_10.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_110.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_111.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_112.h5
@@ -22,7 +20,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_117.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_118.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_119.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_12.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_11.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_120.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_121.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_122.h5
@@ -31,7 +29,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_125.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_126.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_129.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_13.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_12.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_130.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_131.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_132.h5
@@ -42,7 +40,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_137.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_138.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_139.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_14.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_13.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_140.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_141.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_142.h5
@@ -53,7 +51,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_147.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_148.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_149.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_15.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_14.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_150.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_151.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_152.h5
@@ -64,7 +62,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_157.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_158.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_159.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_16.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_15.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_160.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_161.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_162.h5
@@ -75,7 +73,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_167.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_168.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_169.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_17.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_16.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_170.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_171.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_172.h5
@@ -86,7 +84,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_177.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_178.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_179.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_18.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_17.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_180.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_181.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_182.h5
@@ -97,7 +95,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_187.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_188.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_189.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_19.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_18.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_190.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_191.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_192.h5
@@ -108,8 +106,8 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_197.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_198.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_199.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_2.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_20.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_19.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_1.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_200.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_201.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_202.h5
@@ -120,7 +118,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_207.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_208.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_209.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_21.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_20.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_210.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_211.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_212.h5
@@ -131,7 +129,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_217.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_218.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_219.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_22.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_21.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_220.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_221.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_222.h5
@@ -142,7 +140,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_227.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_228.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_229.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_23.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_22.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_230.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_231.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_232.h5
@@ -153,7 +151,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_237.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_238.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_239.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_24.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_23.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_240.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_241.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_242.h5
@@ -164,7 +162,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_247.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_248.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_249.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_25.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_24.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_250.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_251.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_252.h5
@@ -175,7 +173,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_257.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_258.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_259.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_26.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_25.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_260.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_261.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_262.h5
@@ -186,7 +184,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_267.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_268.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_269.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_27.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_26.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_270.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_271.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_272.h5
@@ -197,7 +195,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_277.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_278.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_279.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_28.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_27.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_280.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_281.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_282.h5
@@ -208,7 +206,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_287.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_288.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_289.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_29.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_28.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_290.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_291.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_292.h5
@@ -219,8 +217,8 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_297.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_298.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_299.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_3.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_30.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_29.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_2.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_300.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_301.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_302.h5
@@ -231,7 +229,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_307.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_308.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_309.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_31.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_30.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_310.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_311.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_312.h5
@@ -242,7 +240,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_317.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_318.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_319.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_32.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_31.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_320.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_321.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_322.h5
@@ -253,7 +251,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_327.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_328.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_329.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_33.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_32.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_330.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_331.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_332.h5
@@ -264,7 +262,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_337.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_338.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_339.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_34.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_33.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_340.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_341.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_342.h5
@@ -275,7 +273,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_347.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_348.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_349.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_35.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_34.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_350.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_351.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_352.h5
@@ -286,12 +284,13 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_357.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_358.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_359.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_36.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_35.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_360.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_36.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_37.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_38.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_39.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_4.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_3.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_40.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_41.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_42.h5
@@ -302,7 +301,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_47.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_48.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_49.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_5.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_4.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_50.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_51.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_52.h5
@@ -313,7 +312,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_57.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_58.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_59.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_6.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_5.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_60.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_61.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_62.h5
@@ -324,7 +323,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_67.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_68.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_69.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_7.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_6.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_70.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_71.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_72.h5
@@ -335,7 +334,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_77.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_78.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_79.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_8.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_7.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_80.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_81.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_82.h5
@@ -346,7 +345,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_87.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_88.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_89.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_9.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_8.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_90.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_91.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_92.h5
@@ -357,9 +356,8 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_97.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_98.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_99.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_bkg_9.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_0.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_1.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_10.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_100.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_101.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_102.h5
@@ -370,7 +368,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_107.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_108.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_109.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_11.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_10.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_110.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_111.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_112.h5
@@ -381,7 +379,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_117.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_118.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_119.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_12.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_11.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_120.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_121.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_122.h5
@@ -390,6 +388,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_125.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_126.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_127.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_12.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_13.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_14.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_15.h5
@@ -397,7 +396,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_17.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_18.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_19.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_2.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_1.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_20.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_21.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_22.h5
@@ -408,7 +407,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_27.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_28.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_29.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_3.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_2.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_30.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_31.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_32.h5
@@ -419,7 +418,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_37.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_38.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_39.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_4.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_3.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_40.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_41.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_42.h5
@@ -430,7 +429,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_47.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_48.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_49.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_5.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_4.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_50.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_51.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_52.h5
@@ -441,7 +440,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_57.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_58.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_59.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_6.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_5.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_60.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_61.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_62.h5
@@ -452,7 +451,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_67.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_68.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_69.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_7.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_6.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_70.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_71.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_72.h5
@@ -463,7 +462,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_77.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_78.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_79.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_8.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_7.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_80.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_81.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_82.h5
@@ -474,7 +473,7 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_87.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_88.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_89.h5
-/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_9.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_8.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_90.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_91.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_92.h5
@@ -485,3 +484,4 @@
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_97.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_98.h5
 /raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_99.h5
+/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch/ParTXbb_score_training_3/Data_test_sig_9.h5
