@@ -73,7 +73,7 @@ model.eval()
 
 out_out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/final_{modeltype}_{Ntraining}'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/final_{modeltype}/{size}/'
+out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/final_{modeltype}_{Ntraining}/{size}/'
 if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
 if modeltype in ['mlpHlXbb','mlpLatent','mlpLatentHl']:
