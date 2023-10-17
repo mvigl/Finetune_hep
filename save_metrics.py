@@ -95,15 +95,15 @@ def get_event_info(filelist):
                     data = Data['X_jet'][:]
                     target = Data['labels'][:] 
                     jet_mask = Data['jet_mask'][:]
-                    sig_type = np.zeros(len(Data['labels'][:]))
-                    weights = np.ones(len(Data['labels'][:]))
+                    sig_type,weights = get_sig_type_and_w(filename,len(Data['X_jet'][:]))  
                 else:
                     data = np.concatenate((data,Data['X_jet'][:]),axis=0)
                     target = np.concatenate((target,Data['labels'][:]),axis=0)
                     jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
-                    sig_type = np.concatenate((sig_type,Data['X_jet'][:]),axis=0)
-                i+=1            
-    return data, target
+                    sig_type = np.concatenate((sig_type,get_sig_type_and_w(filename,len(Data['X_jet'][:]))[0]),axis=0)
+                    weights = np.concatenate((weights,get_sig_type_and_w(filename,len(Data['X_jet'][:]))[1]),axis=0)
+                i+=1         
+    return data, target, sig_type, weights
 
 def merge_dict(existing_dict,append_dict):
     ds = [existing_dict,append_dict]
@@ -112,7 +112,6 @@ def merge_dict(existing_dict,append_dict):
       d[k] = tuple(list(d[k] for d in ds))
 
 def get_sig_type_and_w(filename,lenght):
-    
     samlpe = 'oi'
     isSig = ('sig' in filename)
     sig_type = np.zeros(lenght)
@@ -147,6 +146,8 @@ ParTevent_scratch_mean = []
 mlpHlXbb_mean = []
 mlpLatent_mean = []
 mlpLatentHl_mean = []
+
+data, target, sig_type, weights = get_event_info(filelist_test)
 
 for i in range(len(sizes)):
 
@@ -196,8 +197,8 @@ for i in range(len(sizes)):
 
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subsets.h5', 'w') as data:
         
-        data.create_dataset('X_jet', data=X_jet)
-        data.create_dataset('targets', data=targets)
+        data.create_dataset('X_jet', data=data)
+        data.create_dataset('targets', data=target)
         data.create_dataset('sig_type', data=sig_type)
         data.create_dataset('weights', data=weights)
         
