@@ -15,27 +15,7 @@ filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 
 cs =[7823.28,  648.174, 186.946, 32.2928]
 
-sizes = [
-1730,
-19332,
-195762,
-1959955,
-2704,
-29145,
-293774,
-2940006,
-4665,
-48752,
-489801,
-4900263,
-5880252,
-6860297,
-777,
-7840400,
-8820463,
-9547,
-97752,
-979854]
+sizes = [1730,  195762,  1959955,  2704,  29145,  293774,  2940006,  4665,  48752,  489801,  4900263,  9547,  97752,  979854]
 
 sizes = np.sort(sizes)
 
@@ -122,26 +102,44 @@ def extract_number_and_type(input_string):
     return number, has_sig
 
 
-def get_sig_type_and_w(filename,lenght):
+def get_sig_type_and_w(filename,length):
     samlpe,isSig = extract_number_and_type(filename)
-    sig_type = np.zeros(lenght)
-    weights = np.ones(lenght)
+    sig_type = np.zeros(length)
+    weights = np.ones(length)
     if isSig:
-        if samlpe < 10 : 
-            sig_type=np.ones(lenght)
-        elif ((samlpe>69) and (samlpe < 125)) : 
-            sig_type=np.ones(lenght)+1
-        elif ((samlpe>200) and (samlpe < 261)) : 
-            sig_type = np.ones(lenght)+2    
+        if samlpe < 18 : 
+            sig_type=np.ones(length)*600
+        elif ((samlpe>17) and (samlpe < 43)) : 
+            sig_type=np.ones(length)*1000
+        elif ((samlpe>42) and (samlpe < 45)) : 
+            sig_type = np.ones(length)*1200  
+        elif (samlpe==45) : 
+            sig_type = np.ones(length)*1400  
+        elif ((samlpe>45) and (samlpe < 48)) : 
+            sig_type = np.ones(length)*1600  
+        elif ((samlpe>47) and (samlpe < 51)) : 
+            sig_type = np.ones(length)*1800 
+        elif ((samlpe>50) and (samlpe < 92)) : 
+            sig_type = np.ones(length)*2000 
+        elif ((samlpe>91) and (samlpe < 94)) : 
+            sig_type = np.ones(length)*2500   
+        elif ((samlpe>93) and (samlpe < 125)) : 
+            sig_type = np.ones(length)*3000  
+        elif ((samlpe>124) and (samlpe < 127)) : 
+            sig_type = np.ones(length)*4000       
+        else:
+            sig_type = np.ones(length)*4500    
+
+                     
     else:
         if samlpe < 70 : 
-            weights = np.ones(lenght)*cs[0]
+            weights = np.ones(length)*cs[0]
         elif ((samlpe>69) and (samlpe < 125)) : 
-            weights = np.ones(lenght)*cs[1]
+            weights = np.ones(length)*cs[1]
         elif ((samlpe>124) and (samlpe < 201)) : 
-            weights = np.ones(lenght)*cs[2]
+            weights = np.ones(length)*cs[2]
         elif ((samlpe>200) and (samlpe < 261)) : 
-            weights = np.ones(lenght)*cs[3]    
+            weights = np.ones(length)*cs[3]    
          
     return sig_type,weights
 
@@ -168,11 +166,11 @@ for i in range(len(sizes)):
     experiments_mlpLatentHl = []
 
     for Ntraining in range(4):
-        experiments_ParTevent.append(get_metrics(filelist_test,'ParTevent',sizes[i],Ntraining))
-        experiments_ParTevent_scratch.append(get_metrics(filelist_test,'ParTevent_scratch',sizes[i],Ntraining))
-        experiments_mlpHlXbb.append(get_metrics(filelist_test,'mlpHlXbb',sizes[i],Ntraining))
-        experiments_mlpLatent.append(get_metrics(filelist_test,'mlpLatent',sizes[i],Ntraining))
-        experiments_mlpLatentHl.append(get_metrics(filelist_test,'mlpLatentHl',sizes[i],Ntraining))   
+        experiments_ParTevent.append(get_metrics(filelist_test,'ParTevent',sizes[i],Ntraining+1))
+        experiments_ParTevent_scratch.append(get_metrics(filelist_test,'ParTevent_scratch',sizes[i],Ntraining+1))
+        experiments_mlpHlXbb.append(get_metrics(filelist_test,'mlpHlXbb',sizes[i],Ntraining+1))
+        experiments_mlpLatent.append(get_metrics(filelist_test,'mlpLatent',sizes[i],Ntraining+1))
+        experiments_mlpLatentHl.append(get_metrics(filelist_test,'mlpLatentHl',sizes[i],Ntraining+1))   
 
     if i==0:
 
