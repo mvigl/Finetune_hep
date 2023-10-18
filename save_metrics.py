@@ -17,6 +17,8 @@ cs =[7823.28,  648.174, 186.946, 32.2928]
 
 sizes = [1730,  195762,  1959955,  2704,  29145,  293774,  2940006,  4665,  48752,  489801,  4900263,  9547,  97752,  979854]
 
+sizes = [1730,  195762]
+
 sizes = np.sort(sizes)
 
 def get_metrics(filelist_test,modeltype,size,Ntraining):
