@@ -161,11 +161,11 @@ def get_sig_type_and_w(filename,length):
          
     return sig_type,weights
 
-ParTevent = []
-ParTevent_scratch = []
-mlpHlXbb = []
-mlpLatent = []
-mlpLatentHl = []
+ParTevent = [[],[],[],[]]
+ParTevent_scratch = [[],[],[],[]]
+mlpHlXbb = [[],[],[],[]]
+mlpLatent = [[],[],[],[]]
+mlpLatentHl = [[],[],[],[]]
 
 ParTevent_mean = []
 ParTevent_scratch_mean = []
