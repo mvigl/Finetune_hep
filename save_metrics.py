@@ -194,7 +194,8 @@ for i in range(len(sizes)):
             mlpLatentHl[j] = merge_dict(mlpLatentHl[j],experiments_mlpLatentHl[j])   
    
 
-
+out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
+if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subsets.h5', 'w') as data:
         
         data.create_dataset('X_jet', data=data)
