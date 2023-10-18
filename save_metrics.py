@@ -15,7 +15,6 @@ filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 
 cs =[7823.28,  648.174, 186.946, 32.2928]
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854]
-sizes = [1730,  19332,  195762]
 
 sizes = np.sort(sizes)
 
@@ -91,19 +90,19 @@ def merge_dict(existing_dict):
     ds = [existing_dict[0],
           existing_dict[1],
           existing_dict[2],
-          #existing_dict[3],
-          #existing_dict[4],
-          #existing_dict[5],
-          #existing_dict[6],
-          #existing_dict[7],
-          #existing_dict[8],
-          #existing_dict[9],
-          #existing_dict[10],
-          #existing_dict[11],
-          #existing_dict[12],
-          #existing_dict[13],
-          #existing_dict[14],
-          #existing_dict[15]
+          existing_dict[3],
+          existing_dict[4],
+          existing_dict[5],
+          existing_dict[6],
+          existing_dict[7],
+          existing_dict[8],
+          existing_dict[9],
+          existing_dict[10],
+          existing_dict[11],
+          existing_dict[12],
+          existing_dict[13],
+          existing_dict[14],
+          existing_dict[15]
           ]
     d = {}
     for k in existing_dict[0].keys():
@@ -173,7 +172,7 @@ mlpHlXbb_mean = []
 mlpLatent_mean = []
 mlpLatentHl_mean = []
 
-#feats, target, sig_type, weights = get_event_info(filelist_test)
+feats, target, sig_type, weights = get_event_info(filelist_test)
 
 for i in range(len(sizes)):
     print('size : ', sizes[i])
@@ -224,10 +223,10 @@ out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subsets.h5', 'w') as data:
         
-        #data.create_dataset('X_jet', data=feats)
-        #data.create_dataset('targets', data=target)
-        #data.create_dataset('sig_type', data=sig_type)
-        #data.create_dataset('weights', data=weights)
+        data.create_dataset('X_jet', data=feats)
+        data.create_dataset('targets', data=target)
+        data.create_dataset('sig_type', data=sig_type)
+        data.create_dataset('weights', data=weights)
         
         model_group_ete = data.create_group('ete')
         model_group_ete_scratch = data.create_group('ete_scratch')
