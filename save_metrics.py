@@ -48,9 +48,9 @@ def get_mean_metrics(experiments):
     fpr=[]
     bkg_rej=[]
     for i in range(len(experiments)):
-        Auc.append(experiments[i].auc)
-        acc.append(experiments[i].acc)
-        fpr.append(np.interp(tpr_common, experiments[i].tpr, experiments[i].fpr))
+        Auc.append(experiments[i]['auc'])
+        acc.append(experiments[i]['acc'])
+        fpr.append(np.interp(tpr_common, experiments[i]['tpr'], experiments[i]['fpr']))
         bkg_rej.append(1/fpr[i])
 
     Auc = np.array(Auc).reshape(-1)
