@@ -53,7 +53,7 @@ class ParticleTransformerWrapper(nn.Module):
         output_parT = torch.cat( ( torch.reshape(x_cls,(-1,5,128)) , hl_feats ) ,axis=-1 )
         #output_parT = torch.sum(output_parT*jet_mask,dim=1)
         output_head = self.fc(output_parT,jet_mask)
-        output_head = self.fc(output_parT)
+        #output_head = self.fc(output_parT)
         return output_head
 
 def get_model(data_config, **kwargs):
