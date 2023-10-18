@@ -145,17 +145,17 @@ def get_sig_type_and_w(filename,length):
          
     return sig_type,weights
 
-ParTevent = []
-ParTevent_scratch = []
-mlpHlXbb = []
-mlpLatent = []
-mlpLatentHl = []
-
-ParTevent_mean = []
-ParTevent_scratch_mean = []
-mlpHlXbb_mean = []
-mlpLatent_mean = []
-mlpLatentHl_mean = []
+#ParTevent = []
+#ParTevent_scratch = []
+#mlpHlXbb = []
+#mlpLatent = []
+#mlpLatentHl = []
+#
+#ParTevent_mean = []
+#ParTevent_scratch_mean = []
+#mlpHlXbb_mean = []
+#mlpLatent_mean = []
+#mlpLatentHl_mean = []
 
 feats, target, sig_type, weights = get_event_info(filelist_test)
 
