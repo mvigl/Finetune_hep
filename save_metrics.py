@@ -24,6 +24,7 @@ sizes = np.sort(sizes)
 def get_metrics(filelist_test,modeltype,size,Ntraining):
     yi=[]
     tagrgeti=[]
+    tpr_common = np.linspace(0,1,10000)
     with open(filelist_test) as f:
         for line in f:
             filename = line.strip()
@@ -40,7 +41,7 @@ def get_metrics(filelist_test,modeltype,size,Ntraining):
     optimal_threshold = thresholds[np.argmax(tpr - fpr)]
     acc = balanced_accuracy_score(target,(y>= optimal_threshold).astype(int))
     Auc = auc(fpr,tpr)
-    return {'acc': acc,'auc': Auc,'y': y,'fpr': tpr,'tpr': tpr} 
+    return {'acc': acc,'auc': Auc,'y': y,'fpr': np.interp(tpr_common, tpr,fpr),'tpr': tpr_common} 
 
 
 def get_mean_metrics(experiments):
