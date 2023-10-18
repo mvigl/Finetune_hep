@@ -75,16 +75,16 @@ def get_event_info(filelist):
             data_index = filename.index("Data")
             with h5py.File(filename, 'r') as Data:
                 if i ==0:
-                    data = Data['X_jet'][:]
-                    target = Data['labels'][:] 
-                    jet_mask = Data['jet_mask'][:]
-                    sig_type,weights = get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))  
+                    data = Data['X_jet'][:100]
+                    target = Data['labels'][:100] 
+                    jet_mask = Data['jet_mask'][:100]
+                    sig_type,weights = get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:100]))  
                 else:
-                    data = np.concatenate((data,Data['X_jet'][:]),axis=0)
-                    target = np.concatenate((target,Data['labels'][:]),axis=0)
-                    jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
-                    sig_type = np.concatenate((sig_type,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))[0]),axis=0)
-                    weights = np.concatenate((weights,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))[1]),axis=0)
+                    data = np.concatenate((data,Data['X_jet'][:100]),axis=0)
+                    target = np.concatenate((target,Data['labels'][:100]),axis=0)
+                    jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:100]),axis=0)
+                    sig_type = np.concatenate((sig_type,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:100]))[0]),axis=0)
+                    weights = np.concatenate((weights,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:100]))[1]),axis=0)
                 i+=1         
     return data, target, sig_type, weights
 
