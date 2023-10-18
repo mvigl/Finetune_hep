@@ -12,7 +12,7 @@ data: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
 data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
 Xbb: 'no'
 Xbb-val: 'no'
-Ntrainings: 3
+Ntrainings: 2
 alpha: 0
 project-name: 'Finetuning_hep'
 default: False
