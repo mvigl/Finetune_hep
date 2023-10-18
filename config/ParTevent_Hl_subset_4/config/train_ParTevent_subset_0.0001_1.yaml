@@ -8,7 +8,7 @@ nodes-mlp: 128
 njets-mlp: 5
 config: '../../Finetune_hep/config/myJetClass_full.yaml'
 ParT-weights: '/raven/u/mvigl/Finetune_hep_dir/run/ParTXbb_scratch/models/ParTXbb_hl0_nodes128_nj1_lr0.001_bs512_training_4_epoch_9_Val_loss_0.15518087148666382.pt'
-mlp-weights: 'no'
+mlp-weights: '/raven/u/mvigl/Finetune_hep_dir/run/mlpLatentHl_subset_4/models/mlpLatentHl_hl3_nodes128_nj5_lr0.001_bs512_training_1subset_777.pt'
 data: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
 data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
 Xbb: 'no'

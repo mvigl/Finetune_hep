@@ -670,7 +670,9 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
                     model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
         if (mlp_params_path != 'no'):
             for i, layer in enumerate(torch.load(mlp_params_path).keys()):
-                    model.state_dict()[layer].copy_(torch.load(mlp_params_path)[layer])               
+                    print(layer)
+                    layer_backbone='fc.'+layer
+                    model.state_dict()[layer_backbone].copy_(torch.load(mlp_params_path)[layer])               
 
     return model    
 
