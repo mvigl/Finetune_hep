@@ -657,7 +657,7 @@ def plot_evals(evals,label):
 
 def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
 
-    if modeltype in ['ParTXbb']:
+    if (modeltype in ['ParTXbb']) or (ParT_params_path=='../../Finetune_hep/models/ParT_full.pt'):
         if (ParT_params_path != 'no'):
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
                 if i < len(torch.load(ParT_params_path).keys()) -2:
