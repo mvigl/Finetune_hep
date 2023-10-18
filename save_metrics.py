@@ -94,6 +94,7 @@ def merge_dict(existing_dict,append_dict):
     for k in existing_dict.keys():
       d[k] = tuple(list(d[k] for d in ds))
 
+    return d
 import re
 
 def extract_number_and_type(input_string):
