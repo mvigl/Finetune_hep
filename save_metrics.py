@@ -201,10 +201,10 @@ for i in range(len(sizes)):
 
     for j in range(4):
         ParTevent[j].append(experiments_ParTevent[j])
-        ParTevent_scratch[j].append(ParTevent_scratch[j],experiments_ParTevent_scratch[j])
-        mlpHlXbb[j].append(mlpHlXbb[j],experiments_mlpHlXbb[j])
-        mlpLatent[j].append(mlpLatent[j],experiments_mlpLatent[j])
-        mlpLatentHl[j].append(mlpLatentHl[j],experiments_mlpLatentHl[j])   
+        ParTevent_scratch[j].append(experiments_ParTevent_scratch[j])
+        mlpHlXbb[j].append(experiments_mlpHlXbb[j])
+        mlpLatent[j].append(experiments_mlpLatent[j])
+        mlpLatentHl[j].append(experiments_mlpLatentHl[j])   
    
 
 ParTevent_mean = merge_dict(ParTevent_mean)
