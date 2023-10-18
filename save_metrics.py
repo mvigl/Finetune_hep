@@ -106,7 +106,7 @@ def merge_dict(existing_dict):
           #existing_dict[15]
           ]
     d = {}
-    for k in existing_dict.keys():
+    for k in existing_dict[0].keys():
       d[k] = tuple(list(d[k] for d in ds))
     return d
 
@@ -173,7 +173,7 @@ mlpHlXbb_mean = []
 mlpLatent_mean = []
 mlpLatentHl_mean = []
 
-feats, target, sig_type, weights = get_event_info(filelist_test)
+#feats, target, sig_type, weights = get_event_info(filelist_test)
 
 for i in range(len(sizes)):
     print('size : ', sizes[i])
@@ -224,10 +224,10 @@ out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subsets.h5', 'w') as data:
         
-        data.create_dataset('X_jet', data=feats)
-        data.create_dataset('targets', data=target)
-        data.create_dataset('sig_type', data=sig_type)
-        data.create_dataset('weights', data=weights)
+        #data.create_dataset('X_jet', data=feats)
+        #data.create_dataset('targets', data=target)
+        #data.create_dataset('sig_type', data=sig_type)
+        #data.create_dataset('weights', data=weights)
         
         model_group_ete = data.create_group('ete')
         model_group_ete_scratch = data.create_group('ete_scratch')
