@@ -60,7 +60,7 @@ def get_mean_metrics(experiments):
     return {'acc_mean': np.mean(acc,axis=0),'acc_std': np.std(acc,axis=0),
             'auc_mean': np.mean(Auc,axis=0),'auc_std': np.std(Auc,axis=0),
             'fpr_mean': np.mean(fpr,axis=0),'fpr_std': np.std(fpr,axis=0),
-            'bkg_rej_mean': np.mean(bkg_rej,axis=0),'bkg_rej_std': np.std(fpr,axis=0),
+            'bkg_rej_mean': np.mean(bkg_rej,axis=0),'bkg_rej_std': np.std(bkg_rej,axis=0),
             'tpr': tpr_common} 
 
 def get_event_info(filelist):
@@ -158,7 +158,7 @@ mlpLatentHl_mean = []
 feats, target, sig_type, weights = get_event_info(filelist_test)
 
 for i in range(len(sizes)):
-
+    print('size : ', sizes[i])
     experiments_ParTevent = []
     experiments_ParTevent_scratch = []
     experiments_mlpHlXbb = []
