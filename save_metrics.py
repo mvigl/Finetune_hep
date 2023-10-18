@@ -93,8 +93,8 @@ def merge_dict(existing_dict,append_dict):
     d = {}
     for k in existing_dict.keys():
       d[k] = tuple(list(d[k] for d in ds))
-
     return d
+
 import re
 
 def extract_number_and_type(input_string):
@@ -256,15 +256,15 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
         subgroup.create_dataset('tpr', data=mlpLatent_mean['tpr'])
 
         subgroup = model_group_frozen_hl.create_group(f'mean')
-        subgroup.create_dataset('acc_mean', data=mlpLatentHl['acc_mean'])
-        subgroup.create_dataset('acc_std', data=mlpLatentHl['acc_std'])
-        subgroup.create_dataset('auc_mean', data=mlpLatentHl['auc_mean'])
-        subgroup.create_dataset('auc_std', data=mlpLatentHl['auc_std'])
-        subgroup.create_dataset('fpr_mean', data=mlpLatentHl['fpr_mean'])
-        subgroup.create_dataset('fpr_std', data=mlpLatentHl['fpr_std'])
-        subgroup.create_dataset('bkg_rej_mean', data=mlpLatentHl['bkg_rej_mean'])
-        subgroup.create_dataset('bkg_rej_std', data=mlpLatentHl['bkg_rej_std'])
-        subgroup.create_dataset('tpr', data=mlpLatentHl['tpr'])
+        subgroup.create_dataset('acc_mean', data=mlpLatentHl_mean['acc_mean'])
+        subgroup.create_dataset('acc_std', data=mlpLatentHl_mean['acc_std'])
+        subgroup.create_dataset('auc_mean', data=mlpLatentHl_mean['auc_mean'])
+        subgroup.create_dataset('auc_std', data=mlpLatentHl_mean['auc_std'])
+        subgroup.create_dataset('fpr_mean', data=mlpLatentHl_mean['fpr_mean'])
+        subgroup.create_dataset('fpr_std', data=mlpLatentHl_mean['fpr_std'])
+        subgroup.create_dataset('bkg_rej_mean', data=mlpLatentHl_mean['bkg_rej_mean'])
+        subgroup.create_dataset('bkg_rej_std', data=mlpLatentHl_mean['bkg_rej_std'])
+        subgroup.create_dataset('tpr', data=mlpLatentHl_mean['tpr'])
 
         subgroup = model_group_mlpHlXbb.create_group(f'mean')
         subgroup.create_dataset('acc_mean', data=mlpHlXbb_mean['acc_mean'])
