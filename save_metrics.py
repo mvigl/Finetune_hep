@@ -15,6 +15,8 @@ filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 
 cs =[7823.28,  648.174, 186.946, 32.2928]
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854]
+sizes = [1730,  19332,  195762]
+
 sizes = np.sort(sizes)
 
 def get_metrics(filelist_test,modeltype,size,Ntraining):
@@ -173,7 +175,7 @@ for i in range(len(sizes)):
         experiments_mlpLatentHl.append(get_metrics(filelist_test,'mlpLatentHl',sizes[i],Ntraining+1))   
 
     if i==0:
-        #print(i,experiments_mlpHlXbb)
+        print(i,experiments_ParTevent)
         ParTevent = experiments_ParTevent.copy() 
         ParTevent_scratch = experiments_ParTevent_scratch.copy()    
         mlpHlXbb = experiments_mlpHlXbb.copy()    
@@ -185,16 +187,16 @@ for i in range(len(sizes)):
         mlpHlXbb_mean = get_mean_metrics(experiments_mlpHlXbb)
         mlpLatent_mean = get_mean_metrics(experiments_mlpLatent)
         mlpLatentHl_mean = get_mean_metrics(experiments_mlpLatentHl) 
-        #print(i,mlpHlXbb_mean)
+        print(i,ParTevent_mean)
 
     else:
-        #print(i,experiments_mlpHlXbb)
+        print(i,experiments_ParTevent)
         ParTevent_mean = merge_dict(ParTevent_mean,get_mean_metrics(experiments_ParTevent))
         ParTevent_scratch_mean = merge_dict(ParTevent_scratch_mean,get_mean_metrics(experiments_ParTevent_scratch))
         mlpHlXbb_mean = merge_dict(mlpHlXbb_mean,get_mean_metrics(experiments_mlpHlXbb))
         mlpLatent_mean = merge_dict(mlpLatent_mean,get_mean_metrics(experiments_mlpLatent))
         mlpLatentHl_mean = merge_dict(mlpLatentHl_mean,get_mean_metrics(experiments_mlpLatentHl))
-        #print(i,mlpHlXbb_mean)
+        print(i,ParTevent_mean)
         for j in range(4):
             ParTevent[j] = merge_dict(ParTevent[j],experiments_ParTevent[j])
             ParTevent_scratch[j] = merge_dict(ParTevent_scratch[j],experiments_ParTevent_scratch[j])
