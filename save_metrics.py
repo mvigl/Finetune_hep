@@ -208,6 +208,10 @@ for i in range(len(sizes)):
    
 
 ParTevent_mean = merge_dict(ParTevent_mean)
+ParTevent_scratch_mean = merge_dict(ParTevent_scratch_mean)
+mlpHlXbb_mean = merge_dict(mlpHlXbb_mean)
+mlpLatent_mean = merge_dict(mlpLatent_mean)
+mlpLatentHl_mean = merge_dict(mlpLatentHl_mean)
 
 for j in range(4):
         ParTevent[j] = merge_dict(ParTevent[j])
