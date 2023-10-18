@@ -90,18 +90,19 @@ def get_event_info(filelist):
         for line in f:
             filename = line.strip()
             print('reading : ',filename)
+            data_index = filename.index("Data")
             with h5py.File(filename, 'r') as Data:
                 if i ==0:
                     data = Data['X_jet'][:]
                     target = Data['labels'][:] 
                     jet_mask = Data['jet_mask'][:]
-                    sig_type,weights = get_sig_type_and_w(filename,len(Data['X_jet'][:]))  
+                    sig_type,weights = get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))  
                 else:
                     data = np.concatenate((data,Data['X_jet'][:]),axis=0)
                     target = np.concatenate((target,Data['labels'][:]),axis=0)
                     jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
-                    sig_type = np.concatenate((sig_type,get_sig_type_and_w(filename,len(Data['X_jet'][:]))[0]),axis=0)
-                    weights = np.concatenate((weights,get_sig_type_and_w(filename,len(Data['X_jet'][:]))[1]),axis=0)
+                    sig_type = np.concatenate((sig_type,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))[0]),axis=0)
+                    weights = np.concatenate((weights,get_sig_type_and_w(filename[data_index:],len(Data['X_jet'][:]))[1]),axis=0)
                 i+=1         
     return data, target, sig_type, weights
 
@@ -111,9 +112,18 @@ def merge_dict(existing_dict,append_dict):
     for k in existing_dict.keys():
       d[k] = tuple(list(d[k] for d in ds))
 
+import re
+
+def extract_number_and_type(input_string):
+    number_pattern = r'\d+'
+    number_matches = re.findall(number_pattern, input_string)
+    has_sig = 'sig' in input_string
+    number = int(number_matches[0]) if number_matches else 0
+    return number, has_sig
+
+
 def get_sig_type_and_w(filename,lenght):
-    samlpe = 'oi'
-    isSig = ('sig' in filename)
+    samlpe,isSig = extract_number_and_type(filename)
     sig_type = np.zeros(lenght)
     weights = np.ones(lenght)
     if isSig:
