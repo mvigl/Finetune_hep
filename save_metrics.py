@@ -87,8 +87,24 @@ def get_event_info(filelist):
                 i+=1         
     return data, target, sig_type, weights
 
-def merge_dict(existing_dict,append_dict):
-    ds = [existing_dict,append_dict]
+def merge_dict(existing_dict):
+    ds = [existing_dict[0],
+          existing_dict[1],
+          existing_dict[2],
+          #existing_dict[3],
+          #existing_dict[4],
+          #existing_dict[5],
+          #existing_dict[6],
+          #existing_dict[7],
+          #existing_dict[8],
+          #existing_dict[9],
+          #existing_dict[10],
+          #existing_dict[11],
+          #existing_dict[12],
+          #existing_dict[13],
+          #existing_dict[14],
+          #existing_dict[15]
+          ]
     d = {}
     for k in existing_dict.keys():
       d[k] = tuple(list(d[k] for d in ds))
@@ -145,17 +161,17 @@ def get_sig_type_and_w(filename,length):
          
     return sig_type,weights
 
-#ParTevent = []
-#ParTevent_scratch = []
-#mlpHlXbb = []
-#mlpLatent = []
-#mlpLatentHl = []
-#
-#ParTevent_mean = []
-#ParTevent_scratch_mean = []
-#mlpHlXbb_mean = []
-#mlpLatent_mean = []
-#mlpLatentHl_mean = []
+ParTevent = []
+ParTevent_scratch = []
+mlpHlXbb = []
+mlpLatent = []
+mlpLatentHl = []
+
+ParTevent_mean = []
+ParTevent_scratch_mean = []
+mlpHlXbb_mean = []
+mlpLatent_mean = []
+mlpLatentHl_mean = []
 
 feats, target, sig_type, weights = get_event_info(filelist_test)
 
@@ -174,36 +190,31 @@ for i in range(len(sizes)):
         experiments_mlpLatent.append(get_metrics(filelist_test,'mlpLatent',sizes[i],Ntraining+1))
         experiments_mlpLatentHl.append(get_metrics(filelist_test,'mlpLatentHl',sizes[i],Ntraining+1))   
 
-    if i==0:
-        print(i,experiments_ParTevent)
-        ParTevent = experiments_ParTevent.copy() 
-        ParTevent_scratch = experiments_ParTevent_scratch.copy()    
-        mlpHlXbb = experiments_mlpHlXbb.copy()    
-        mlpLatent = experiments_mlpLatent.copy()   
-        mlpLatentHl = experiments_mlpLatentHl.copy() 
 
-        ParTevent_mean = get_mean_metrics(experiments_ParTevent)
-        ParTevent_scratch_mean = get_mean_metrics(experiments_ParTevent_scratch)
-        mlpHlXbb_mean = get_mean_metrics(experiments_mlpHlXbb)
-        mlpLatent_mean = get_mean_metrics(experiments_mlpLatent)
-        mlpLatentHl_mean = get_mean_metrics(experiments_mlpLatentHl) 
-        print(i,ParTevent_mean)
+    print(i,experiments_ParTevent)
+    ParTevent_mean.append(get_mean_metrics(experiments_ParTevent))
+    ParTevent_scratch_mean.append(get_mean_metrics(experiments_ParTevent_scratch))
+    mlpHlXbb_mean.append(get_mean_metrics(experiments_mlpHlXbb))
+    mlpLatent_mean.append(get_mean_metrics(experiments_mlpLatent))
+    mlpLatentHl_mean.append(get_mean_metrics(experiments_mlpLatentHl))
+    print(i,ParTevent_mean)
 
-    else:
-        print(i,experiments_ParTevent)
-        ParTevent_mean = merge_dict(ParTevent_mean,get_mean_metrics(experiments_ParTevent))
-        ParTevent_scratch_mean = merge_dict(ParTevent_scratch_mean,get_mean_metrics(experiments_ParTevent_scratch))
-        mlpHlXbb_mean = merge_dict(mlpHlXbb_mean,get_mean_metrics(experiments_mlpHlXbb))
-        mlpLatent_mean = merge_dict(mlpLatent_mean,get_mean_metrics(experiments_mlpLatent))
-        mlpLatentHl_mean = merge_dict(mlpLatentHl_mean,get_mean_metrics(experiments_mlpLatentHl))
-        print(i,ParTevent_mean)
-        for j in range(4):
-            ParTevent[j] = merge_dict(ParTevent[j],experiments_ParTevent[j])
-            ParTevent_scratch[j] = merge_dict(ParTevent_scratch[j],experiments_ParTevent_scratch[j])
-            mlpHlXbb[j] = merge_dict(mlpHlXbb[j],experiments_mlpHlXbb[j])
-            mlpLatent[j] = merge_dict(mlpLatent[j],experiments_mlpLatent[j])
-            mlpLatentHl[j] = merge_dict(mlpLatentHl[j],experiments_mlpLatentHl[j])   
+    for j in range(4):
+        ParTevent[j].append(experiments_ParTevent[j])
+        ParTevent_scratch[j].append(ParTevent_scratch[j],experiments_ParTevent_scratch[j])
+        mlpHlXbb[j].append(mlpHlXbb[j],experiments_mlpHlXbb[j])
+        mlpLatent[j].append(mlpLatent[j],experiments_mlpLatent[j])
+        mlpLatentHl[j].append(mlpLatentHl[j],experiments_mlpLatentHl[j])   
    
+
+ParTevent_mean = merge_dict(ParTevent_mean)
+
+for j in range(4):
+        ParTevent[j] = merge_dict(ParTevent[j])
+        ParTevent_scratch[j] = merge_dict(ParTevent_scratch[j])
+        mlpHlXbb[j] = merge_dict(mlpHlXbb[j])
+        mlpLatent[j] = merge_dict(mlpLatent[j])
+        mlpLatentHl[j] = merge_dict(mlpLatentHl[j])
 
 out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
