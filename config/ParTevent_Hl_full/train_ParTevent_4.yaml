@@ -22,4 +22,4 @@ ws: 'mvigl'
 checkpoint: 'no'
 check-message: 'no'
 start-epoch: 0
-Fyaml: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent/config/train_ParTevent_4.yaml'
+Fyaml: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl/config/train_ParTevent_4.yaml'
