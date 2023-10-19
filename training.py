@@ -2,6 +2,7 @@ from comet_ml import Experiment,ExistingExperiment
 from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import ParT_mlp_Hl
+from Finetune_hep.python import ParT_mlp_Xbb_Hl
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -74,13 +75,14 @@ subset_batches_val=1
 if subset: subset_batches_val = 0.1
 idxmap_val = df.get_idxmap(filelist_val,subset_batches_val)
 
-if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen','ParTevent_Hl']:
+if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen','ParTevent_Hl','ParTevent_Xbb_Hl']:
     with open(config_path) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)  
 
-    if modeltype in['ParTevent','ParTevent_frozen','ParTevent_Hl']:
+    if modeltype in['ParTevent','ParTevent_frozen','ParTevent_Hl','ParTevent_Xbb_Hl']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         if modeltype == 'ParTevent_Hl': model = ParT_mlp_Hl.get_model(data_config,for_inference=False)  
+        if modeltype == 'ParTevent_Xbb_Hl': model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=False)  
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
         Xbb = False
@@ -222,7 +224,7 @@ if modeltype in ['ParTevent','ParTXbb','ParTevent_frozen']:
         )
     )
 
-elif modeltype == 'ParTevent_Hl':    
+elif modeltype in ['ParTevent_Hl','ParTevent_Xbb_Hl']:    
         evals_part, model_part = ParT_mlp_Hl.train_loop(
         model,
         idxmap,
