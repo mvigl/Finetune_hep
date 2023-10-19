@@ -20,7 +20,7 @@ default: False
 subset: True
 api-key: 'r1SBLyPzovxoWBPDLx3TAE02O'
 ws: 'mvigl'
-checkpoint: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_1/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_979854.pt'
+checkpoint: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_3/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_979854.pt'
 check-message: 'no'
 start-epoch: 0
 Fyaml: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset/config/train_ParTevent_1.yaml'
