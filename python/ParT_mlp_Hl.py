@@ -287,7 +287,7 @@ def get_latent_preds(model,data_loader,device,subset,build_features,isXbb=False)
 
     return preds,target    
 
-def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False,Latent=False):
+def get_Xbb_preds(model,filelist,device,out_dir,Xbb=False,Latent=False):
 
     with torch.no_grad():
         model.eval()

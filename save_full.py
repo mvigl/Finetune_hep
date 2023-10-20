@@ -36,8 +36,8 @@ labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_other
 device = df.get_device()
 
 if modeltype == 'mlpHlXbb':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_{Ntraining}/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pt'
-    scaler_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_{Ntraining}/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_1subset_{size}.pkl'
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_{Ntraining}.pt'
+    scaler_path = f'/raven/u/mvigl/Finetune_hep_dir/run/mlpHlXbb_subset_{Ntraining}/models/mlpHlXbb_hl4_nodes24_nj5_lr0.001_bs512_training_{Ntraining}.pkl'
 
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,24,4,for_inference=False,binary=False),
                                 rho=Mlp.make_mlp(24,24*2,4,for_inference=True,binary=True))
