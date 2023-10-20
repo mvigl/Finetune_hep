@@ -14,7 +14,7 @@ import h5py
 filelist_test = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 
 cs =[7823.28,  648.174, 186.946, 32.2928]
-sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854]
+sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854, 9800758]
 
 sizes = np.sort(sizes)
 
@@ -102,7 +102,8 @@ def merge_dict(existing_dict):
           existing_dict[12],
           existing_dict[13],
           existing_dict[14],
-          existing_dict[15]
+          existing_dict[15],
+          existing_dict[16]
           ]
     d = {}
     for k in existing_dict[0].keys():
@@ -165,6 +166,9 @@ ParTevent_scratch = [[],[],[],[]]
 mlpHlXbb = [[],[],[],[]]
 mlpLatent = [[],[],[],[]]
 mlpLatentHl = [[],[],[],[]]
+ParTevent_Hl = []
+ParTevent_Xbb_Hl = []
+ParTevent_paper = []
 
 ParTevent_mean = []
 ParTevent_scratch_mean = []
@@ -181,6 +185,7 @@ for i in range(len(sizes)):
     experiments_mlpHlXbb = []
     experiments_mlpLatent = []
     experiments_mlpLatentHl = []
+    
 
     for Ntraining in range(4):
         experiments_ParTevent.append(get_metrics(filelist_test,'ParTevent',sizes[i],Ntraining+1))
@@ -188,15 +193,17 @@ for i in range(len(sizes)):
         experiments_mlpHlXbb.append(get_metrics(filelist_test,'mlpHlXbb',sizes[i],Ntraining+1))
         experiments_mlpLatent.append(get_metrics(filelist_test,'mlpLatent',sizes[i],Ntraining+1))
         experiments_mlpLatentHl.append(get_metrics(filelist_test,'mlpLatentHl',sizes[i],Ntraining+1))   
+    ParTevent_Hl.append(get_metrics(filelist_test,'ParTevent_Hl',sizes[i],1))
+    ParTevent_Xbb_Hl.append(get_metrics(filelist_test,'ParTevent_Xbb_Hl',sizes[i],1))
+    ParTevent_paper.append(get_metrics(filelist_test,'ParTevent_paper',sizes[i],1))
 
-
-    print(i,experiments_ParTevent)
+    #print(i,experiments_ParTevent)
     ParTevent_mean.append(get_mean_metrics(experiments_ParTevent))
     ParTevent_scratch_mean.append(get_mean_metrics(experiments_ParTevent_scratch))
     mlpHlXbb_mean.append(get_mean_metrics(experiments_mlpHlXbb))
     mlpLatent_mean.append(get_mean_metrics(experiments_mlpLatent))
     mlpLatentHl_mean.append(get_mean_metrics(experiments_mlpLatentHl))
-    print(i,ParTevent_mean)
+    #print(i,ParTevent_mean)
 
     for j in range(4):
         ParTevent[j].append(experiments_ParTevent[j])
@@ -218,6 +225,9 @@ for j in range(4):
         mlpHlXbb[j] = merge_dict(mlpHlXbb[j])
         mlpLatent[j] = merge_dict(mlpLatent[j])
         mlpLatentHl[j] = merge_dict(mlpLatentHl[j])
+ParTevent_Hl = merge_dict(ParTevent_Hl)
+ParTevent_Xbb_Hl = merge_dict(ParTevent_Xbb_Hl)
+ParTevent_paper = merge_dict(ParTevent_paper)
 
 out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
@@ -233,6 +243,9 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
         model_group_frozen = data.create_group('frozen')
         model_group_frozen_hl = data.create_group('frozen_hl')
         model_group_mlpHlXbb = data.create_group('mlpHlXbb')
+        model_group_ete_Hl = data.create_group('ete_Hl')
+        model_group_ete_Xbb_Hl = data.create_group('ete_Xbb_Hl')
+        model_group_ete_paper = data.create_group('ete_paper')
 
 
         subgroup = model_group_ete.create_group(f'mean')
@@ -326,4 +339,24 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
             subgroup.create_dataset('fpr', data=mlpHlXbb[i]['fpr'])
             subgroup.create_dataset('tpr', data=mlpHlXbb[i]['tpr'])
 
+        subgroup = model_group_ete_Hl.create_group('training_1')
+        subgroup.create_dataset('acc', data=ParTevent_Hl[0]['acc'])
+        subgroup.create_dataset('auc', data=ParTevent_Hl[0]['auc'])
+        subgroup.create_dataset('y', data=ParTevent_Hl[0]['y'])
+        subgroup.create_dataset('fpr', data=ParTevent_Hl[0]['fpr'])
+        subgroup.create_dataset('tpr', data=ParTevent_Hl[0]['tpr'])
+
+        subgroup = model_group_ete_Xbb_Hl.create_group('training_1')
+        subgroup.create_dataset('acc', data=ParTevent_Xbb_Hl[0]['acc'])
+        subgroup.create_dataset('auc', data=ParTevent_Xbb_Hl[0]['auc'])
+        subgroup.create_dataset('y', data=ParTevent_Xbb_Hl[0]['y'])
+        subgroup.create_dataset('fpr', data=ParTevent_Xbb_Hl[0]['fpr'])
+        subgroup.create_dataset('tpr', data=ParTevent_Xbb_Hl[0]['tpr'])
+
+        subgroup = model_group_ete_paper.create_group('training_1')
+        subgroup.create_dataset('acc', data=ParTevent_paper[0]['acc'])
+        subgroup.create_dataset('auc', data=ParTevent_paper[0]['auc'])
+        subgroup.create_dataset('y', data=ParTevent_paper[0]['y'])
+        subgroup.create_dataset('fpr', data=ParTevent_paper[0]['fpr'])
+        subgroup.create_dataset('tpr', data=ParTevent_paper[0]['tpr'])
 
