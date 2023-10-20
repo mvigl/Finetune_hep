@@ -1,7 +1,5 @@
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
-from Finetune_hep.python import ParT_mlp_Hl
-from Finetune_hep.python import ParT_mlp_Xbb_Hl
 from Finetune_hep.python import ParT_latent
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -68,20 +66,6 @@ elif modeltype == 'ParTevent_scratch':
     model = ParT_mlp.get_model(data_config,for_inference=True)  
     Xbb = False
 
-elif modeltype == 'ParTevent_Hl':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
-    model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
-    Xbb = False
-
-elif modeltype == 'ParTevent_Xbb_Hl':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_{Ntraining}/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
-    model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=True)  
-    Xbb = False 
-
-elif modeltype == 'ParTevent_paper':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_paper_subset_{Ntraining}/models/ParTevent_paper_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
-    model = ParT_mlp.get_model(data_config,for_inference=True)  
-    Xbb = False
 
 model.to(device)
 model.load_state_dict(torch.load(model_path))
@@ -94,8 +78,6 @@ if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
 if modeltype in ['mlpHlXbb','mlpLatent','mlpLatentHl']:
     y = Mlp.get_Mlp_preds(model,filelist_test,device,out_dir,Xbb_scores_path,scaler_path,modeltype)
-elif modeltype in ['ParTevent_Hl','ParTevent_Xbb_Hl']:
-    y = ParT_mlp_Hl.get_Xbb_preds(model,filelist_test,device,out_dir)    
 else:
     y = ParT_mlp.get_Xbb_preds(model,filelist_test,device,out_dir)
 
