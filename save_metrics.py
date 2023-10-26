@@ -441,9 +441,9 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
             subgroup.create_dataset('tpr', data=ParTevent_Xbb_Hl_scratch[i]['tpr'])
 
         subgroup = model_group_ete_paper.create_group('training_1')
-        subgroup.create_dataset('acc', data=ParTevent_paper[0]['acc'])
-        subgroup.create_dataset('auc', data=ParTevent_paper[0]['auc'])
-        subgroup.create_dataset('y', data=ParTevent_paper[0]['y'])
-        subgroup.create_dataset('fpr', data=ParTevent_paper[0]['fpr'])
-        subgroup.create_dataset('tpr', data=ParTevent_paper[0]['tpr'])
+        subgroup.create_dataset('acc', data=ParTevent_paper['acc'])
+        subgroup.create_dataset('auc', data=ParTevent_paper['auc'])
+        subgroup.create_dataset('y', data=ParTevent_paper['y'])
+        subgroup.create_dataset('fpr', data=ParTevent_paper['fpr'])
+        subgroup.create_dataset('tpr', data=ParTevent_paper['tpr'])
 
