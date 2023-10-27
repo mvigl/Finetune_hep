@@ -34,7 +34,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fcXbb = make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=True)
+        self.fcXbb = make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=False)
         self.fc = InvariantModel(   phi=make_mlp(6,24,4,for_inference=False,binary=False),
                                     rho=make_mlp(24,48,4,for_inference=self.for_inference))
         #self.fc = make_mlp(in_features=128+5,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
