@@ -2,6 +2,7 @@ from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import ParT_mlp_Hl
 from Finetune_hep.python import ParT_mlp_Xbb_Hl
+from Finetune_hep.python import ParT_mlp_Xbb_Hl_sigmoid
 from Finetune_hep.python import ParT_latent
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -67,7 +68,7 @@ elif modeltype == 'ParTevent_Hl_scratch':
     Xbb = False
 
 elif modeltype == 'ParTevent_Xbb_Hl':
-    model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=True)  
+    model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
     Xbb = False 
 
 elif modeltype == 'ParTevent_Xbb_Hl_scratch':
