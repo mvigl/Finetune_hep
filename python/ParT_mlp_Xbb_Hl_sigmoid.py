@@ -52,7 +52,7 @@ class ParticleTransformerWrapper(nn.Module):
         mask = torch.reshape(mask,(-1,1,100))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
         output_Xbb = self.fcXbb(torch.reshape(x_cls,(-1,5,128)))
-        output_parT = torch.cat( ( output_Xbb, hl_feats ) ,axis=-1 )
+        output_parT = torch.cat( ( torch.cat( ( hl_feats[:2], output_Xbb ) ,axis=-1 ) , hl_feats[2:] ) ,axis=-1 )
         #output_parT = torch.sum(output_parT*jet_mask,dim=1)
         output_head = self.fc(output_parT,jet_mask)
         #output_head = self.fc(output_parT)
