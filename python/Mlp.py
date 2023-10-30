@@ -87,7 +87,7 @@ class CustomDataset(Dataset):
                         else:
                             Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
                         i+=1    
-            data[:,:,jVars.index('fj_doubleb')] = Xbb
+            data[:,:,jVars.index('fj_doubleb')] = np.nan_to_num(Xbb)
         if scaler_path !='no' : 
             if (test == False): 
                 if subset_batches !=1 : scaler_path = scaler_path.replace(".pkl", "subset_"+str(len(data))+".pkl")
