@@ -3,6 +3,7 @@ from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import ParT_mlp_Hl
 from Finetune_hep.python import ParT_mlp_Xbb_Hl
+from Finetune_hep.python import ParT_mlp_Xbb_Hl_sigmoid
 from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -82,7 +83,8 @@ if modeltype in ['ParTevent','ParTXbb','Aux','ParTevent_frozen','ParTevent_Hl','
     if modeltype in['ParTevent','ParTevent_frozen','ParTevent_Hl','ParTevent_Xbb_Hl']:
         model = ParT_mlp.get_model(data_config,for_inference=False)  
         if modeltype == 'ParTevent_Hl': model = ParT_mlp_Hl.get_model(data_config,for_inference=False)  
-        if modeltype == 'ParTevent_Xbb_Hl': model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=False)  
+        if modeltype == 'ParTevent_Xbb_Hl': model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=False) 
+        if (modeltype == 'ParTevent_Xbb_Hl') and (mlp_weights != 'no'): model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=False)  
         model.to(device)
         model = df.load_weights_ParT_mlp(model,modeltype,mlp_layers=1,ParT_params_path=ParT_weights,mlp_params_path=mlp_weights)  
         Xbb = False

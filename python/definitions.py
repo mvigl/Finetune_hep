@@ -662,7 +662,22 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
                 if i < len(torch.load(ParT_params_path).keys()) -2:
                     model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])                
-
+    elif (modeltype == 'ParTevent_Xbb_Hl') and (mlp_params_path != 'no'):
+        if (ParT_params_path != 'no'):
+            for i, layer in enumerate(torch.load(ParT_params_path).keys()):
+                if i > (mlp_layers*2-1):
+                    model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])
+                else:
+                    print(layer)
+                    layer_backbone=layer.replace("fc.","fcXbb.")
+                    print(layer_backbone)
+                    model.state_dict()[layer_backbone].copy_(torch.load(ParT_params_path)[layer])    
+        if (mlp_params_path != 'no'):
+            for i, layer in enumerate(torch.load(mlp_params_path).keys()):
+                    print(layer)
+                    layer_backbone='fc.'+layer
+                    print(layer_backbone)
+                    model.state_dict()[layer_backbone].copy_(torch.load(mlp_params_path)[layer])  
     else:
         if (ParT_params_path != 'no'):
             for i, layer in enumerate(torch.load(ParT_params_path).keys()):
