@@ -2,7 +2,7 @@ subset_batches: '0.7'
 model: 'mlpHlXbb'
 lr: 0.001
 bs: 512
-ep: 100
+ep: 150
 nlayer-mlp: 4
 nodes-mlp: 24
 njets-mlp: 5
