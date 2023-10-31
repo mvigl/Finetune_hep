@@ -2,6 +2,7 @@ from Finetune_hep.python import ParT_Xbb
 from Finetune_hep.python import ParT_mlp
 from Finetune_hep.python import ParT_mlp_Hl
 from Finetune_hep.python import ParT_mlp_Xbb_Hl
+from Finetune_hep.python import ParT_mlp_Xbb_Hl_sigmoid
 from Finetune_hep.python import ParT_latent
 from Finetune_hep.python import Mlp
 from Finetune_hep.python import definitions as df
@@ -79,8 +80,8 @@ elif modeltype == 'ParTevent_Hl_scratch':
     Xbb = False
 
 elif modeltype == 'ParTevent_Xbb_Hl':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_{Ntraining}/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
-    model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=True)  
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_{Ntraining}/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
+    model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
     Xbb = False 
 
 elif modeltype == 'ParTevent_Xbb_Hl_scratch':
