@@ -37,7 +37,7 @@ labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_other
 device = df.get_device()
 
 if modeltype == 'mlpHlXbb':
-    scaler_path = model_path.replace(".pt", ".pkl")
+    scaler_path = 'no'#model_path.replace(".pt", ".pkl")
     model = Mlp.InvariantModel( phi=Mlp.make_mlp(6,24,4,for_inference=False,binary=False),
                                 rho=Mlp.make_mlp(24,24*2,4,for_inference=True,binary=True))
     
