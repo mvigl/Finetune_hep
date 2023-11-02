@@ -401,7 +401,7 @@ def get_Mlp_preds(model,filelist,device,out_dir,Xbb_scores_path,scaler_path,mode
                 data[:,:,jVars.index('fj_sdmass')] = log(data[:,:,jVars.index('fj_sdmass')])
                 with h5py.File(filenamexbb, 'r') as Xbb_scores:
                         if modeltype == 'mlpHlXbb':
-                            data[:,:,jVars.index('fj_doubleb')] = Xbb_scores['evt_score'][:]
+                            data[:,:,jVars.index('fj_doubleb')] = np.nan_to_num(Xbb_scores['evt_score'][:])
                             if scaler_path !='no' : 
                                 with open(scaler_path,'rb') as f:
                                     scaler = pickle.load(f)
