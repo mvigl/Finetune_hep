@@ -46,7 +46,8 @@ threshold=[]
 
 ParTXbb_model.to(device)
 ParTXbb_model.eval()
-ParTXbb_model = df.load_Xbb_backbone(ParTXbb_model,'',mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')
+#ParTXbb_model = df.load_Xbb_backbone(ParTXbb_model,'',mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')
+ParTXbb_model.load_state_dict(torch.load(model_path))   
 
 print('device: ', device)
 
