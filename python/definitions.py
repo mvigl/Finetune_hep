@@ -702,7 +702,7 @@ def load_Xbb_backbone(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_par
                 model.state_dict()[layer_backbone].copy_(torch.load(ParT_params_path)[layer])   
     for layer in enumerate(torch.load(ParT_params_path).keys()):
         print(layer)
-        if ( ("fc." not in layer) or ("fcXbb." not in layer) ): 
+        if ( ("fc." not in layer) and ("fcXbb." not in layer) ): 
             print('loading')
             model.state_dict()[layer].copy_(torch.load(ParT_params_path)[layer])          
     return model     
