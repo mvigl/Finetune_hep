@@ -693,7 +693,7 @@ def load_weights_ParT_mlp(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp
 
 def load_Xbb_backbone(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_params_path='no'):    
     if modeltype == 'Xbb':
-        for layer in enumerate(torch.load(ParT_params_path).keys()):
+        for i, layer in enumerate(torch.load(ParT_params_path).keys()):
             print(layer)
             if ( "fc." not in layer ): 
                 print('loading')
@@ -701,7 +701,7 @@ def load_Xbb_backbone(model,modeltype,mlp_layers=0,ParT_params_path='no',mlp_par
                 else: layer_backbone=layer
                 model.state_dict()[layer_backbone].copy_(torch.load(ParT_params_path)[layer])  
     else:             
-        for layer in enumerate(torch.load(ParT_params_path).keys()):
+        for i, layer in enumerate(torch.load(ParT_params_path).keys()):
             print(layer)
             if ( ("fc." not in layer) and ("fcXbb." not in layer) ): 
                 print('loading')
