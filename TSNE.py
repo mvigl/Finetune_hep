@@ -26,6 +26,7 @@ with open(filelist) as f:
                 #data = Data['X_jet'][:subset_offset]
                 #target = Data['labels'][:subset_offset] 
                 jet_mask = Data['jet_mask'][:subset_offset]
+                print(Data['X_label'].shape)
                 target = Data['X_label'][:subset_offset,:,labelVars.index('label_H_bb')] 
             else:
                 #data = np.concatenate((data,Data['X_jet'][:subset_offset]),axis=0)
