@@ -12,7 +12,7 @@ pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig'
 filelist = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_scratch/Xbb_scratch_test_list_1.txt'
 Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_finetuned/Xbb_scratch_test_list_1.txt'
-subset_batches = 0.01
+subset_batches = 0.0001
 
 subset_offset=0
 i=0
@@ -24,18 +24,20 @@ with open(filelist) as f:
             subset_offset = int(len(Data['X_jet'])*subset_batches)
             if i ==0:
                 #data = Data['X_jet'][:subset_offset]
-                #target = Data['labels'][:subset_offset] 
+                target_evt = Data['labels'][:subset_offset] 
                 jet_mask = Data['jet_mask'][:subset_offset]
                 print(Data['X_label'].shape)
                 target = Data['X_label'][:subset_offset,:,labelVars.index('label_H_bb')] 
             else:
                 #data = np.concatenate((data,Data['X_jet'][:subset_offset]),axis=0)
-                #target = np.concatenate((target,Data['labels'][:subset_offset]),axis=0)
+                target_evt = np.concatenate((target_evt,Data['labels'][:subset_offset]),axis=0)
                 jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:subset_offset]),axis=0)
                 target = np.concatenate((target,Data['X_label'][:subset_offset,:,labelVars.index('label_H_bb')] ),axis=0)
             i+=1    
 
-target = target[jet_mask==1].reshape(-1)
+
+target = target.reshape(-1)[(jet_mask==1).reshape(-1)]
+target_evt = target_evt.reshape(-1)
 subset_offset=0
 i=0
 with open(Xbb_scores_path) as f:
@@ -49,6 +51,7 @@ with open(Xbb_scores_path) as f:
             else:
                 Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
             i+=1    
+evt_rep = (np.sum(np.nan_to_num(Xbb)*jet_mask,axis=-1)).reshape(-1,128)
 Xbb = (np.nan_to_num(Xbb)[jet_mask==1]).reshape(-1,128)
 
 subset_offset=0
@@ -64,6 +67,7 @@ with open(Xbb_finetuned_scores_path) as f:
             else:
                 Xbb_finetuned = np.concatenate((Xbb_finetuned,Xbb_scores['evt_score'][:subset_offset]),axis=0)
             i+=1    
+evt_rep_finetuned = (np.sum(np.nan_to_num(Xbb_finetuned)*jet_mask,axis=-1)).reshape(-1,128)
 Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1,128)
 
 print('target : ' , target)
@@ -89,3 +93,24 @@ fig = plt.figure()
 plt.scatter(embed_finetuned[:,0],embed_finetuned[:,1],c = target[:len(embed_finetuned)], cmap = 'viridis', alpha = 0.2)
 plt.colorbar()
 fig.savefig(f"../../Finetune_hep/plots/TSNE_finetuned.pdf")
+
+tsne = TSNE(
+    perplexity=30,
+    metric="euclidean",
+    n_jobs=8,
+    random_state=42,
+    verbose=True,
+)
+
+embed_evt = tsne.fit(evt_rep)
+embed_evt_finetuned = tsne.fit(evt_rep_finetuned)
+
+fig = plt.figure()
+plt.scatter(embed_evt[:,0],embed_evt[:,1],c = target_evt[:len(embed_evt)], cmap = 'viridis', alpha = 0.2)
+plt.colorbar()
+fig.savefig(f"../../Finetune_hep/plots/TSNE_evt.pdf")
+
+fig = plt.figure()
+plt.scatter(embed_evt_finetuned[:,0],embed_evt_finetuned[:,1],c = target_evt[:len(embed_evt_finetuned)], cmap = 'viridis', alpha = 0.2)
+plt.colorbar()
+fig.savefig(f"../../Finetune_hep/plots/TSNE_evt_finetuned.pdf")
