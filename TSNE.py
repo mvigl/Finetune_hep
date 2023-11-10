@@ -12,7 +12,7 @@ pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig'
 filelist = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_scratch/Xbb_scratch_test_list_1.txt'
 Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_finetuned/Xbb_scratch_test_list_1.txt'
-subset_batches = 0.0001
+subset_batches = 0.01
 
 subset_offset=0
 i=0
