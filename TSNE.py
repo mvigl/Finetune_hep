@@ -35,7 +35,7 @@ with open(filelist) as f:
                 target = np.concatenate((target,Data['X_label'][:subset_offset,:,labelVars.index('label_H_bb')] ),axis=0)
             i+=1    
 
-target = target.reshape(-1)
+target = target[jet_mask==1].reshape(-1)
 subset_offset=0
 i=0
 with open(Xbb_scores_path) as f:
