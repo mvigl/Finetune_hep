@@ -51,7 +51,7 @@ with open(Xbb_scores_path) as f:
             else:
                 Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
             i+=1    
-evt_rep = (np.sum(np.nan_to_num(Xbb)*jet_mask[:,:,np.newaxis],axis=-1)).reshape(-1,128)
+evt_rep = (np.sum(np.nan_to_num(Xbb)*jet_mask[:,:,np.newaxis],axis=1)).reshape(-1,128)
 Xbb = (np.nan_to_num(Xbb)[jet_mask==1]).reshape(-1,128)
 
 subset_offset=0
@@ -67,7 +67,7 @@ with open(Xbb_finetuned_scores_path) as f:
             else:
                 Xbb_finetuned = np.concatenate((Xbb_finetuned,Xbb_scores['evt_score'][:subset_offset]),axis=0)
             i+=1    
-evt_rep_finetuned = (np.sum(np.nan_to_num(Xbb_finetuned)*jet_mask[:,:,np.newaxis],axis=-1)).reshape(-1,128)
+evt_rep_finetuned = (np.sum(np.nan_to_num(Xbb_finetuned)*jet_mask[:,:,np.newaxis],axis=1)).reshape(-1,128)
 Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1,128)
 
 print('target : ' , target)
