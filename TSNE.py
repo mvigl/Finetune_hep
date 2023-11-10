@@ -65,7 +65,9 @@ with open(Xbb_finetuned_scores_path) as f:
             i+=1    
 Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1,128)
 
-
+print('target : ' , target)
+print('Xbb : ' , Xbb)
+print('Xbb_finetuned : ' , Xbb_finetuned)
 tsne = TSNE(
     perplexity=30,
     metric="euclidean",
