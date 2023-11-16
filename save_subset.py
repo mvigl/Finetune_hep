@@ -74,6 +74,13 @@ elif modeltype == 'ParTevent_Hl':
     model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
     Xbb = False
 
+elif modeltype == 'ParTevent_Hl_double':
+    if size > 979850:
+        model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_double_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
+    else: model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_double_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
+    model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
+    Xbb = False    
+
 elif modeltype == 'ParTevent_Hl_scratch':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_scratch_subset_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
     model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
@@ -81,6 +88,11 @@ elif modeltype == 'ParTevent_Hl_scratch':
 
 elif modeltype == 'ParTevent_Xbb_Hl':
     model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_{Ntraining}/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
+    model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
+    Xbb = False 
+
+elif modeltype == 'ParTevent_Xbb_Hl_double':
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_double_{Ntraining}/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
     model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
     Xbb = False 
 
@@ -105,7 +117,7 @@ if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
 if modeltype in ['mlpHlXbb','mlpLatent','mlpLatentHl']:
     y = Mlp.get_Mlp_preds(model,filelist_test,device,out_dir,Xbb_scores_path,scaler_path,modeltype)
-elif modeltype in ['ParTevent_Hl','ParTevent_Hl_scratch','ParTevent_Xbb_Hl','ParTevent_Xbb_Hl_scratch']:
+elif modeltype in ['ParTevent_Hl','ParTevent_Hl_scratch','ParTevent_Hl_double','ParTevent_Xbb_Hl','ParTevent_Xbb_Hl_scratch','ParTevent_Xbb_Hl_double']:
     y = ParT_mlp_Hl.get_Xbb_preds(model,filelist_test,device,out_dir)    
 else:
     y = ParT_mlp.get_Xbb_preds(model,filelist_test,device,out_dir)
