@@ -75,7 +75,7 @@ elif modeltype == 'ParTevent_Hl':
     Xbb = False
 
 elif modeltype == 'ParTevent_Hl_double':
-    if size > 979850:
+    if size in ['1959955','2940006','4900263','979854']:
         model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_double_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
     else: model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl_subset_double_{Ntraining}/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
     model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
