@@ -63,6 +63,10 @@ elif modeltype == 'ParTevent_Hl':
     model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
     Xbb = False
 
+elif modeltype == 'ParTevent_Hl_double':
+    model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
+    Xbb = False
+
 elif modeltype == 'ParTevent_Hl_scratch':
     model = ParT_mlp_Hl.get_model(data_config,for_inference=True)  
     Xbb = False
@@ -70,6 +74,10 @@ elif modeltype == 'ParTevent_Hl_scratch':
 elif modeltype == 'ParTevent_Xbb_Hl':
     model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
     Xbb = False 
+
+elif modeltype == 'ParTevent_Xbb_Hl_double':
+    model = ParT_mlp_Xbb_Hl_sigmoid.get_model(data_config,for_inference=True)  
+    Xbb = False     
 
 elif modeltype == 'ParTevent_Xbb_Hl_scratch':
     model = ParT_mlp_Xbb_Hl.get_model(data_config,for_inference=True)  
@@ -90,7 +98,7 @@ if (not os.path.exists(out_dir)): os.system(f'mkdir {out_dir}')
 
 if modeltype in ['mlpHlXbb','mlpLatent','mlpLatentHl']:
     y = Mlp.get_Mlp_preds(model,filelist_test,device,out_dir,Xbb_scores_path,scaler_path,modeltype)
-elif modeltype in ['ParTevent_Hl','ParTevent_Hl_scratch','ParTevent_Xbb_Hl','ParTevent_Xbb_Hl_scratch']:
+elif modeltype in ['ParTevent_Hl','ParTevent_Hl_double','ParTevent_Hl_scratch','ParTevent_Xbb_Hl','ParTevent_Xbb_Hl_scratch','ParTevent_Xbb_Hl_double']:
     y = ParT_mlp_Hl.get_Xbb_preds(model,filelist_test,device,out_dir)    
 else:
     y = ParT_mlp.get_Xbb_preds(model,filelist_test,device,out_dir)
