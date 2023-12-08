@@ -52,14 +52,14 @@ ParTXbb_model = df.load_Xbb_backbone(ParTXbb_model,'Xbb',mlp_layers=1,ParT_param
 
 print('device: ', device)
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch_etoe/{name}/'
-yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,out_dir,Xbb=True)
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch_etoe/{name}/'
+#yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_train,device,out_dir,Xbb=True)
 
 out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch_etoe/{name}/'
 yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_test,device,out_dir,Xbb=True)
 
-out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch_etoe/{name}/'
-yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,out_dir,Xbb=True)
+#out_dir = f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTXbb_scratch_etoe/{name}/'
+#yi_ParTXbb = ParT_mlp.get_Xbb_preds(ParTXbb_model,filelist_val,device,out_dir,Xbb=True)
 
 
 
