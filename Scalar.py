@@ -84,14 +84,14 @@ for size in sizes:
                 i+=1            
 
         Xbb_scratch = (np.nan_to_num(Xbb_scratch)[jet_mask==1]).reshape(-1)
-        auc_scratch.append(roc_auc_score(target.reshape(-1,1),Xbb_scratch))
+        auc_scratch.append(roc_auc_score(target.reshape(-1,1),1-Xbb_scratch))
         Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1)
         auc_finetuned.append(roc_auc_score(target.reshape(-1,1),Xbb_finetuned))
         Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
         auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
 
         if size == 9800758:
-            fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,Xbb_scratch)
+            fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,1-Xbb_scratch)
             fpr_finetuned, tpr_finetuned, thresholds_finetuned = roc_curve(target,Xbb_finetuned)
             fpr_double, tpr_double, thresholds_double = roc_curve(target,Xbb_double)
 
