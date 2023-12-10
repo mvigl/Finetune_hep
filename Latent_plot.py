@@ -108,10 +108,10 @@ def plot_grid(vecs,target,label,title):
     plt.figure(figsize=(8, 8))
     heatmap = plt.imshow(auc_values_2d, cmap='viridis', aspect='auto', interpolation='nearest', vmin=0, vmax=1)
 
-    #for i in range(16):
-    #    for j in range(8):
-    #        auc = auc_values_2d[i, j]
-    #        plt.text(j, i, f'{auc:.3f}', color='white', ha='center', va='center', fontsize=8)
+    for i in range(16):
+        for j in range(8):
+            auc = auc_values_2d[i, j]
+            plt.text(j, i, f'{auc:.3f}', color='white', ha='center', va='center', fontsize=8)
 
     plt.colorbar(label='Mean Value')
     plt.title(title)
