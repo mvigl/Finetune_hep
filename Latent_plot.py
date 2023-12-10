@@ -67,9 +67,9 @@ with open(filelist) as f:
             else:
                 Xbb_scratch = np.concatenate((Xbb_scratch,Xbb_scores['evt_score'][:subset_offset]),axis=0)
 
-        print('loading finetuned scalar from : ',filename)
+        print('loading finetuned scalar from : ',name)
         name = f'{Xbb_finetuned_scores_path}/{sample_name}'
-        with h5py.File(filename, 'r') as Xbb_scores:
+        with h5py.File(name, 'r') as Xbb_scores:
             subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
             if i ==0:
                 Xbb_finetuned = Xbb_scores['evt_score'][:subset_offset]
