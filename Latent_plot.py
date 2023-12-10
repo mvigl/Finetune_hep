@@ -10,10 +10,10 @@ pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig'
 
 
 filelist = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
-Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_scratch/ParTXbb_score_training_1'
-Xbb_scratch_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_scratch_etoe/ParTXbb_score_training_1'
-Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_finetuned/ParTXbb_score_training_1'
-Xbb_double_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/Latent_ParTXbb_double_etoe/ParTXbb_score_training_1'
+Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch//ParTXbb_score_training_1'
+Xbb_scratch_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_etoe/ParTXbb_score_training_1'
+Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_finetuned/ParTXbb_score_training_1'
+Xbb_double_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_double/ParTXbb_score_training_1'
 subset_batches = 0.01
 
 subset_offset=0
