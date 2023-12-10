@@ -14,7 +14,7 @@ Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_Pa
 Xbb_scratch_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_etoe/ParTXbb_score_training_1'
 Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_finetuned/ParTXbb_score_training_1'
 Xbb_double_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_double/ParTXbb_score_training_1'
-subset_batches = 0.1
+subset_batches = 1
 
 subset_offset=0
 i=0
@@ -120,10 +120,18 @@ def plot_grid(vecs,target,label,title):
     plt.savefig(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/plots/{title}.png')
     plt.show()
 
-plot_grid(Xbb,target,1,title='Frozen vector')
-plot_grid(Xbb_scratch,target,1,title='From-scratch vector')
-plot_grid(Xbb_finetuned,target,1,title='Finetuned vector')
-plot_grid(Xbb_double,target,1,title='Double-Finetuned vector')
+    return auc_values_2d
+
+auc_xbb = plot_grid(Xbb,target,1,title='Frozen vector')
+auc_scratch = plot_grid(Xbb_scratch,target,1,title='From-scratch vector')
+auc_finetuned = plot_grid(Xbb_finetuned,target,1,title='Finetuned vector')
+auc_double = plot_grid(Xbb_double,target,1,title='Double-Finetuned vector')
 
 
+with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/vectors_auc.h5', 'w') as data:
+        
+        data.create_dataset('auc_xbb', data=auc_xbb)
+        data.create_dataset('auc_scratch', data=auc_scratch)
+        data.create_dataset('auc_finetuned', data=auc_finetuned)
+        data.create_dataset('auc_double', data=auc_double)
 
