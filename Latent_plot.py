@@ -57,7 +57,6 @@ with open(filelist) as f:
                 Xbb = Xbb_scores['evt_score'][:subset_offset]
             else:
                 Xbb = np.concatenate((Xbb,Xbb_scores['evt_score'][:subset_offset]),axis=0)
-            i+=1    
 
         name = f'{Xbb_scratch_scores_path}/{sample_name}'
         print('loading scratch scalar from : ',name)
@@ -67,7 +66,6 @@ with open(filelist) as f:
                 Xbb_scratch = Xbb_scores['evt_score'][:subset_offset]
             else:
                 Xbb_scratch = np.concatenate((Xbb_scratch,Xbb_scores['evt_score'][:subset_offset]),axis=0)
-            i+=1  
 
         print('loading finetuned scalar from : ',filename)
         name = f'{Xbb_finetuned_scores_path}/{sample_name}'
@@ -77,7 +75,6 @@ with open(filelist) as f:
                 Xbb_finetuned = Xbb_scores['evt_score'][:subset_offset]
             else:
                 Xbb_finetuned = np.concatenate((Xbb_finetuned,Xbb_scores['evt_score'][:subset_offset]),axis=0)
-            i+=1     
 
         name = f'{Xbb_double_scores_path}/{sample_name}'
         print('loading double finetuned scalar from : ',name)
@@ -87,7 +84,8 @@ with open(filelist) as f:
                 Xbb_double = Xbb_scores['evt_score'][:subset_offset]
             else:
                 Xbb_double = np.concatenate((Xbb_double,Xbb_scores['evt_score'][:subset_offset]),axis=0)
-            i+=1            
+            
+        i+=1            
 
 Xbb = (np.nan_to_num(Xbb)[jet_mask==1]).reshape(-1,128)
 Xbb_scratch = (np.nan_to_num(Xbb_scratch)[jet_mask==1]).reshape(-1,128)
