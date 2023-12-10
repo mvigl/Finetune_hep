@@ -12,7 +12,7 @@ filelist = '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
 Xbb_scratch_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent_Xbb_Hl_scratch'
 Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent_Xbb_Hl'
 Xbb_double_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent_Xbb_Hl_double'
-subset_batches = 0.01
+subset_batches = 1
 
 subset_offset=0
 i=0
