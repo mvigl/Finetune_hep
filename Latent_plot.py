@@ -14,7 +14,7 @@ Xbb_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_Pa
 Xbb_scratch_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_scratch_etoe/ParTXbb_score_training_1'
 Xbb_finetuned_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_finetuned/ParTXbb_score_training_1'
 Xbb_double_scores_path = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/Latent_ParTXbb_double/ParTXbb_score_training_1'
-subset_batches = 0.01
+subset_batches = 0.1
 
 subset_offset=0
 i=0
@@ -120,10 +120,10 @@ def plot_grid(vecs,target,label,title):
     plt.savefig(f'/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/plots/{title}.png')
     plt.show()
 
-plot_grid(Xbb,target,1,title='Frozen scalar Xbb score')
-plot_grid(Xbb_scratch,target,1,title='From-scratch scalar')
-plot_grid(Xbb_finetuned,target,1,title='Finetuned scalar')
-plot_grid(Xbb_double,target,1,title='Double-Finetuned scalar')
+plot_grid(Xbb,target,1,title='Frozen vector')
+plot_grid(Xbb_scratch,target,1,title='From-scratch vector')
+plot_grid(Xbb_finetuned,target,1,title='Finetuned vector')
+plot_grid(Xbb_double,target,1,title='Double-Finetuned vector')
 
 
 
