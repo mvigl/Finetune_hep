@@ -40,6 +40,7 @@ target = target.reshape(-1)[(jet_mask==1).reshape(-1)]
 target_evt = target_evt.reshape(-1)
 
 auc_scratch = []
+auc_scratch_rev = []
 auc_finetuned = []
 auc_double = []
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854, 9800758]
@@ -84,23 +85,28 @@ for size in sizes:
                 i+=1            
 
         Xbb_scratch = (np.nan_to_num(Xbb_scratch)[jet_mask==1]).reshape(-1)
-        auc_scratch.append(roc_auc_score(target.reshape(-1,1),1-Xbb_scratch))
+        auc_scratch.append(roc_auc_score(target.reshape(-1,1),Xbb_scratch))
+        auc_scratch_rev.append(roc_auc_score(target.reshape(-1,1),1-Xbb_scratch))
         Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1)
         auc_finetuned.append(roc_auc_score(target.reshape(-1,1),Xbb_finetuned))
         Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
         auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
 
         if size == 9800758:
-            fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,1-Xbb_scratch)
+            fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,Xbb_scratch)
+            fpr_scratch_rev, tpr_scratch_rev, thresholds_scratch_rev = roc_curve(target,1-Xbb_scratch)
             fpr_finetuned, tpr_finetuned, thresholds_finetuned = roc_curve(target,Xbb_finetuned)
             fpr_double, tpr_double, thresholds_double = roc_curve(target,Xbb_double)
 
 
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/scalars_auc.h5', 'w') as data:
         
-        data.create_dataset('auc_scratch', data=Xbb_scratch)
+        data.create_dataset('auc_scratch', data=auc_scratch)
         data.create_dataset('tpr_scratch', data=tpr_scratch)
         data.create_dataset('fpr_scratch', data=fpr_scratch)
+        data.create_dataset('auc_scratch_rev', data=auc_scratch_rev)
+        data.create_dataset('tpr_scratch_rev', data=tpr_scratch_rev)
+        data.create_dataset('fpr_scratch_rev', data=fpr_scratch_rev)
         data.create_dataset('auc_finetuned', data=auc_finetuned)
         data.create_dataset('tpr_finetuned', data=tpr_finetuned)
         data.create_dataset('fpr_finetuned', data=fpr_finetuned)
