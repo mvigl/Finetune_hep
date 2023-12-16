@@ -83,6 +83,9 @@ for size in sizes_low:
         Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
         auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
 
+        auc_scratch.append(0.)
+        auc_scratch_rev.append(0.)
+
 for size in sizes:
         subset_offset=0
         i=0
