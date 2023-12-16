@@ -68,6 +68,8 @@ for size in sizes_low:
                         Xbb_finetuned = np.concatenate((Xbb_finetuned,Xbb_scores['evt_score'][:subset_offset]),axis=0)
 
                 name = f'{Xbb_double_scores_path}/{size}/{sample_name}'
+                if name == '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent_Xbb_Hl/41/Data_test_sig_73.h5':
+                    name = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParTevent_Xbb_Hl_double/41/Data_test_sig_73.h5'
                 print('loading double finetuned scalar from : ',name)
                 with h5py.File(name, 'r') as Xbb_scores:
                     subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
