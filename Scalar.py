@@ -58,8 +58,8 @@ for size in sizes_low:
                 data_index = filename.index("Data")
                 sample_name = filename[data_index:]
 
-                print('loading finetuned scalar from : ',name)
                 name = f'{Xbb_finetuned_scores_path}/{size}/{sample_name}'
+                print('loading finetuned scalar from : ',name)
                 with h5py.File(name, 'r') as Xbb_scores:
                     subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
                     if i ==0:
@@ -104,8 +104,8 @@ for size in sizes:
                     else:
                         Xbb_scratch = np.concatenate((Xbb_scratch,Xbb_scores['evt_score'][:subset_offset]),axis=0)
 
-                print('loading finetuned scalar from : ',name)
                 name = f'{Xbb_finetuned_scores_path}/{size}/{sample_name}'
+                print('loading finetuned scalar from : ',name)
                 with h5py.File(name, 'r') as Xbb_scores:
                     subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
                     if i ==0:
