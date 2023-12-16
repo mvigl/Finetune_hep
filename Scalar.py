@@ -46,6 +46,43 @@ auc_double = []
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854, 9800758]
 sizes = np.sort(sizes)
 
+sizes_low = [41, 89, 138, 242]
+sizes_low = np.sort(sizes_low)
+
+for size in sizes_low:
+        subset_offset=0
+        i=0
+        with open(filelist) as f:
+            for line in f:
+                filename = line.strip()
+                data_index = filename.index("Data")
+                sample_name = filename[data_index:]
+
+                print('loading finetuned scalar from : ',name)
+                name = f'{Xbb_finetuned_scores_path}/{size}/{sample_name}'
+                with h5py.File(name, 'r') as Xbb_scores:
+                    subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
+                    if i ==0:
+                        Xbb_finetuned = Xbb_scores['evt_score'][:subset_offset]
+                    else:
+                        Xbb_finetuned = np.concatenate((Xbb_finetuned,Xbb_scores['evt_score'][:subset_offset]),axis=0)
+
+                name = f'{Xbb_double_scores_path}/{size}/{sample_name}'
+                print('loading double finetuned scalar from : ',name)
+                with h5py.File(name, 'r') as Xbb_scores:
+                    subset_offset = int(len(Xbb_scores['evt_score'])*subset_batches)
+                    if i ==0:
+                        Xbb_double = Xbb_scores['evt_score'][:subset_offset]
+                    else:
+                        Xbb_double = np.concatenate((Xbb_double,Xbb_scores['evt_score'][:subset_offset]),axis=0)
+
+                i+=1            
+
+        Xbb_finetuned = (np.nan_to_num(Xbb_finetuned)[jet_mask==1]).reshape(-1)
+        auc_finetuned.append(roc_auc_score(target.reshape(-1,1),Xbb_finetuned))
+        Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
+        auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
+
 for size in sizes:
         subset_offset=0
         i=0
