@@ -1,12 +1,3 @@
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_126.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_129.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_13.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_130.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_131.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_132.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_133.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_134.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_135.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_149.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_173.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_bkg_174.h5
@@ -24,12 +15,3 @@
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_31.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_32.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_33.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_45.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_46.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_47.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_48.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_49.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_59.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_6.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_60.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_train_sig_61.h5
