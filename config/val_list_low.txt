@@ -1,6 +1,3 @@
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_149.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_173.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_174.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_175.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_176.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_bkg_177.h5
@@ -10,8 +7,4 @@
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_27.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_28.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_29.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_3.h5
 /raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_30.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_31.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_32.h5
-/raven/u/mvigl/Finetune_hep_dir/data/H5_samples_full/Data_val_sig_33.h5
