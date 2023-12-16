@@ -50,13 +50,13 @@ threshold=[]
 ParTXbb_model.to(device)
 ParTXbb_model.eval()
 if modeltype == 'ParTevent_Xbb_Hl':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs64_WparT_Wmlp_training_1subset_{size}.pt'
 
 elif modeltype == 'ParTevent_Xbb_Hl_double':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_double_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1subset_{size}.pt'
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_subset_double_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs64_WparT_Wmlp_training_1subset_{size}.pt'
 
 elif modeltype == 'ParTevent_Xbb_Hl_scratch':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_scratch_subset_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_training_1subset_{size}.pt'
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_scratch_subset_1/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs64_training_1subset_{size}.pt'
 
 ParTXbb_model = df.load_Xbb_backbone(ParTXbb_model,'Xbb',mlp_layers=1,ParT_params_path=model_path,mlp_params_path='no')
 #ParTXbb_model.load_state_dict(torch.load(model_path))   
