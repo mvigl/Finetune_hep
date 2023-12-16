@@ -1,5 +1,5 @@
 model: 'ParTevent_Xbb_Hl'
-subset_batches: 0.000001  
+subset_batches: 0.00001  
 lr: 0.001
 bs: 4
 ep: 30
