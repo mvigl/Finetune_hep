@@ -46,7 +46,7 @@ auc_double = []
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854, 9800758]
 sizes = np.sort(sizes)
 
-sizes_low = [41, 89, 138, 242]
+sizes_low = [11, 22, 34, 41, 58, 89, 138, 242]
 sizes_low = np.sort(sizes_low)
 
 for size in sizes_low:
