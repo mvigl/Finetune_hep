@@ -43,11 +43,18 @@ auc_scratch = []
 auc_scratch_rev = []
 auc_finetuned = []
 auc_double = []
+bkgrej_finetuned = []
+bkgrej_double = []
+bkgrej_scratch = []
+bkgrej_scratch_rev = []
 sizes = [1730,  19332,  195762,  1959955,  2704,  29145,  293774,  2940006, 4665,  48752,  489801,  4900263,  777,  9547,  97752,  979854, 9800758]
 sizes = np.sort(sizes)
 
 sizes_low = [11, 22, 34, 41, 58, 89, 138, 242]
 sizes_low = np.sort(sizes_low)
+
+tpr_common = np.linspace(0,1,10000)
+ix = int(0.9*len(tpr_common)-1)
 
 for size in sizes_low:
         subset_offset=0
@@ -84,9 +91,17 @@ for size in sizes_low:
         auc_finetuned.append(roc_auc_score(target.reshape(-1,1),Xbb_finetuned))
         Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
         auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
-
         auc_scratch.append(0.)
         auc_scratch_rev.append(0.)
+
+
+        fpr_finetuned, tpr_finetuned, thresholds_finetuned = roc_curve(target,Xbb_finetuned)
+        fpr_double, tpr_double, thresholds_double = roc_curve(target,Xbb_double)
+        
+        bkgrej_finetuned.append(1/(np.interp(tpr_common,tpr_finetuned,fpr_finetuned)[ix]))
+        bkgrej_double.append(1/(np.interp(tpr_common,tpr_double,fpr_double)[ix]))
+        bkgrej_scratch.append(0.)
+        bkgrej_scratch_rev.append(0.)
 
 for size in sizes:
         subset_offset=0
@@ -134,12 +149,15 @@ for size in sizes:
         Xbb_double = (np.nan_to_num(Xbb_double)[jet_mask==1]).reshape(-1)
         auc_double.append(roc_auc_score(target.reshape(-1,1),Xbb_double))
 
-        if size == 9800758:
-            fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,Xbb_scratch)
-            fpr_scratch_rev, tpr_scratch_rev, thresholds_scratch_rev = roc_curve(target,1-Xbb_scratch)
-            fpr_finetuned, tpr_finetuned, thresholds_finetuned = roc_curve(target,Xbb_finetuned)
-            fpr_double, tpr_double, thresholds_double = roc_curve(target,Xbb_double)
-
+        fpr_finetuned, tpr_finetuned, thresholds_finetuned = roc_curve(target,Xbb_finetuned)
+        fpr_double, tpr_double, thresholds_double = roc_curve(target,Xbb_double)
+        fpr_scratch, tpr_scratch, thresholds_scratch = roc_curve(target,Xbb_scratch)
+        fpr_scratch_rev, tpr_scratch_rev, thresholds_scratch_rev = roc_curve(target,1-Xbb_scratch)
+        
+        bkgrej_finetuned.append(1/(np.interp(tpr_common,tpr_finetuned,fpr_finetuned)[ix]))
+        bkgrej_double.append(1/(np.interp(tpr_common,tpr_double,fpr_double)[ix]))
+        bkgrej_scratch.append(1/(np.interp(tpr_common,tpr_scratch,fpr_scratch)[ix]))
+        bkgrej_scratch_rev.append(1/(np.interp(tpr_common,tpr_scratch_rev,fpr_scratch_rev)[ix]))
 
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/scalars_auc.h5', 'w') as data:
         
