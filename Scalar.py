@@ -162,15 +162,19 @@ for size in sizes:
 with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/scalars_auc.h5', 'w') as data:
         
         data.create_dataset('auc_scratch', data=auc_scratch)
+        data.create_dataset('bkgrej_scratch', data=bkgrej_scratch)
         data.create_dataset('tpr_scratch', data=tpr_scratch)
         data.create_dataset('fpr_scratch', data=fpr_scratch)
         data.create_dataset('auc_scratch_rev', data=auc_scratch_rev)
+        data.create_dataset('bkgrej_scratch_rev', data=bkgrej_scratch_rev)
         data.create_dataset('tpr_scratch_rev', data=tpr_scratch_rev)
         data.create_dataset('fpr_scratch_rev', data=fpr_scratch_rev)
         data.create_dataset('auc_finetuned', data=auc_finetuned)
+        data.create_dataset('bkgrej_finetuned', data=bkgrej_finetuned)
         data.create_dataset('tpr_finetuned', data=tpr_finetuned)
         data.create_dataset('fpr_finetuned', data=fpr_finetuned)
         data.create_dataset('auc_double', data=auc_double)
+        data.create_dataset('bkgrej_double', data=bkgrej_double)
         data.create_dataset('tpr_double', data=tpr_double)
         data.create_dataset('fpr_double', data=fpr_double)
         
