@@ -1,7 +1,7 @@
 model: 'ParTevent'
 lr: 0.001
 bs: 256
-ep: 1
+ep: 10
 nlayer-mlp: 3
 nodes-mlp: 128
 njets-mlp: 5
