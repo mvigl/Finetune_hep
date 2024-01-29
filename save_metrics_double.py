@@ -216,8 +216,6 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
         model_group_ete_double = data.create_group('Latent_finetuned_double')
 
 
-
-
         subgroup = model_group_ete_Xbb_Hl_double.create_group(f'mean')
         subgroup.create_dataset('acc_mean', data=ParTevent_Xbb_Hl_double_mean['acc_mean'])
         subgroup.create_dataset('acc_std', data=ParTevent_Xbb_Hl_double_mean['acc_std'])
@@ -269,10 +267,10 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
             subgroup.create_dataset('tpr', data=ParTevent_Hl_double[i]['tpr'])
 
             subgroup = model_group_ete_double.create_group(f'training_{i+1}')
-            subgroup.create_dataset('acc', data=ParTevent_double_mean[i]['acc'])
-            subgroup.create_dataset('auc', data=ParTevent_double_mean[i]['auc'])
-            subgroup.create_dataset('y', data=ParTevent_double_mean[i]['y'])
-            subgroup.create_dataset('fpr', data=ParTevent_double_mean[i]['fpr'])
-            subgroup.create_dataset('tpr', data=ParTevent_double_mean[i]['tpr'])
+            subgroup.create_dataset('acc', data=ParTevent_double[i]['acc'])
+            subgroup.create_dataset('auc', data=ParTevent_double[i]['auc'])
+            subgroup.create_dataset('y', data=ParTevent_double[i]['y'])
+            subgroup.create_dataset('fpr', data=ParTevent_double[i]['fpr'])
+            subgroup.create_dataset('tpr', data=ParTevent_double[i]['tpr'])
 
 

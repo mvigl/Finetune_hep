@@ -65,7 +65,7 @@ elif modeltype == 'ParTevent':
     Xbb = False
 
 elif modeltype == 'ParTevent_double':
-    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_{Ntraining}/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
+    model_path = f'/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_subset_double_{Ntraining}/models/ParTevent_hl3_nodes128_nj5_lr0.001_bs256_WparT_training_1subset_{size}.pt'
     model = ParT_mlp.get_model(data_config,for_inference=True)                             
     Xbb = False
 
