@@ -55,6 +55,10 @@ elif modeltype == 'ParTevent':
     model = ParT_mlp.get_model(data_config,for_inference=True)  
     Xbb = False
 
+elif modeltype == 'ParTevent_double':
+    model = ParT_mlp.get_model(data_config,for_inference=True)  
+    Xbb = False
+
 elif modeltype == 'ParTevent_scratch':
     model = ParT_mlp.get_model(data_config,for_inference=True)  
     Xbb = False
