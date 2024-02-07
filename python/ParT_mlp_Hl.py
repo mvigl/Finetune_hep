@@ -13,16 +13,6 @@ from torch_optimizer import Lookahead
 # from ignite.handlers import create_lr_scheduler_with_warmup
     
 
-def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
-    layers = []
-    for i in range(nlayer):
-        layers.append(torch.nn.Linear(in_features, out_features))
-        layers.append(torch.nn.ReLU())
-        in_features = out_features
-    if binary: layers.append(torch.nn.Linear(in_features, 1))
-    if for_inference: layers.append(torch.nn.Sigmoid())
-    model = torch.nn.Sequential(*layers)
-    return model
 
 class ParticleTransformerWrapper(nn.Module):
     def __init__(self, **kwargs) -> None:
@@ -34,8 +24,8 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = InvariantModel(   phi=make_mlp(128+5,128,3,for_inference=False,binary=False),
-                                    rho=make_mlp(128,128,3,for_inference=self.for_inference))
+        self.fc = InvariantModel(   phi=df.make_mlp(128+5,128,3,for_inference=False,binary=False),
+                                    rho=df.make_mlp(128,128,3,for_inference=self.for_inference))
         #self.fc = make_mlp(in_features=128+5,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None

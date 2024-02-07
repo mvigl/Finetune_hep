@@ -4,43 +4,61 @@ import torch
 import torch.nn as nn
 vector.register_awkward()
 from Finetune_hep.python.ParticleTransformer import ParticleTransformer
+from Finetune_hep.python import definitions as df
 
-def make_mlp(in_features,out_features,nlayer,for_inference=False):
-    layers = []
-    for i in range(nlayer):
-        layers.append(torch.nn.Linear(in_features, out_features))
-        layers.append(torch.nn.ReLU())
-        in_features = out_features
-    layers.append(torch.nn.Linear(in_features, 1))
-    if for_inference: layers.append(torch.nn.Sigmoid())
-    model = torch.nn.Sequential(*layers)
-    return model
 
 class ParticleTransformerWrapper(nn.Module):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self,**kwargs) -> None:
         super().__init__()
 
-        in_dim = kwargs['embed_dims'][-1]
-        fc_params = kwargs.pop('fc_params')
-        num_classes = kwargs.pop('num_classes')
+        self.embed_dims = kwargs['embed_dims'][-1]
         self.for_inference = kwargs['for_inference']
+        self.head_width = kwargs['head_width']
+        self.head_nlayers = kwargs['head_nlayers']
+        self.head_latent = kwargs['head_latent']
+        self.Task = kwargs['Task']
 
-        fcs = []
-        self.fc = make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=self.for_inference)
-
+        self.head = df.make_mlp(
+                                in_features = self.embed_dims,
+                                out_features=self.head_width,
+                                nlayer = self.head_nlayers,
+                                binary = not self.head_latent,
+                                for_inference=self.for_inference
+        )
+        
+        if self.hl_feat: 
+            if self.head_latent:
+                self.deepsets = df.InvariantModel(  phi=df.make_mlp(128+5,128,3,for_inference=False,binary=False),
+                                                    rho=df.make_mlp(128,128,3,for_inference=self.for_inference))
+            else:
+                self.deepsets = df.InvariantModel(  phi=df.make_mlp(1+5,24,4,for_inference=False,binary=False),
+                                                    rho=df.make_mlp(24,48,4,for_inference=self.for_inference))    
+        
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
+        self.input_dim = kwargs['input_dim']
+        self.pair_input_dim = kwargs['pair_input_dim']
+        self.head_Njets_max = kwargs['head_Njets_max']
         self.mod = ParticleTransformer(**kwargs)
 
     @torch.jit.ignore
     def no_weight_decay(self):
         return {'mod.cls_token', }
 
-    def forward(self, points, features, lorentz_vectors, mask):
-        x_cls = self.mod(features, v=lorentz_vectors, mask=mask)
-        output = self.fc(x_cls)
-        return output
-
+    def forward(self, points, features, lorentz_vectors, mask,jet_mask=None):
+        if self.Task == 'Xbb':    
+            x_cls = self.mod(features, v=lorentz_vectors, mask=mask)
+            output = self.head(x_cls)
+            return output
+        elif self.Task == 'Event':
+            features = torch.reshape(features,(-1,self.input_dim,100))
+            lorentz_vectors = torch.reshape(lorentz_vectors,(-1,self.pair_input_dim,100))
+            mask = torch.reshape(mask,(-1,1,100))
+            x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
+            output_parT = torch.sum(torch.reshape(x_cls,(-1,self.head_Njets_max,self.embed_dims))*jet_mask,dim=1)
+            output_head = self.fc(output_parT)
+            return output_head
+        
 def get_model(data_config, **kwargs):
 
     cfg = dict(
@@ -64,6 +82,11 @@ def get_model(data_config, **kwargs):
         trim=True,
         for_inference=False,
         use_amp=False,
+        head_nlayers=0,
+        head_width=128,
+        head_latent=False,
+        Task='Xbb',
+        head_Njets_max=5
     )
     cfg.update(**kwargs)
 
@@ -71,3 +94,20 @@ def get_model(data_config, **kwargs):
     return model
 
 
+class InvariantModel(nn.Module):
+    def __init__(self, phi: nn.Module, rho: nn.Module):
+        super().__init__()
+        self.phi = phi
+        self.rho = rho
+
+    def forward(self, x,jet_mask):
+        # compute the representation for each data point
+        x = self.phi(x)*jet_mask
+
+        # sum up the representations
+        x = torch.sum(x, dim=1)
+
+        # compute the output
+        out = self.rho(x)
+
+        return out

@@ -14,6 +14,17 @@ labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_other
 jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
 pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]        
 
+def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
+    layers = []
+    for i in range(nlayer):
+        layers.append(torch.nn.Linear(in_features, out_features))
+        layers.append(torch.nn.ReLU())
+        in_features = out_features
+    if binary: layers.append(torch.nn.Linear(in_features, 1))
+    if for_inference: layers.append(torch.nn.Sigmoid())
+    model = torch.nn.Sequential(*layers)
+    return model
+
 def get_device():
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     return device

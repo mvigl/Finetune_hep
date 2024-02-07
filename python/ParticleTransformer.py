@@ -480,6 +480,11 @@ class ParticleTransformer(nn.Module):
                  trim=True,
                  for_inference=False,
                  use_amp=False,
+                 head_nlayers=0,
+                 head_width=128,
+                 head_latent=False,
+                 Task='Xbb',
+                 head_Njets_max=5,
                  **kwargs) -> None:
         super().__init__(**kwargs)
 

@@ -10,18 +10,6 @@ from Finetune_hep.python.ParticleTransformer import ParticleTransformer
 import h5py
 from torch_optimizer import Lookahead
 
-
-def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
-    layers = []
-    for i in range(nlayer):
-        layers.append(torch.nn.Linear(in_features, out_features))
-        layers.append(torch.nn.ReLU())
-        in_features = out_features
-    if binary: layers.append(torch.nn.Linear(in_features, 1))
-    if for_inference: layers.append(torch.nn.Sigmoid())
-    model = torch.nn.Sequential(*layers)
-    return model
-
 class ParticleTransformerWrapper(nn.Module):
     def __init__(self, **kwargs) -> None:
         super().__init__()
@@ -32,7 +20,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
 
         fcs = []
-        self.fc = make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=self.for_inference)
+        self.fc = df.make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=self.for_inference)
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None

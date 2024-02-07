@@ -11,30 +11,22 @@ import h5py
 from torch_optimizer import Lookahead
 # from torch.optim.lr_scheduler import ExponentialLR
 # from ignite.handlers import create_lr_scheduler_with_warmup
-    
 
-def make_mlp(in_features,out_features,nlayer,for_inference=False,binary=True):
-    layers = []
-    for i in range(nlayer):
-        layers.append(torch.nn.Linear(in_features, out_features))
-        layers.append(torch.nn.ReLU())
-        in_features = out_features
-    if binary: layers.append(torch.nn.Linear(in_features, 1))
-    if for_inference: layers.append(torch.nn.Sigmoid())
-    model = torch.nn.Sequential(*layers)
-    return model
 
 class ParticleTransformerWrapper(nn.Module):
     def __init__(self, **kwargs) -> None:
         super().__init__()
 
         in_dim = kwargs['embed_dims'][-1]
-        fc_params = kwargs.pop('fc_params')
-        num_classes = kwargs.pop('num_classes')
         self.for_inference = kwargs['for_inference']
 
-        fcs = []
-        self.fc = make_mlp(in_dim,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
+        self.head = df.make_mlp(
+                                in_dim,
+                                out_features=kwargs['head_width'],
+                                nlayer = kwargs['head_nlayers'],
+                                binary= not kwargs['head_latent'],
+                                for_inference=self.for_inference
+        )
 
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
@@ -76,6 +68,9 @@ def get_model(data_config, **kwargs):
         trim=True,
         for_inference=False,
         use_amp=False,
+        head_nlayers=3,
+        head_width=128,
+        head_latent=False
     )
     cfg.update(**kwargs)
 
