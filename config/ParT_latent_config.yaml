@@ -1,0 +1,55 @@
+
+inputs:
+   pf_features:
+      length: 100
+      vars: 
+         - ['pfcand_pt_log']
+         - ['pfcand_e_log']
+         - ['pfcand_logptrel']
+         - ['pfcand_logerel']
+         - ['pfcand_deltaR']
+         - ['pfcand_charge']
+         - ['pfcand_isChargedHad']
+         - ['pfcand_isNeutralHad']
+         - ['pfcand_isGamma']
+         - ['pfcand_isEl']
+         - ['pfcand_isMu']
+         - ['pfcand_dz']
+         - ['pfcand_dzerr']
+         - ['pfcand_dz']
+         - ['pfcand_dzerr']
+         - ['pfcand_deta']
+         - ['pfcand_dphi']
+   pf_vectors:
+      length: 100
+      vars: 
+         - [pfcand_px]
+         - [pfcand_py]
+         - [pfcand_pz]
+         - [pfcand_energy]
+   hlf:
+      concatenate: False
+      vars: 
+         - ['fj_pt']
+         - ['fj_eta']
+         - ['fj_phi']      
+         - ['fj_mass']
+         - ['fj_sdmass']
+
+
+head:
+   width: 128
+   nlayers: 3
+   latent: False
+   Njets_max: 5
+
+Task: 'Event'
+
+save_representaions: False
+
+labels:
+   value: ['label_H_bb']
+
+
+
+

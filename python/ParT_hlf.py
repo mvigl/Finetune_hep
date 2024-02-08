@@ -11,24 +11,68 @@ import h5py
 from torch_optimizer import Lookahead
 # from torch.optim.lr_scheduler import ExponentialLR
 # from ignite.handlers import create_lr_scheduler_with_warmup
+    
 
 
 class ParticleTransformerWrapper(nn.Module):
     def __init__(self, **kwargs) -> None:
         super().__init__()
 
-        in_dim = kwargs['embed_dims'][-1]
-        fc_params = kwargs.pop('fc_params')
-        num_classes = kwargs.pop('num_classes')
+        self.embed_dims = kwargs['embed_dims'][-1]
         self.for_inference = kwargs['for_inference']
+        self.head_width = kwargs['head_width']
+        self.head_nlayers = kwargs['head_nlayers']
+        self.head_latent = kwargs['head_latent']
+        self.Task = kwargs['Task']
+        self.hlf_dim = kwargs['hlf_dim']
 
-        fcs = []
-        self.fcXbb = df.make_mlp(in_dim,out_features=128,nlayer = 0,for_inference=True)
-        self.fc = InvariantModel(   phi=df.make_mlp(6,24,4,for_inference=False,binary=False),
-                                    rho=df.make_mlp(24,48,4,for_inference=self.for_inference))
-        #self.fc = make_mlp(in_features=128+5,out_features=128,nlayer = 3,for_inference=self.for_inference,binary=True)
+        if self.head_latent:
+            self.head = InvariantModel( phi = df.make_mlp(
+                                            in_features = self.embed_dims+self.hlf_dim,
+                                            out_features = self.head_width,
+                                            nlayer = self.head_nlayers,
+                                            binary = False,
+                                            for_inference=False
+                                            ),
+                                        rho = df.make_mlp(
+                                            in_features = self.head_width,
+                                            out_features= self.head_width,
+                                            nlayer = self.head_nlayers,
+                                            binary = True,
+                                            for_inference=self.for_inference
+                                            )    
+            )    
+        else:
+            self.Xbb = df.make_mlp(
+                                in_features = self.embed_dims,
+                                out_features = self.head_width,
+                                nlayer = 0,
+                                binary = True,
+                                for_inference=False
+            )
+            self.head = InvariantModel( phi= df.make_mlp(
+                                            in_features = 1+self.hlf_dim,
+                                            out_features = self.head_width,
+                                            nlayer = self.head_nlayers,
+                                            binary = False,
+                                            for_inference=False
+                                            ),
+                                        rho= df.make_mlp(
+                                            in_features = self.head_width,
+                                            out_features= self.head_width,
+                                            nlayer = self.head_nlayers,
+                                            binary = True,
+                                            for_inference=self.for_inference
+                                            )    
+                        )   
+        
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
+        self.input_dim = kwargs['input_dim']
+        self.pair_input_dim = kwargs['pair_input_dim']
+        self.Nconst_max = kwargs['Nconst_max']
+        self.head_Njets_max = kwargs['head_Njets_max']
+        self.save_representaions = kwargs['save_representaions']
         self.mod = ParticleTransformer(**kwargs)
 
     @torch.jit.ignore
@@ -36,15 +80,17 @@ class ParticleTransformerWrapper(nn.Module):
         return {'mod.cls_token', }
 
     def forward(self, points, features, lorentz_vectors, mask,jet_mask,hl_feats):
-        features = torch.reshape(features,(-1,17,100))
-        lorentz_vectors = torch.reshape(lorentz_vectors,(-1,4,100))
-        mask = torch.reshape(mask,(-1,1,100))
+        features = torch.reshape(features,(-1,self.input_dim,self.Nconst_max))
+        lorentz_vectors = torch.reshape(lorentz_vectors,(-1,self.pair_input_dim,self.Nconst_max))
+        mask = torch.reshape(mask,(-1,1,self.Nconst_max))
         x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
-        output_Xbb = self.fcXbb(torch.reshape(x_cls,(-1,5,128)))
-        output_parT = torch.cat( ( torch.cat( ( hl_feats[:,:,:2], output_Xbb ) ,axis=-1 ) , hl_feats[:,:,2:] ) ,axis=-1 )
-        #output_parT = torch.sum(output_parT*jet_mask,dim=1)
-        output_head = self.fc(output_parT,jet_mask)
-        #output_head = self.fc(output_parT)
+        if self.head_latent:
+            output_parT = torch.cat( ( torch.reshape(x_cls,(-1,self.head_Njets_max,self.embed_dims)) , hl_feats ) ,axis=-1 )
+        else:
+            output_Xbb = self.Xbb(torch.reshape(x_cls,(-1,self.head_Njets_max,self.embed_dims)))
+            output_parT = torch.cat( ( output_Xbb, hl_feats ) ,axis=-1 )
+        if self.save_representaions: return output_parT    
+        output_head = self.head(output_parT,jet_mask)
         return output_head
 
 def get_model(data_config, **kwargs):
@@ -70,6 +116,14 @@ def get_model(data_config, **kwargs):
         trim=True,
         for_inference=False,
         use_amp=False,
+        Nconst_max=data_config['inputs']['pf_features']['length'],
+        head_nlayers=data_config['head']['nlayers'],
+        head_width=data_config['head']['width'],
+        head_latent=data_config['head']['latent'],
+        Task=data_config['Task'],
+        head_Njets_max=data_config['head']['Njets_max'],
+        hlf_dim=len(data_config['inputs']['hlf']['vars']),
+        save_representaions=data_config['save_representaions'],
     )
     cfg.update(**kwargs)
 
@@ -188,9 +242,6 @@ def train_loop(model, idxmap,integer_file_map,idxmap_val,integer_file_map_val, d
         Dataset_val = df.CustomDataset(idxmap_val,integer_file_map_val)
         build_features = df.build_features_and_labels_hl
     num_samples = Dataset.length
-    # num_train = int(0.80 * num_samples)
-    # num_val = num_samples - num_train
-    # train_dataset, val_dataset = torch.utils.data.random_split(Dataset, [num_train, num_val])
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True,num_workers=12)
 
     base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
@@ -278,7 +329,7 @@ def get_latent_preds(model,data_loader,device,subset,build_features,isXbb=False)
 
     return preds,target    
 
-def get_Xbb_preds(model,filelist,device,subset,out_dir,Xbb=False,Latent=False):
+def get_Xbb_preds(model,filelist,device,out_dir,Xbb=False,Latent=False):
 
     with torch.no_grad():
         model.eval()
@@ -406,13 +457,8 @@ class InvariantModel(nn.Module):
         self.rho = rho
 
     def forward(self, x,jet_mask):
-        # compute the representation for each data point
         x = self.phi(x)*jet_mask
-
-        # sum up the representations
         x = torch.sum(x, dim=1)
-
-        # compute the output
         out = self.rho(x)
 
         return out

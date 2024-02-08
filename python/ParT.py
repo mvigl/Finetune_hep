@@ -15,48 +15,53 @@ class ParticleTransformerWrapper(nn.Module):
         self.for_inference = kwargs['for_inference']
         self.head_width = kwargs['head_width']
         self.head_nlayers = kwargs['head_nlayers']
-        self.head_latent = kwargs['head_latent']
         self.Task = kwargs['Task']
 
-        self.head = df.make_mlp(
+        if self.Task == 'Xbb': 
+            self.Xbb = df.make_mlp(
                                 in_features = self.embed_dims,
                                 out_features=self.head_width,
                                 nlayer = self.head_nlayers,
-                                binary = not self.head_latent,
+                                binary = True,
                                 for_inference=self.for_inference
-        )
-        
-        if self.hl_feat: 
-            if self.head_latent:
-                self.deepsets = df.InvariantModel(  phi=df.make_mlp(128+5,128,3,for_inference=False,binary=False),
-                                                    rho=df.make_mlp(128,128,3,for_inference=self.for_inference))
-            else:
-                self.deepsets = df.InvariantModel(  phi=df.make_mlp(1+5,24,4,for_inference=False,binary=False),
-                                                    rho=df.make_mlp(24,48,4,for_inference=self.for_inference))    
+            )
+
+        else:
+            self.head = df.make_mlp(
+                                in_features = self.embed_dims,
+                                out_features=self.head_width,
+                                nlayer = self.head_nlayers,
+                                binary = True,
+                                for_inference=self.for_inference
+            )
         
         kwargs['num_classes'] = None
         kwargs['fc_params'] = None
         self.input_dim = kwargs['input_dim']
         self.pair_input_dim = kwargs['pair_input_dim']
+        self.Nconst_max = kwargs['Nconst_max']
         self.head_Njets_max = kwargs['head_Njets_max']
+        self.save_representaions = kwargs['save_representaions']
         self.mod = ParticleTransformer(**kwargs)
 
     @torch.jit.ignore
     def no_weight_decay(self):
         return {'mod.cls_token', }
 
-    def forward(self, points, features, lorentz_vectors, mask,jet_mask=None):
+    def forward(self, points, features, lorentz_vectors, mask,jet_mask=None,hl_feats=None):
         if self.Task == 'Xbb':    
             x_cls = self.mod(features, v=lorentz_vectors, mask=mask)
-            output = self.head(x_cls)
+            if self.save_representaions: return x_cls
+            output = self.Xbb(x_cls)
             return output
         elif self.Task == 'Event':
-            features = torch.reshape(features,(-1,self.input_dim,100))
-            lorentz_vectors = torch.reshape(lorentz_vectors,(-1,self.pair_input_dim,100))
-            mask = torch.reshape(mask,(-1,1,100))
+            features = torch.reshape(features,(-1,self.input_dim,self.Nconst_max))
+            lorentz_vectors = torch.reshape(lorentz_vectors,(-1,self.pair_input_dim,self.Nconst_max))
+            mask = torch.reshape(mask,(-1,1,self.Nconst_max))
             x_cls = self.mod(features, v=lorentz_vectors, mask=mask) 
+            if self.save_representaions: return torch.reshape(x_cls,(-1,self.head_Njets_max,self.embed_dims))*jet_mask
             output_parT = torch.sum(torch.reshape(x_cls,(-1,self.head_Njets_max,self.embed_dims))*jet_mask,dim=1)
-            output_head = self.fc(output_parT)
+            output_head = self.head(output_parT)
             return output_head
         
 def get_model(data_config, **kwargs):
@@ -82,11 +87,14 @@ def get_model(data_config, **kwargs):
         trim=True,
         for_inference=False,
         use_amp=False,
-        head_nlayers=0,
-        head_width=128,
-        head_latent=False,
-        Task='Xbb',
-        head_Njets_max=5
+        Nconst_max=data_config['inputs']['pf_features']['length'],
+        head_nlayers=data_config['head']['nlayers'],
+        head_width=data_config['head']['width'],
+        head_latent=data_config['head']['latent'],
+        Task=data_config['Task'],
+        head_Njets_max=data_config['head']['Njets_max'],
+        hlf_dim=len(data_config['inputs']['hlf']['vars']),
+        save_representaions=data_config['save_representaions'],
     )
     cfg.update(**kwargs)
 
@@ -101,13 +109,8 @@ class InvariantModel(nn.Module):
         self.rho = rho
 
     def forward(self, x,jet_mask):
-        # compute the representation for each data point
         x = self.phi(x)*jet_mask
-
-        # sum up the representations
         x = torch.sum(x, dim=1)
-
-        # compute the output
         out = self.rho(x)
 
         return out
