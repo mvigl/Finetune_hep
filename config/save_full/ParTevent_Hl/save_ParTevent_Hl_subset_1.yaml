@@ -1,6 +1,0 @@
-modeltype: 'ParTevent_Hl'
-Ntraining: 1
-filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
-config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
-Xbb-scores-path: 'no'
-model-path: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Hl/models/ParTevent_Hl_hl3_nodes128_nj5_lr0.001_bs256_WparT_Wmlp_training_1_epoch_3_Val_loss_0.0995473712682724.pt'

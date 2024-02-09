@@ -1,6 +1,0 @@
-modeltype: 'ParTevent_Xbb_Hl_scratch'
-Ntraining: 3
-filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
-config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
-Xbb-scores-path: 'no'
-model-path: '/raven/u/mvigl/Finetune_hep_dir/run/ParTevent_Xbb_Hl_scratch/models/ParTevent_Xbb_Hl_hl3_nodes128_nj5_lr0.001_bs256_training_3_epoch_9_Val_loss_0.10510396212339401.pt'

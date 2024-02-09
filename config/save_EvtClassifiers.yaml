@@ -1,8 +1,0 @@
-config-path: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/config/myJetClass_full.yaml'
-model-path: '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/models/ParT_full.pt'
-data-test: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt' 
-out-name: 'ParTXbb_score_training_1'
-subset: False
-model: 'ParTevent'
-scaler-path: /raven/u/mvigl/Finetune_hep_dir/run
-Xbb-scores-path: /raven/u/mvigl/Finetune_hep_dir/run

@@ -1,5 +1,0 @@
-modeltype: 'ParTevent_double'
-Ntraining: 1
-filelist-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
-config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
-Xbb-scores-path: 'no'

@@ -1,6 +1,0 @@
-modeltype: 'ParTevent_Xbb_Hl_double'
-config-path: '../../Finetune_hep/config/myJetClass_full.yaml'
-data-train: '/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt'
-data-test: '/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt'
-data-val: '/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt'
-subset: False
