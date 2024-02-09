@@ -163,10 +163,12 @@ def get_sig_type_and_w(filename,length):
 ParTevent_Xbb_Hl_double = [[],[],[],[]]
 ParTevent_Hl_double = [[],[],[],[]]
 ParTevent_double = [[],[],[],[]]
+ParTevent_paper = [[],[],[],[]]
 
 ParTevent_Xbb_Hl_double_mean = []
 ParTevent_Hl_double_mean = []
 ParTevent_double_mean = []
+ParTevent_paper_mean = []
 
 feats, target, sig_type, weights = get_event_info(filelist_test)
 
@@ -175,32 +177,38 @@ for i in range(len(sizes)):
     experiments_ParTevent_Xbb_Hl_double = []
     experiments_ParTevent_Hl_double = []
     experiments_ParTevent_double = []
+    experiments_ParTevent_paper = []
     
 
     for Ntraining in range(4):
         experiments_ParTevent_Xbb_Hl_double.append(get_metrics(filelist_test,'ParTevent_Xbb_Hl_double',sizes[i],Ntraining+1))
         experiments_ParTevent_Hl_double.append(get_metrics(filelist_test,'ParTevent_Hl_double',sizes[i],Ntraining+1))
         experiments_ParTevent_double.append(get_metrics(filelist_test,'ParTevent_double',sizes[i],Ntraining+1))
+        experiments_ParTevent_paper.append(get_metrics(filelist_test,'ParTevent_paper',sizes[i],Ntraining+1))
 
 
     #print(i,experiments_ParTevent)
     ParTevent_Xbb_Hl_double_mean.append(get_mean_metrics(experiments_ParTevent_Xbb_Hl_double))
     ParTevent_Hl_double_mean.append(get_mean_metrics(experiments_ParTevent_Hl_double))
     ParTevent_double_mean.append(get_mean_metrics(experiments_ParTevent_double))
+    ParTevent_paper_mean.append(get_mean_metrics(experiments_ParTevent_paper))
 
     for j in range(4):
         ParTevent_Xbb_Hl_double[j].append(experiments_ParTevent_Xbb_Hl_double[j])
         ParTevent_Hl_double[j].append(experiments_ParTevent_Hl_double[j])
         ParTevent_double[j].append(experiments_ParTevent_double[j])
+        ParTevent_paper[j].append(experiments_ParTevent_paper[j])
    
 ParTevent_Xbb_Hl_double_mean = merge_dict(ParTevent_Xbb_Hl_double_mean)
 ParTevent_Hl_double_mean = merge_dict(ParTevent_Hl_double_mean)
 ParTevent_double_mean = merge_dict(ParTevent_double_mean)
+ParTevent_paper_mean = merge_dict(ParTevent_paper_mean)
 
 for j in range(4):
         ParTevent_Xbb_Hl_double[j] = merge_dict(ParTevent_Xbb_Hl_double[j])
         ParTevent_Hl_double[j] = merge_dict(ParTevent_Hl_double[j])
         ParTevent_double[j] = merge_dict(ParTevent_double[j])
+        ParTevent_paper[j] = merge_dict(ParTevent_paper[j])
 
 out_out_dir = '/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/'
 if (not os.path.exists(out_out_dir)): os.system(f'mkdir {out_out_dir}')
@@ -214,6 +222,7 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
         model_group_ete_Xbb_Hl_double = data.create_group('Xbb_Hl_finetuned_double')
         model_group_ete_Hl_double = data.create_group('Latent_Hl_finetuned_double')
         model_group_ete_double = data.create_group('Latent_finetuned_double')
+        model_group_ete_paper = data.create_group('Latent_finetuned_paper')
 
 
         subgroup = model_group_ete_Xbb_Hl_double.create_group(f'mean')
@@ -249,6 +258,17 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
         subgroup.create_dataset('bkg_rej_std', data=ParTevent_double_mean['bkg_rej_std'])
         subgroup.create_dataset('tpr', data=ParTevent_double_mean['tpr'])
 
+        subgroup = model_group_ete_paper.create_group(f'mean')
+        subgroup.create_dataset('acc_mean', data=ParTevent_paper_mean['acc_mean'])
+        subgroup.create_dataset('acc_std', data=ParTevent_paper_mean['acc_std'])
+        subgroup.create_dataset('auc_mean', data=ParTevent_paper_mean['auc_mean'])
+        subgroup.create_dataset('auc_std', data=ParTevent_paper_mean['auc_std'])
+        subgroup.create_dataset('fpr_mean', data=ParTevent_paper_mean['fpr_mean'])
+        subgroup.create_dataset('fpr_std', data=ParTevent_paper_mean['fpr_std'])
+        subgroup.create_dataset('bkg_rej_mean', data=ParTevent_paper_mean['bkg_rej_mean'])
+        subgroup.create_dataset('bkg_rej_std', data=ParTevent_paper_mean['bkg_rej_std'])
+        subgroup.create_dataset('tpr', data=ParTevent_paper_mean['tpr'])
+
 
         
         for i in range(4):
@@ -272,5 +292,12 @@ with h5py.File('/raven/u/mvigl/Finetune_hep_dir/Finetune_hep/metrics/final_subse
             subgroup.create_dataset('y', data=ParTevent_double[i]['y'])
             subgroup.create_dataset('fpr', data=ParTevent_double[i]['fpr'])
             subgroup.create_dataset('tpr', data=ParTevent_double[i]['tpr'])
+
+            subgroup = model_group_ete_paper.create_group(f'training_{i+1}')
+            subgroup.create_dataset('acc', data=ParTevent_paper[i]['acc'])
+            subgroup.create_dataset('auc', data=ParTevent_paper[i]['auc'])
+            subgroup.create_dataset('y', data=ParTevent_paper[i]['y'])
+            subgroup.create_dataset('fpr', data=ParTevent_paper[i]['fpr'])
+            subgroup.create_dataset('tpr', data=ParTevent_paper[i]['tpr'])
 
 
