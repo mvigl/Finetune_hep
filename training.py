@@ -9,16 +9,17 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.01')
 parser.add_argument('--bs', type=int,  help='batch size',default='512')
 parser.add_argument('--ep', type=int,  help='epochs',default='3')
-parser.add_argument('--num_workers', type=int,  help='num_workers',default='6')
+parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
 parser.add_argument('--mess', help='message',default='')
-parser.add_argument('--config', help='config',default='../../Finetune_hep/config/myJetClass_full.yaml')
+parser.add_argument('--config', help='config',default='config/ParT_Xbb_config.yaml')
 parser.add_argument('--data', help='data',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/train_list.txt')
 parser.add_argument('--data_val', help='data_val',default='/home/iwsatlas1/mavigl/Finetune_hep_dir/Finetune_hep/config/val_list.txt')
-parser.add_argument('--project_name', help='project_name',default='Finetune_hep')
-parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.001)
+#parser.add_argument('--data', help='data',default='config/train.txt')
+#parser.add_argument('--data_val', help='data_val',default='config/val.txt')
+parser.add_argument('--project_name', help='project_name',default='test')
+parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.01)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
-parser.add_argument('--alpha', type=float,  help='alpha',default=0.01)
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='../../Finetune_hep/models/ParT_full.pt')
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 
@@ -72,9 +73,12 @@ config = dict(
 model_path = (f'models/{experiment_name}.pt' )
 
 
-print(model)
-num_params = sum(p.numel() for p in model.parameters())
-print(f"Number of parameters in the model: {num_params}")
+if __name__ == '__main__':    
 
-train.train_loop(model, config)
-log_model(experiment, model, model_name = experiment_name )
+    print(model)
+    num_params = sum(p.numel() for p in model.parameters())
+    print(f"Number of parameters in the model: {num_params}")
+
+    evals, trained_model = train.train_loop(model, config)
+
+    log_model(experiment, model, model_name = experiment_name )
