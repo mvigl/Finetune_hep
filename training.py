@@ -8,7 +8,7 @@ import yaml
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.01')
 parser.add_argument('--bs', type=int,  help='batch size',default='512')
-parser.add_argument('--ep', type=int,  help='epochs',default='3')
+parser.add_argument('--ep', type=int,  help='epochs',default='10')
 parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
 parser.add_argument('--mess', help='message',default='')
 parser.add_argument('--config', help='config',default='config/ParT_Xbb_config.yaml')
