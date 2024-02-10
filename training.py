@@ -55,7 +55,7 @@ experiment = Experiment(
     log_graph=True, # Can be True or False.
     auto_metric_logging=True # Can be True or False
     )
-Experiment.set_name(experiment,'test')
+Experiment.set_name(experiment,experiment_name)
 print(experiment.get_key())
 experiment.log_parameter("exp_key", experiment.get_key())
 experiment.log_parameters(hyper_params)
