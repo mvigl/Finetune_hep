@@ -17,7 +17,7 @@ parser.add_argument('--data_val', help='data_val',default='/raven/u/mvigl/Finetu
 #parser.add_argument('--data', help='data',default='config/train.txt')
 #parser.add_argument('--data_val', help='data_val',default='config/val.txt')
 parser.add_argument('--project_name', help='project_name',default='test')
-parser.add_argument('--subset',  type=float, help='njets_mlp',default=1)
+parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.01)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='../../Finetune_hep/models/ParT_full.pt')
@@ -26,13 +26,18 @@ parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 args = parser.parse_args()
 
 device = helpers.get_device()
-idxmap = helpers.get_idxmap(args.data,args.subset)
+model = models.full_model(args.config,for_inference=False)
+
 subset_val=1
 if args.subset!=1: subset_val = 0.01
-idxmap_val = helpers.get_idxmap(args.data_val,subset_val)
+if model.Task == 'Xbb':
+    idxmap = helpers.get_idxmap(args.data,args.subset)
+    idxmap_val = helpers.get_idxmap(args.data_val,subset_val)
+else:
+    idxmap = helpers.get_idxmap(args.data,args.subset)
+    idxmap_val = helpers.get_idxmap(args.data_val,subset_val)
 integer_file_map = helpers.create_integer_file_map(idxmap)
 integer_file_map_val = helpers.create_integer_file_map(idxmap_val)
-model = models.full_model(args.config,for_inference=False)
 
 hyper_params = {
    "learning_rate": args.lr,
