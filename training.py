@@ -69,14 +69,11 @@ config = dict(
             idxmap_val = idxmap_val,
             integer_file_map = integer_file_map,
             integer_file_map_val = integer_file_map_val,
-            out_model_path = 'models/test.pt',
+            out_model_path =  f'models/{experiment_name}.pt',
             start_epoch = hyper_params['start_epoch'],
             num_workers = hyper_params['num_workers'],
             experiment = experiment
         )
-
-model_path = (f'models/{experiment_name}.pt' )
-
 
 if __name__ == '__main__':    
 
