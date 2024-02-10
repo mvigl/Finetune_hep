@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 vector.register_awkward()
 from Finetune_hep.python.ParticleTransformer import ParticleTransformer
-from Finetune_hep.python import definitions as df
+from Finetune_hep.python import helpers
 
 
 class ParticleTransformerWrapper(nn.Module):
@@ -18,7 +18,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.Task = kwargs['Task']
 
         if self.Task == 'Xbb': 
-            self.Xbb = df.make_mlp(
+            self.Xbb = helpers.make_mlp(
                                 in_features = self.embed_dims,
                                 out_features=self.head_width,
                                 nlayer = self.head_nlayers,
@@ -27,7 +27,7 @@ class ParticleTransformerWrapper(nn.Module):
             )
 
         else:
-            self.head = df.make_mlp(
+            self.head = helpers.make_mlp(
                                 in_features = self.embed_dims,
                                 out_features=self.head_width,
                                 nlayer = self.head_nlayers,
