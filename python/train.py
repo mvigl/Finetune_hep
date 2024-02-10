@@ -41,7 +41,7 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
     with torch.no_grad():
         model.eval()
         for i, train_batch in enumerate( train_loader ):  
-            if (i > 100): break
+            if (i > 20): break
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()

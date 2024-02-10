@@ -29,7 +29,7 @@ device = helpers.get_device()
 model = models.full_model(args.config,for_inference=False)
 
 subset_val=1
-if args.subset!=1: subset_val = 0.01
+if args.subset!=1: subset_val = 0.005
 if model.Task == 'Xbb':
     idxmap = helpers.get_idxmap_Xbb(args.data,args.subset)
     idxmap_val = helpers.get_idxmap_Xbb(args.data_val,subset_val)
