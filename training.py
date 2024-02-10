@@ -78,7 +78,7 @@ if __name__ == '__main__':
     print(model)
     num_params = sum(p.numel() for p in model.parameters())
     print(f"Number of parameters in the model: {num_params}")
-
+    model.to(device)
     evals, trained_model = train.train_loop(model, config)
 
     log_model(experiment, model, model_name = experiment_name )
