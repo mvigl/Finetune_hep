@@ -353,3 +353,14 @@ class Xbb_CustomDataset(Dataset):
     
     def __len__(self):
         return self.length    
+
+
+def load_weights(model,weights,device):
+    pretrained_dict = torch.load(weights,map_location=torch.device(device))
+    model_dict = model.state_dict()
+    pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+    print('loading weights :')
+    print(pretrained_dict.keys())
+    model_dict.update(pretrained_dict) 
+    model.load_state_dict(model_dict)
+    return model

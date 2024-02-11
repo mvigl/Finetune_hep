@@ -20,7 +20,7 @@ parser.add_argument('--project_name', help='project_name',default='test')
 parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
-parser.add_argument('--checkpoint',  help='training-checkpoint',default='../../Finetune_hep/models/ParT_full.pt')
+parser.add_argument('--checkpoint',  help='training-checkpoint',default='')
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 
 args = parser.parse_args()
@@ -74,6 +74,8 @@ config = dict(
             num_workers = hyper_params['num_workers'],
             experiment = experiment
         )
+
+if args.checkpoint != '': model = helpers.load_weights(model,args.checkpoint,device)
 
 if __name__ == '__main__':    
 
