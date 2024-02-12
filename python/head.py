@@ -88,7 +88,7 @@ class CustomDataset(Dataset):
         else:
             self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
-        self.jet_mask = torch.from_numpy(jet_mask).float().to(device)    
+        self.jet_mask = torch.from_numpy(jet_mask.reshape(-1,5)).float().to(device)    
         self.length = len(target)
         print('N data : ',self.length)
         
