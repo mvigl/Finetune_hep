@@ -1,6 +1,6 @@
 from comet_ml import Experiment,ExistingExperiment
 from comet_ml.integration.pytorch import log_model
-from Finetune_hep.python import train,helpers,models
+from Finetune_hep.python import helpers,models
 import argparse
 import os
 
@@ -21,4 +21,4 @@ if __name__ == '__main__':
 
     print(model)
     model.to(device)
-    model.save_rep(model,device,args.data,args.out)
+    models.save_rep(model,device,args.data,args.out)
