@@ -9,6 +9,7 @@ parser.add_argument('--out', help='message',default='/raven/u/mvigl/public/run/X
 parser.add_argument('--config', help='config',default='/raven/u/mvigl/public/Finetune_hep/config/ParT_Xbb_config.yaml')
 parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt')
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='/raven/u/mvigl/public/run/Xbb/models/Xbb_lr0.01_bs512_subset0.1.pt')
+parser.add_argument('--repDim', type=int,  help='repDim',default='1')
 
 args = parser.parse_args()
 
@@ -21,4 +22,4 @@ if __name__ == '__main__':
 
     print(model)
     model.to(device)
-    models.save_rep(model,device,args.data,args.out)
+    models.save_rep(model,device,args.data,args.out,args.repDim)

@@ -30,7 +30,7 @@ def head(config_file, **kwargs):
     
     return model
 
-def save_rep(model,device,filelist,out_dir):
+def save_rep(model,device,filelist,out_dir,repDim):
 
     with torch.no_grad():
         model.eval()
@@ -73,12 +73,12 @@ def save_rep(model,device,filelist,out_dir):
                             target = np.concatenate((target,data['label']),axis=0)
                     if model.Task == 'Xbb':
                         Data = h5py.File(out_dir_i, 'w')
-                        Data.create_dataset('Xbb_score', data=preds)
+                        Data.create_dataset('Xbb_score', data=preds.reshape(-1,5,repDim))
                         Data.create_dataset('Xbb_label', data=target.reshape(-1,5),dtype='i4')
                         Data.close()   
                     else:
                         Data = h5py.File(out_dir_i, 'w')
-                        Data.create_dataset('evt_score', data=preds)
+                        Data.create_dataset('evt_score', data=preds.reshape(-1,repDim))
                         Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
                         Data.close()      
     return 0
