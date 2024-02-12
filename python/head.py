@@ -51,7 +51,6 @@ class CustomDataset(Dataset):
         hlf[:,:,helpers.jVars.index('fj_pt')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_pt')])
         hlf[:,:,helpers.jVars.index('fj_mass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_mass')])
         hlf[:,:,helpers.jVars.index('fj_sdmass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_sdmass')])
-   
         if Xbb_scores_path != '': 
             subset_offset=0
             i=0
@@ -88,7 +87,7 @@ class CustomDataset(Dataset):
         else:
             self.x = torch.from_numpy(data).float().to(device)    
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
-        self.jet_mask = torch.from_numpy(jet_mask.reshape(-1,5)).float().to(device)    
+        self.jet_mask = torch.from_numpy(jet_mask.reshape(-1,5,1)).float().to(device)    
         self.length = len(target)
         print('N data : ',self.length)
         
