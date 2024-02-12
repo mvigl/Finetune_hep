@@ -74,7 +74,7 @@ def save_rep(model,device,filelist,out_dir):
                     if model.Task == 'Xbb':
                         Data = h5py.File(out_dir_i, 'w')
                         Data.create_dataset('Xbb_score', data=preds)
-                        Data.create_dataset('Xbb_label', data=target.reshape(-1,len(helpers.labelVars)),dtype='i4')
+                        Data.create_dataset('Xbb_label', data=target.reshape(-1,5),dtype='i4')
                         Data.close()   
                     else:
                         Data = h5py.File(out_dir_i, 'w')
