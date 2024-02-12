@@ -54,7 +54,7 @@ def save_rep(model,device,filelist,out_dir):
                         if model.Task == 'Xbb':
                             build_features = helpers.build_features_and_labels_Xbb
                             data['X_jet'] = Data['X_jet'][batches[j]].reshape(-1,len(helpers.jVars))
-                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,5, len(helpers.pVars))
+                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,100, len(helpers.pVars))
                             data['labels'] = Data['X_label'][batches[j]].reshape(-1,len(helpers.labelVars))
                             data = build_features(data)
                         else:   
