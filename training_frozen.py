@@ -2,6 +2,7 @@ from comet_ml import Experiment
 from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import head,helpers,models
 import argparse
+import yaml
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.001')
@@ -23,7 +24,8 @@ args = parser.parse_args()
 
 device = helpers.get_device()
 model = models.head(args.config,for_inference=False)
-use_hlf = args.config['inputs']['hlf']['concatenate']
+with open(args.config) as file:
+    use_hlf = yaml.load(file, Loader=yaml.FullLoader) ['inputs']['hlf']['concatenate']
 subset_val=1
 if args.subset!=1: subset_val = 0.005
 
