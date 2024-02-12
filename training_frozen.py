@@ -10,10 +10,10 @@ parser.add_argument('--lr', type=float,  help='learning rate',default='0.001')
 parser.add_argument('--bs', type=int,  help='batch size',default='256')
 parser.add_argument('--ep', type=int,  help='epochs',default='100')
 parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
-parser.add_argument('--mess', help='message',default='Finetuned_Xbb_hl')
+parser.add_argument('--mess', help='message',default='Frozen_Xbb_hl')
 parser.add_argument('--config', help='config',default='config/ParT_Xbb_hlf_config.yaml')
-parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt')
-parser.add_argument('--data_val', help='data_val',default='/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt')
+parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/Xbb_train_list.txt')
+parser.add_argument('--Xbb_val', help='data_val',default='/raven/u/mvigl/Finetune_hep_dir/config/Xbb_val_list.txt')
 parser.add_argument('--project_name', help='project_name',default='test')
 parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
@@ -24,7 +24,7 @@ parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 args = parser.parse_args()
 
 device = helpers.get_device()
-model = models.full_model(args.config,for_inference=False)
+model = models.head(args.config,for_inference=False)
 
 subset_val=1
 if args.subset!=1: subset_val = 0.005
