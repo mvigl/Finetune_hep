@@ -68,7 +68,7 @@ class CustomDataset(Dataset):
                         i+=1    
             hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb)
 
-        hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.Vars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]            
+        hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]            
         if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
         else: data = Xbb
 
