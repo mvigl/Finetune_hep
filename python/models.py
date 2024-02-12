@@ -44,7 +44,9 @@ def save_rep(model,device,filelist,out_dir,repDim):
                 with h5py.File(filename, 'r') as Data:
                     if len(Data['X_label']) > 3000: size = 512
                     elif len(Data['X_label']) < 512: size = int(len(Data['X_label'])/2)
-                    elif len(Data['X_label']) == 0: 
+                    else:
+                        size = len(Data['X_label'])/10
+                        if len(Data['X_label']) == 0: 
                             print('no data')
                             continue
                     i+=1    
