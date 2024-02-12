@@ -65,7 +65,7 @@ class CustomDataset(Dataset):
                         else:
                             Xbb = np.concatenate((Xbb,Xbb_scores['Xbb_score'][:subset_offset]),axis=0)
                         i+=1    
-            if latent == False: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb[:,:,np.newaxis])  
+            if latent == False: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
                     
         if latent == False: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
