@@ -100,6 +100,8 @@ class CustomDataset(Dataset):
 
 def train_step(model,data,target,jet_mask,opt,loss_fn):
     model.train()
+    print(jet_mask.shape)
+    print(data.shape)
     if 'phi.0.weight' in model.state_dict().keys(): preds = model(data,jet_mask)    
     else: preds =  model(data)
     loss = loss_fn(preds,target)
