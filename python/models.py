@@ -53,8 +53,8 @@ def save_rep(model,device,filelist,out_dir):
                         data = {}
                         if model.Task == 'Xbb':
                             build_features = helpers.build_features_and_labels_Xbb
-                            data['X_jet'] = Data['X_jet'][batches[j]].reshape(-1,1+model.hlf_dim)
-                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,model.Nconst_max, model.input_dim)
+                            data['X_jet'] = Data['X_jet'][batches[j]].reshape(-1,len(helpers.jVars))
+                            data['X_pfo'] = Data['X_pfo'][batches[j]].reshape(-1,5, len(helpers.pVars))
                             data['X_label'] = Data['X_label'][batches[j]].reshape(-1,len(helpers.labelVars))
                             data = build_features(data)
                         else:   
@@ -74,7 +74,7 @@ def save_rep(model,device,filelist,out_dir):
                     if model.Task == 'Xbb':
                         Data = h5py.File(out_dir_i, 'w')
                         if model.head_latent:   Data.create_dataset('Xbb_score', data=preds)
-                        Data.create_dataset('Xbb_label', data=target.reshape(-1,len(helpers.jVars)),dtype='i4')
+                        Data.create_dataset('Xbb_label', data=target.reshape(-1,len(helpers.labelVars)),dtype='i4')
                         Data.close()   
                     else:
                         Data = h5py.File(out_dir_i, 'w')
