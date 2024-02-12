@@ -1,0 +1,24 @@
+from comet_ml import Experiment,ExistingExperiment
+from comet_ml.integration.pytorch import log_model
+from Finetune_hep.python import train,helpers,models
+import torch
+import argparse
+import yaml
+
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('--out', help='message',default='/raven/u/mvigl/public/run/Xbb/scores/')
+parser.add_argument('--config', help='config',default='/raven/u/mvigl/public/Finetune_hep/config/ParT_Xbb_config.yaml')
+parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/train_test.txt')
+parser.add_argument('--checkpoint',  help='training-checkpoint',default='/raven/u/mvigl/public/run/Xbb/models/Xbb_lr0.01_bs512_subset0.1.pt')
+
+args = parser.parse_args()
+
+device = helpers.get_device()
+model = models.full_model(args.config,save_representaions=False,for_inference=True)
+model = helpers.load_weights(model,args.checkpoint,device)
+
+if __name__ == '__main__':    
+
+    print(model)
+    model.to(device)
+    model.save_rep(model,device,args.data,args.out)
