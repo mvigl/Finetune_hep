@@ -40,7 +40,7 @@ def save_rep(model,device,filelist,out_dir):
                 filename = line.strip()
                 print('reading : ',filename)
                 data_index = filename.index("Data")
-                out_dir_i = out_dir + filename[data_index:]
+                out_dir_i = out_dir + '/' + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
                     if len(Data['X_label']) > 3000: size = 512
                     elif len(Data['X_label']) < 512: size = int(len(Data['X_label'])/2)
