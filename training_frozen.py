@@ -11,6 +11,8 @@ parser.add_argument('--ep', type=int,  help='epochs',default='100')
 parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
 parser.add_argument('--mess', help='message',default='Frozen_Xbb_hl')
 parser.add_argument('--config', help='config',default='config/ParT_Xbb_hlf_config.yaml')
+parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/train_list.txt')
+parser.add_argument('--data_val', help='data_val',default='/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt')
 parser.add_argument('--Xbb', help='data',default='')#'/raven/u/mvigl/Finetune_hep_dir/config/Xbb_train_list.txt')
 parser.add_argument('--Xbb_val', help='data_val',default='')#'/raven/u/mvigl/Finetune_hep_dir/config/Xbb_val_list.txt')
 parser.add_argument('--project_name', help='project_name',default='test')
@@ -39,6 +41,8 @@ hyper_params = {
    "Xbb_scores_path": args.Xbb, 
    "Xbb_scores_path_val": args.Xbb_val, 
    "scaler_path": args.scaler_path, 
+   "filelist": args.data, 
+   "filelist_val": args.data_val, 
 }
 experiment_name = f'{args.mess}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_subset{args.subset}'
 experiment = Experiment(
@@ -57,6 +61,8 @@ config = dict(
             LR = hyper_params['learning_rate'],
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['epochs'],
+            filelist = hyper_params['filelist'],
+            filelist_val = hyper_params['filelist_val'],
             device = device,
             Xbb_scores_path = hyper_params['Xbb_scores_path'],
             Xbb_scores_path_val = hyper_params['Xbb_scores_path_val'],
