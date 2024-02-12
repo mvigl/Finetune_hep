@@ -7,7 +7,7 @@ import yaml
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.001')
-parser.add_argument('--bs', type=int,  help='batch size',default='512')
+parser.add_argument('--bs', type=int,  help='batch size',default='256')
 parser.add_argument('--ep', type=int,  help='epochs',default='100')
 parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
 parser.add_argument('--mess', help='message',default='Finetuned_Xbb_hl')
