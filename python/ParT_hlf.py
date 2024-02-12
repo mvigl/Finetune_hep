@@ -1,6 +1,5 @@
 from Finetune_hep.python import helpers
 import numpy as np
-import math
 import vector
 import torch
 import torch.nn as nn

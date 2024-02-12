@@ -1,12 +1,10 @@
 import numpy as np
 import awkward as ak
 import matplotlib.pyplot as plt
-import pandas as pd
 import math
 import vector
 import torch
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import h5py
 vector.register_awkward()
 
