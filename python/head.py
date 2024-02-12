@@ -146,11 +146,10 @@ def train_loop(model,config):
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(config['device']))
     evals = []
     best_val_loss = float('inf')
-    Dataset = CustomDataset(config['filelist'],config['device'],config['scaler_path'],config['Xbb_scores_path'],use_hlf=config['use_hlf'],test=False,subset_batches=config['subset_batches'])
-    num_samples = Dataset.length
-    Dataset_val = CustomDataset(config['filelist_val'],config['device'],config['scaler_path'],config['Xbb_scores_path_val'],test=True,subset_batches=config['subset_batches_val'])
+    Dataset = CustomDataset(config['filelist'],config['device'],config['scaler_path'],config['Xbb_scores_path'],use_hlf=config['use_hlf'],test=False,subset_batches=config['subset'])
+    Dataset_val = CustomDataset(config['filelist_val'],config['device'],config['scaler_path'],config['Xbb_scores_path_val'],test=True,subset_batches=config['subset_val'])
 
-    best_model_params_path = config['path']   
+    best_model_params_path = config['out_model_path']   
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True)
     for epoch in range (0,config['epochs']):
         print(f'epoch: {epoch+1}') 
