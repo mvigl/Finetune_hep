@@ -25,7 +25,7 @@ def transform_without_zeros(data,jet_mask,scaler):
     return scaled_data.reshape(-1,5,len(helpers.jVars))
 
 class CustomDataset(Dataset):
-    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,use_hlf=True,test=False,subset_batches=1):
+    def __init__(self, filelist,device,scaler_path,Xbb_scores_path,use_hlf=True,test=False,subset_batches=1,latent=False):
         self.device = device
         self.x=[]
         self.y=[]
@@ -65,9 +65,9 @@ class CustomDataset(Dataset):
                         else:
                             Xbb = np.concatenate((Xbb,Xbb_scores['Xbb_score'][:subset_offset]),axis=0)
                         i+=1    
-            hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb)
+            if latent == False: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb[:,:,np.newaxis])  
                     
-        Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
+        if latent == False: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
         hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
         if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
