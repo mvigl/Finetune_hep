@@ -112,9 +112,9 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 print('loading Xbb scores from : ',filenamexbb)
                 with h5py.File(filenamexbb, 'r') as Xbb_scores:
                     Xbb = Xbb_scores['Xbb_score'][:]
-                    if repDim != 1: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
+                    if repDim == 1: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
                     
-                if repDim != 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
+                if repDim == 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
                 hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
                 if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
