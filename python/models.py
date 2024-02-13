@@ -66,7 +66,6 @@ def save_rep(model,device,filelist,out_dir,repDim):
                             data['labels'] = Data['labels'][batches[j]]
                             data['jet_mask'] = Data['jet_mask'][batches[j]]
                             data = build_features(data) 
-                            data['pf_mask'][:,:,:,:2] += np.abs(data['jet_mask'][:,:,np.newaxis]-1)
                         if (j==0):
                             preds = train.infer_val(model,data,device).detach().cpu().numpy()
                             target = data['label']
