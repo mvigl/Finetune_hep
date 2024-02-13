@@ -20,7 +20,7 @@ def full_model(config_file, **kwargs):
     
     return model
 
-def head(config_file, **kwargs):
+def head_model(config_file, **kwargs):
 
     with open(config_file) as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader) 

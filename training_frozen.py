@@ -25,7 +25,7 @@ parser.add_argument('--scaler_path',  help='training-checkpoint',default='')
 args = parser.parse_args()
 
 device = helpers.get_device()
-model = models.head(args.config,for_inference=False)
+model = models.head_model(args.config,for_inference=False)
 with open(args.config) as file:
     use_hlf = yaml.load(file, Loader=yaml.FullLoader) ['inputs']['hlf']['concatenate']
 subset_val=1
