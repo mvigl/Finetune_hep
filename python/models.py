@@ -91,58 +91,51 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
     with torch.no_grad():
         model.to(device)
         model.eval()
-        with open(filelist) as f:
-            i=0
-            for line in f:
+        with open(filelist) as f, open(Xbb_scores_path) as fxbb:
+            print('..done')
+            for line, linexbb in zip(f, fxbb):
                 filename = line.strip()
+                filenamexbb = linexbb.strip()
                 print('reading : ',filename)
+                print('reading : ',filenamexbb)
+                data_index = filename.index("Data")
+                out_dir_i = out_dir + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
-                    if i ==0:
-                        hlf = Data['X_jet'][:]
-                        target = Data['labels'][:] 
-                        jet_mask = Data['jet_mask'][:]
-                    else:
-                        hlf = np.concatenate((hlf,Data['X_jet'][:]),axis=0)
-                        target = np.concatenate((target,Data['labels'][:]),axis=0)
-                        jet_mask = np.concatenate((jet_mask,Data['jet_mask'][:]),axis=0)
-                    i+=1    
-        scaler = StandardScaler()
-        hlf[:,:,helpers.jVars.index('fj_pt')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_pt')])
-        hlf[:,:,helpers.jVars.index('fj_mass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_mass')])
-        hlf[:,:,helpers.jVars.index('fj_sdmass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_sdmass')])
-        if Xbb_scores_path != '': 
-            i=0
-            with open(Xbb_scores_path) as f:
-                for line in f:
-                    filename = line.strip()
-                    print('loading Xbb scores from : ',filename)
-                    with h5py.File(filename, 'r') as Xbb_scores:
-                        if i ==0:
-                            Xbb = Xbb_scores['Xbb_score'][:]
-                        else:
-                            Xbb = np.concatenate((Xbb,Xbb_scores['Xbb_score'][:]),axis=0)
-                        i+=1    
-            if repDim != 1: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
+                    hlf = Data['X_jet'][:]
+                    target = Data['labels'][:] 
+                    jet_mask = Data['jet_mask'][:]  
+                scaler = StandardScaler()
+                hlf[:,:,helpers.jVars.index('fj_pt')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_pt')])
+                hlf[:,:,helpers.jVars.index('fj_mass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_mass')])
+                hlf[:,:,helpers.jVars.index('fj_sdmass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_sdmass')])
+                if Xbb_scores_path != '': 
+                    with open(Xbb_scores_path) as f:
+                        for line in f:
+                            filename = line.strip()
+                            print('loading Xbb scores from : ',filename)
+                            with h5py.File(filename, 'r') as Xbb_scores:
+                                Xbb = Xbb_scores['Xbb_score'][:]
+                    if repDim != 1: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
                     
-        if repDim != 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
+                if repDim != 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
-        hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
-        if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
-        else: data = Xbb
+                hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
+                if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
+                else: data = Xbb
 
-        if scaler_path !='' : 
-            with open(scaler_path,'rb') as f:
-                scaler = pickle.load(f)
-                X_norm = head.transform_without_zeros(data,jet_mask,scaler)
-                x = torch.from_numpy(X_norm).float().to(device)
-        else:
-            x = torch.from_numpy(data).float().to(device)    
-        jet_mask = torch.from_numpy(jet_mask.reshape(-1,5,1)).float().to(device) 
-        if use_hlf: preds = model(x,jet_mask).detach().cpu().numpy() 
-        else: preds = model(x).detach().cpu().numpy() 
+                if scaler_path !='' : 
+                    with open(scaler_path,'rb') as f:
+                        scaler = pickle.load(f)
+                    X_norm = head.transform_without_zeros(data,jet_mask,scaler)
+                    x = torch.from_numpy(X_norm).float().to(device)
+                else:
+                    x = torch.from_numpy(data).float().to(device)    
+                jet_mask = torch.from_numpy(jet_mask.reshape(-1,5,1)).float().to(device) 
+                if use_hlf: preds = model(x,jet_mask).detach().cpu().numpy() 
+                else: preds = model(x).detach().cpu().numpy() 
 
-        Data = h5py.File(out_dir+'/scores.h5', 'w')
-        Data.create_dataset('evt_score', data=preds.reshape(-1,repDim))
-        Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
-        Data.close()   
+                Data = h5py.File(out_dir_i, 'w')
+                Data.create_dataset('evt_score', data=preds.reshape(-1,repDim))
+                Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                Data.close()   
         
