@@ -108,13 +108,10 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 hlf[:,:,helpers.jVars.index('fj_pt')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_pt')])
                 hlf[:,:,helpers.jVars.index('fj_mass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_mass')])
                 hlf[:,:,helpers.jVars.index('fj_sdmass')] = helpers.log(hlf[:,:,helpers.jVars.index('fj_sdmass')])
-                if Xbb_scores_path != '': 
-                    with open(Xbb_scores_path) as f:
-                        for line in f:
-                            filename = line.strip()
-                            print('loading Xbb scores from : ',filename)
-                            with h5py.File(filename, 'r') as Xbb_scores:
-                                Xbb = Xbb_scores['Xbb_score'][:]
+                
+                print('loading Xbb scores from : ',filenamexbb)
+                with h5py.File(filenamexbb, 'r') as Xbb_scores:
+                    Xbb = Xbb_scores['Xbb_score'][:]
                     if repDim != 1: hlf[:,:,helpers.jVars.index('fj_doubleb')] = np.nan_to_num(Xbb.reshape(-1,5))  
                     
                 if repDim != 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
