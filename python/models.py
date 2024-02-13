@@ -99,7 +99,7 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 print('reading : ',filename)
                 print('reading : ',filenamexbb)
                 data_index = filename.index("Data")
-                out_dir_i = out_dir + filename[data_index:]
+                out_dir_i = out_dir + '/' + filename[data_index:]
                 with h5py.File(filename, 'r') as Data:
                     hlf = Data['X_jet'][:]
                     target = Data['labels'][:] 
