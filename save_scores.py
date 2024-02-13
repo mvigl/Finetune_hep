@@ -17,8 +17,11 @@ parser.add_argument('--use_hlf',  action='store_true', help='use_hlf', default=T
 args = parser.parse_args()
 
 device = helpers.get_device()
-if args.ishead: model = models.head_model(args.config,save_representaions=args.save_representaions,for_inference=True)
-else: model = models.full_model(args.config,save_representaions=args.save_representaions,for_inference=True)
+if args.ishead: 
+    print('head')
+    model = models.head_model(args.config,save_representaions=args.save_representaions,for_inference=True)
+else: 
+    model = models.full_model(args.config,save_representaions=args.save_representaions,for_inference=True)
 model = helpers.load_weights(model,args.checkpoint,device)
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
 
