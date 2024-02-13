@@ -143,7 +143,7 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path,use_hlf,s
         jet_mask = torch.from_numpy(jet_mask.reshape(-1,5,1)).float().to(device) 
         preds = model(x) 
 
-        Data = h5py.File(out_dir, 'w')
+        Data = h5py.File(out_dir+'/scores.h5', 'w')
         Data.create_dataset('evt_score', data=preds.reshape(-1,repDim))
         Data.create_dataset('evt_label', data=y.reshape(-1),dtype='i4')
         Data.close()   
