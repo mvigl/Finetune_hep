@@ -103,14 +103,14 @@ def train_loop(model, config):
     if model.Task == 'Xbb':
         print('Xbb task')
         loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.39]).to(config['device']))
-        Dataset = helpers.Xbb_CustomDataset(config['idxmap'],config['integer_file_map'])
-        Dataset_val = helpers.Xbb_CustomDataset(config['idxmap_val'],config['integer_file_map_val'])
+        Dataset = helpers.Xbb_CustomDataset(config['filelist'],config['subset'],train=True,device="cpu")
+        Dataset_val = helpers.Xbb_CustomDataset(config['filelist_val'],config['subset'],train=False,device="cpu")
         build_features = helpers.build_features_and_labels_Xbb
     else:    
         print('Evt task')
         loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(config['device']))
-        Dataset = helpers.CustomDataset(config['idxmap'],config['integer_file_map'])
-        Dataset_val = helpers.CustomDataset(config['idxmap_val'],config['integer_file_map_val'])
+        Dataset = helpers.CustomDataset(config['filelist'],config['subset'],train=True,device="cpu")
+        Dataset_val = helpers.CustomDataset(config['filelist'],config['subset'],train=False,device="cpu")
         build_features = helpers.build_features_and_labels
     num_samples = Dataset.length
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True,num_workers=config['num_workers'])
