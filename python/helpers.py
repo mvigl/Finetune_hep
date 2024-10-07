@@ -310,56 +310,22 @@ def create_integer_file_map(idxmap):
     return integer_file_map     
     
 class CustomDataset(Dataset):
-    def __init__(self, filelist,subset=1,train=True,device='cpu'):
-        self.device = device
-        self.X_jet=[]
-        self.X_pfo=[]
-        self.X_label=[]
-        self.jet_mask=[]
-        self.labels=[]
-        i=0
-        with open(filelist) as f:
-            for line in f:
-                filename = line.strip()
-                print('reading : ',filename)
-                with h5py.File(filename, 'r') as Data:
-                    length = len(Data['labels'])
-                    if i==0:
-                        if train:
-                            self.X_jet = Data['X_jet'][:int(length*0.9*subset)]
-                            self.X_pfo = Data['X_pfo'][:int(length*0.9*subset)] 
-                            self.X_label = Data['X_label'][:int(length*0.9*subset)]
-                            self.labels = Data['labels'][:int(length*0.9*subset)]
-                            self.jet_mask = Data['jet_mask'][:int(length*0.9*subset)]
-                        else:
-                            self.X_jet = Data['X_jet'][int(self.length*0.9):]
-                            self.X_pfo = Data['X_pfo'][int(self.length*0.9):]
-                            self.X_label = Data['X_label'][int(self.length*0.9):]
-                            self.labels = Data['labels'][int(self.length*0.9):]
-                            self.jet_mask = Data['jet_mask'][int(self.length*0.9):]
-                    else:
-                        if train:
-                            self.X_jet = np.concatenate((self.X_jet,Data['X_jet'][:int(length*0.9*subset)]),axis=0)
-                            self.X_pfo = np.concatenate((self.X_pfo,Data['X_pfo'][:int(length*0.9*subset)]),axis=0)
-                            self.X_label = np.concatenate((self.X_label,Data['X_label'][:int(length*0.9*subset)]),axis=0)
-                            self.labels = np.concatenate((self.labels,Data['labels'][:int(length*0.9*subset)]),axis=0)
-                            self.jet_mask = np.concatenate((self.jet_mask,Data['jet_mask'][:int(length*0.9*subset)]),axis=0) 
-                        else:     
-                            self.X_jet = np.concatenate((self.X_jet,Data['X_jet'][int(self.length*0.9):]),axis=0)
-                            self.X_pfo = np.concatenate((self.X_pfo,Data['X_pfo'][int(self.length*0.9):]),axis=0)
-                            self.X_label = np.concatenate((self.X_label,Data['X_label'][int(self.length*0.9):]),axis=0)
-                            self.labels = np.concatenate((self.labels,Data['labels'][int(self.length*0.9):]),axis=0)
-                            self.jet_mask = np.concatenate((self.jet_mask,Data['jet_mask'][int(self.length*0.9):]),axis=0) 
-                i+=1        
-        self.length = len(self.labels)                
-        print('N data: ',self.length)
+    def __init__(self, idxmap,integer_file_map):
+        self.integer_file_map = integer_file_map
+        self.length = len(integer_file_map)
+        self.idxmap = idxmap
+        print("N data : ", self.length)
+        
     def __getitem__(self, index):
+        file_path = self.integer_file_map[index][0]
+        offset = np.min(self.idxmap[file_path])
         data = {}
-        data['X_jet'] = self.X_jet[index]
-        data['X_pfo'] = self.X_pfo[index]
-        data['X_label'] = self.X_label[index]
-        data['labels'] = self.labels[index]
-        data['jet_mask'] = self.jet_mask[index]
+        with h5py.File(file_path, 'r') as f:
+            data['X_jet'] = f['X_jet'][index-offset]
+            data['X_pfo'] = f['X_pfo'][index-offset]
+            data['X_label'] = f['X_label'][index-offset]
+            data['labels'] = f['labels'][index-offset]
+            data['jet_mask'] = f['jet_mask'][index-offset]
         return data
     
     def __len__(self):
@@ -367,49 +333,24 @@ class CustomDataset(Dataset):
 
 
 class Xbb_CustomDataset(Dataset):
-    def __init__(self, filelist,subset=1,train=True,device='cpu'):
-        self.device = device
-        self.X_jet=[]
-        self.X_pfo=[]
-        self.labels=[]
-        i=0
-        with open(filelist) as f:
-            for line in f:
-                filename = line.strip()
-                print('reading : ',filename)
-                with h5py.File(filename, 'r') as Data:
-                    length = len(Data['labels'])
-                    if i==0:
-                        if train:
-                            self.X_jet = Data['X_jet'][:int(length*0.9*subset)].reshape((-1,6))
-                            self.X_pfo = Data['X_pfo'][:int(length*0.9*subset)].reshape((-1,100,15)) 
-                            self.labels = Data['labels'][:int(length*0.9*subset)].reshape((-1,6))
-                        else:
-                            self.X_jet = Data['X_jet'][int(self.length*0.9):].reshape((-1,6))
-                            self.X_pfo = Data['X_pfo'][int(self.length*0.9):].reshape((-1,100,15)) 
-                            self.labels = Data['labels'][int(self.length*0.9):].reshape((-1,6))
-                    else:
-                        if train:
-                            self.X_jet = np.concatenate((self.X_jet,Data['X_jet'][:int(length*0.9*subset)].reshape((-1,6))),axis=0)
-                            self.X_pfo = np.concatenate((self.X_pfo,Data['X_pfo'][:int(length*0.9*subset)].reshape((-1,100,15))),axis=0)
-                            self.labels = np.concatenate((self.labels,Data['labels'][:int(length*0.9*subset)].reshape((-1,6))),axis=0)
-                        else:     
-                            self.X_jet = np.concatenate((self.X_jet,Data['X_jet'][int(self.length*0.9):].reshape((-1,6))),axis=0)
-                            self.X_pfo = np.concatenate((self.X_pfo,Data['X_pfo'][int(self.length*0.9):].reshape((-1,100,15)) ),axis=0)
-                            self.labels = np.concatenate((self.labels,Data['labels'][int(self.length*0.9):].reshape((-1,6))),axis=0)
-                i+=1 
-        self.length = len(self.labels)
-        print('N data: ',self.length)
+    def __init__(self, idxmap,integer_file_map):
+        self.integer_file_map = integer_file_map
+        self.length = len(integer_file_map)
+        self.idxmap = idxmap
+        print("N data : ", self.length)
         
     def __getitem__(self, index):
+        file_path = self.integer_file_map[index][0]
+        offset = np.min(self.idxmap[file_path])
         data = {}
-        data['X_jet'] = self.X_jet[index]
-        data['X_pfo'] = self.X_pfo[index]
-        data['labels'] = self.labels[index]
+        with h5py.File(file_path, 'r') as f:
+            data['X_jet'] = f['X_jet_singlejet'][int(index-offset)]
+            data['X_pfo'] = f['X_pfo_singlejet'][int(index-offset)]
+            data['labels'] = f['X_label_singlejet'][int(index-offset)]
         return data
     
     def __len__(self):
-        return self.length    
+        return self.length 
 
 
 def load_weights(model,weights,device):

@@ -40,7 +40,7 @@ inputs:
 head:
    width: 128
    nlayers: 3
-   latent: False
+   latent: True
    Njets_max: 5
 
 Task: 'Event'
@@ -50,6 +50,6 @@ save_representaions: False
 labels:
    value: ['label_H_bb']
 
-
+latent: True
 
 

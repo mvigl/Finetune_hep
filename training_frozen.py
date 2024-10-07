@@ -3,6 +3,7 @@ from comet_ml.integration.pytorch import log_model
 from Finetune_hep.python import head,helpers,models
 import argparse
 import yaml
+import os
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.001')
@@ -15,19 +16,25 @@ parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_d
 parser.add_argument('--data_val', help='data_val',default='/raven/u/mvigl/Finetune_hep_dir/config/val_list.txt')
 parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/public/Finetune_hep/config/Xbb_train_list.txt')
 parser.add_argument('--Xbb_val', help='data_val',default='/raven/u/mvigl/public/Finetune_hep/config/Xbb_val_list.txt')
-parser.add_argument('--project_name', help='project_name',default='test')
+parser.add_argument('--project_name', help='project_name',default='FM_SBI')
 parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='')
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--scaler_path',  help='training-checkpoint',default='')
+parser.add_argument('--out', help='out directory',default='/raven/u/mvigl/public/run/Frozen_Xbb_hl')
 args = parser.parse_args()
+if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
+if (not os.path.exists(f'{args.out}/models')): os.system(f'mkdir {args.out}/models')
+if (not os.path.exists(f'{args.out}/scores')): os.system(f'mkdir {args.out}/scores')
 
 device = helpers.get_device()
 model = models.head_model(args.config,for_inference=False)
 with open(args.config) as file:
     use_hlf = yaml.load(file, Loader=yaml.FullLoader) ['inputs']['hlf']['concatenate']
+with open(args.config) as file:
+    latent = yaml.load(file, Loader=yaml.FullLoader) ['latent']
 subset_val=1
 if args.subset!=1: subset_val = 0.005
 
@@ -47,7 +54,7 @@ hyper_params = {
 experiment_name = f'{args.mess}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_subset{args.subset}'
 experiment = Experiment(
     api_key = 'r1SBLyPzovxoWBPDLx3TAE02O',
-    project_name = 'public_test',
+    project_name = args.project_name,
     workspace='mvigl',
     log_graph=True, # Can be True or False.
     auto_metric_logging=True # Can be True or False
@@ -67,9 +74,10 @@ config = dict(
             Xbb_scores_path = hyper_params['Xbb_scores_path'],
             Xbb_scores_path_val = hyper_params['Xbb_scores_path_val'],
             use_hlf = use_hlf,
+            latent = latent,
             subset = hyper_params['subset'],
             subset_val = subset_val,
-            out_model_path =  f'models/{experiment_name}.pt',
+            out_model_path =  f'{args.out}/models/{experiment_name}.pt',
             start_epoch = hyper_params['start_epoch'],
             num_workers = hyper_params['num_workers'],
             scaler_path = hyper_params['scaler_path'],

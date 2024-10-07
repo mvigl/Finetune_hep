@@ -4,12 +4,13 @@ from Finetune_hep.python import train,helpers,models
 import torch
 import argparse
 import yaml
+import os
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--lr', type=float,  help='learning rate',default='0.001')
-parser.add_argument('--bs', type=int,  help='batch size',default='256')
+parser.add_argument('--bs', type=int,  help='batch size',default='512')
 parser.add_argument('--ep', type=int,  help='epochs',default='100')
-parser.add_argument('--num_workers', type=int,  help='num_workers',default='1')
+parser.add_argument('--num_workers', type=int,  help='num_workers',default='12')
 parser.add_argument('--mess', help='message',default='Scratch_Xbb_hl')
 parser.add_argument('--config', help='config',default='/Users/matthiasvigl/Documents/Physics/EndToEnd/public/Finetune_hep/config/ParT_Xbb_hlf_config.yaml')
 parser.add_argument('--data', help='data',default='/Users/matthiasvigl/Documents/Physics/EndToEnd/public/data/test_list.txt')
@@ -20,11 +21,26 @@ parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE0
 parser.add_argument('--ws', help='workspace',default='mvigl')
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='')#'/raven/u/mvigl/public/run/Xbb/models/Xbb_lr0.01_bs512_subset0.1.pt')
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
+parser.add_argument('--out', help='out directory',default='/raven/u/mvigl/public/run/Scratch_Xbb_hl')
 
 args = parser.parse_args()
-
+if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
+if (not os.path.exists(f'{args.out}/models')): os.system(f'mkdir {args.out}/models')
+if (not os.path.exists(f'{args.out}/scores')): os.system(f'mkdir {args.out}/scores')
 device = helpers.get_device()
 model = models.full_model(args.config,for_inference=False)
+
+#subset_val=1
+#if args.subset!=1: subset_val = 0.01
+subset_val=0.01
+if model.Task == 'Xbb':
+    idxmap = helpers.get_idxmap_Xbb(args.data,args.subset)
+    idxmap_val = helpers.get_idxmap_Xbb(args.data_val,subset_val)
+else:
+    idxmap = helpers.get_idxmap(args.data,args.subset)
+    idxmap_val = helpers.get_idxmap(args.data_val,subset_val)
+integer_file_map = helpers.create_integer_file_map(idxmap)
+integer_file_map_val = helpers.create_integer_file_map(idxmap_val)
 
 hyper_params = {
    "learning_rate": args.lr,
@@ -52,10 +68,11 @@ config = dict(
             batch_size = hyper_params['batch_size'],
             epochs = hyper_params['epochs'],
             device = device,
-            filelist = args.data,
-            filelist_val = args.data_val,
-            subset = args.subset,
-            out_model_path =  f'models/{experiment_name}.pt',
+            idxmap = idxmap,
+            idxmap_val = idxmap_val,
+            integer_file_map = integer_file_map,
+            integer_file_map_val = integer_file_map_val,
+            out_model_path =  f'{args.out}/models/{experiment_name}.pt',
             start_epoch = hyper_params['start_epoch'],
             num_workers = hyper_params['num_workers'],
             experiment = experiment
@@ -67,7 +84,7 @@ if __name__ == '__main__':
 
     print(model)
     num_params = sum(p.numel() for p in model.parameters())
-    print(f"Number of parameters: {num_params}")
+    print(f"Number of parameters in the model: {num_params}")
     model.to(device)
     evals, trained_model = train.train_loop(model, config)
 

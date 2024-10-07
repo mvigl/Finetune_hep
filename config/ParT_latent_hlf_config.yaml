@@ -50,6 +50,6 @@ save_representaions: False
 labels:
    value: ['label_H_bb']
 
-
+latent: True
 
 

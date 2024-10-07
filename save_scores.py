@@ -8,10 +8,11 @@ parser.add_argument('--config', help='config',default='/raven/u/mvigl/public/Fin
 parser.add_argument('--data', help='data',default='/raven/u/mvigl/Finetune_hep_dir/config/test_list.txt')
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='/raven/u/mvigl/public/run/Frozen_Xbb_hl/models/Frozen_Xbb_hl_lr0.001_bs512_subset0.1.pt')
 parser.add_argument('--repDim', type=int,  help='repDim',default='1')
+parser.add_argument('--out_dim', type=int,  help='out_dim',default='1')
 parser.add_argument('--save_representaions',  action='store_true', help='save_representaions', default=False)
-parser.add_argument('--ishead',  action='store_true', help='ishead', default=True)
+parser.add_argument('--ishead',  action='store_true', help='ishead', default=False)
 parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/public/Finetune_hep/config/Xbb_test_list.txt')
-parser.add_argument('--scaler_path',  help='training-checkpoint',default='')
+parser.add_argument('--scaler_path',  help='scaler_path',default='')
 parser.add_argument('--use_hlf',  action='store_true', help='use_hlf', default=True)
 
 args = parser.parse_args()
@@ -24,11 +25,15 @@ else:
     model = models.full_model(args.config,save_representaions=args.save_representaions,for_inference=True)
 model = helpers.load_weights(model,args.checkpoint,device)
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
+if (not os.path.exists(f'{args.out}/scores')): os.system(f'mkdir {args.out}/scores')
 
 if __name__ == '__main__':    
 
     print(model)
     model.to(device)
-    if args.ishead: models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path)
+    if args.ishead: 
+        out_dim = args.out_dim
+        if args.save_representaions: out_dim = args.repDim
+        models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
     else: models.save_rep(model,device,args.data,args.out,args.repDim)
     

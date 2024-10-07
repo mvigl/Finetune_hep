@@ -70,8 +70,8 @@ class CustomDataset(Dataset):
         if latent == False: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
         hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
-        if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
-        else: data = Xbb
+        if use_hlf: data = np.concatenate((np.nan_to_num(Xbb),hlf[:,:,hlfeats]),axis=-1)      
+        else: data = np.nan_to_num(Xbb)
 
         if scaler_path !='' : 
             if (test == False): 
@@ -85,9 +85,10 @@ class CustomDataset(Dataset):
                 X_norm = transform_without_zeros(data,jet_mask,self.scaler)
                 self.x = torch.from_numpy(X_norm).float().to(device)
         else:
-            self.x = torch.from_numpy(data).float().to(device)    
+            self.x = torch.from_numpy(data).float().to(device)       
         self.y = torch.from_numpy(target.reshape(-1,1)).float().to(device)
         self.jet_mask = torch.from_numpy(jet_mask.reshape(-1,5,1)).float().to(device)    
+        if ( (latent) and (not use_hlf) ): self.x = torch.sum(torch.reshape(self.x,(-1,5,128))*self.jet_mask,dim=1) 
         self.length = len(target)
         print('N data : ',self.length)
         
@@ -99,8 +100,8 @@ class CustomDataset(Dataset):
 
 def train_step(model,data,target,jet_mask,opt,loss_fn):
     model.train()
-    print(jet_mask.shape)
-    print(data.shape)
+    #print(jet_mask.shape)
+    #print(data.shape)
     if 'phi.0.weight' in model.state_dict().keys(): preds = model(data,jet_mask)    
     else: preds =  model(data)
     loss = loss_fn(preds,target)
@@ -149,8 +150,8 @@ def train_loop(model,config):
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(config['device']))
     evals = []
     best_val_loss = float('inf')
-    Dataset = CustomDataset(config['filelist'],config['device'],config['scaler_path'],config['Xbb_scores_path'],use_hlf=config['use_hlf'],test=False,subset_batches=config['subset'])
-    Dataset_val = CustomDataset(config['filelist_val'],config['device'],config['scaler_path'],config['Xbb_scores_path_val'],test=True,subset_batches=config['subset_val'])
+    Dataset = CustomDataset(config['filelist'],config['device'],config['scaler_path'],config['Xbb_scores_path'],use_hlf=config['use_hlf'],test=False,subset_batches=config['subset'],latent=config['latent'])
+    Dataset_val = CustomDataset(config['filelist_val'],config['device'],config['scaler_path'],config['Xbb_scores_path_val'],use_hlf=config['use_hlf'],test=True,subset_batches=config['subset_val'],latent=config['latent'])
 
     best_model_params_path = config['out_model_path']   
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True)

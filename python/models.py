@@ -86,7 +86,7 @@ def save_rep(model,device,filelist,out_dir,repDim):
                         Data.close()      
     return 0
 
-def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hlf=True,scaler_path=''):
+def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hlf=True,scaler_path='',out_dim=1):
 
     with torch.no_grad():
         model.to(device)
@@ -117,8 +117,8 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 if repDim == 1: Xbb = hlf[:,:,helpers.jVars.index('fj_doubleb')].reshape(-1,5,1)
         
                 hlfeats = [helpers.jVars.index('fj_pt'),helpers.jVars.index('fj_eta'),helpers.jVars.index('fj_phi'),helpers.jVars.index('fj_mass'),helpers.jVars.index('fj_sdmass')]
-                if use_hlf: data = np.concatenate((Xbb,hlf[:,:,hlfeats]),axis=-1)      
-                else: data = Xbb
+                if use_hlf: data = np.concatenate((np.nan_to_num(Xbb),hlf[:,:,hlfeats]),axis=-1)      
+                else: data = np.nan_to_num(Xbb)
 
                 if scaler_path !='' : 
                     with open(scaler_path,'rb') as f:
@@ -132,7 +132,7 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 else: preds = model(x).detach().cpu().numpy() 
 
                 Data = h5py.File(out_dir_i, 'w')
-                Data.create_dataset('evt_score', data=preds.reshape(-1,repDim))
+                Data.create_dataset('evt_score', data=preds.reshape(-1,out_dim))
                 Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
                 Data.close()   
         
