@@ -18,8 +18,8 @@ parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/public/Finetune
 parser.add_argument('--Xbb_val', help='data_val',default='/raven/u/mvigl/public/Finetune_hep/config/Xbb_val_list.txt')
 parser.add_argument('--project_name', help='project_name',default='FM_SBI')
 parser.add_argument('--subset',  type=float, help='njets_mlp',default=0.1)
-parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')
-parser.add_argument('--ws', help='workspace',default='mvigl')
+parser.add_argument('--api_key', help='api_key',default='')#r1SBLyPzovxoWBPDLx3TAE02O
+parser.add_argument('--ws', help='workspace',default='')#mvigl
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='')
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--scaler_path',  help='training-checkpoint',default='')
