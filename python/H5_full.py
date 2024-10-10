@@ -7,6 +7,7 @@ import h5py
 import argparse
 import sys
 from Finetune_hep.python import helpers
+import os
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--bkg',  action='store_true', help='is bkg', default=False)
@@ -23,6 +24,8 @@ bkg = args.bkg
 mess = args.mess
 out = args.out
 testonly = args.testonly
+
+if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
 
 tree = uproot.open(fname)['deepntuplizer/tree']     
 print(tree)
