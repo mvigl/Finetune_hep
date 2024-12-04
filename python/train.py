@@ -115,9 +115,16 @@ def train_loop(model, config):
     num_samples = Dataset.length
     val_loader = DataLoader(Dataset_val, batch_size=config['batch_size'], shuffle=True,num_workers=config['num_workers'])
 
-    base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
-    opt = Lookahead(base_opt, k=6, alpha=0.5)
-    scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)
+    if config["LoRa"]:
+        print("using LoRa!!!")
+        trainable_params = [p for p in model_Xbb_hlf_LoRa.parameters() if p.requires_grad]
+        base_opt = torch.optim.RAdam(trainable_params, lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
+        opt = Lookahead(base_opt, k=6, alpha=0.5)
+        scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)
+    else:
+        base_opt = torch.optim.RAdam(model.parameters(), lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
+        opt = Lookahead(base_opt, k=6, alpha=0.5)
+        scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)
 
     best_model_params_path = config['out_model_path']
 

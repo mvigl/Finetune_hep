@@ -6,6 +6,8 @@ import vector
 import torch
 from torch.utils.data import Dataset
 import h5py
+import torch.nn as nn
+import copy
 vector.register_awkward()
 
 labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]       
@@ -362,3 +364,72 @@ def load_weights(model,weights,device):
     model_dict.update(pretrained_dict) 
     model.load_state_dict(model_dict)
     return model
+
+def count_trainable_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    
+class LoRA(nn.Module):
+    def __init__(self, original_layer, rank=4):
+        super().__init__()
+        self.original_layer = original_layer  # Reference to the original layer
+        self.rank = rank
+
+        # Define the LoRA-specific layers
+        self.lora_Alora = nn.Linear(original_layer.in_features, rank, bias=False)
+        self.lora_Blora = nn.Linear(rank, original_layer.out_features, bias=False)
+
+        # Initialize LoRA layers
+        nn.init.kaiming_uniform_(self.lora_Alora.weight, a=math.sqrt(5))
+        nn.init.zeros_(self.lora_Blora.weight)
+
+        # LoRA parameters are trainable
+        self.lora_Alora.requires_grad = True
+        self.lora_Blora.requires_grad = True
+
+    def forward(self, *args, **kwargs):
+        # Pass inputs through the original layer
+        original_output = self.original_layer(*args, **kwargs)
+        print('original : ',original_output)
+        # Compute the LoRA adjustment
+        lora_output = self.lora_Blora(self.lora_Alora(args[0]))  # Adjust this depending on input structure
+        print('lora : ',lora_output)
+        return original_output + lora_output
+
+    # Expose weight and bias attributes if necessary
+    @property
+    def weight(self):
+        return self.original_layer.weight
+
+    @property
+    def bias(self):
+        return self.original_layer.bias
+
+# Apply LoRA to specific layers (excluding head layers)
+def apply_lora_to_model(model, layers_to_lora, rank=4):
+    # Create a deep copy of the original model to keep it unmodified
+    model_copy = copy.deepcopy(model)
+    
+    for name, module in model_copy.named_modules():
+        if any(layer in name for layer in layers_to_lora):
+            if isinstance(module, torch.nn.Linear):
+                # Replace the module with LoRA wrapper
+                parent, attr_name = _get_parent_module_and_name(model_copy, name)
+                setattr(parent, attr_name, LoRA(module, rank=rank))
+    
+    return model_copy
+
+# Utility to get the parent module and the attribute name
+def _get_parent_module_and_name(model, layer_name):
+    parts = layer_name.split('.')
+    parent = model
+    for part in parts[:-1]:
+        parent = getattr(parent, part)
+    return parent, parts[-1]
+
+# Utility to get the parent module and the attribute name
+def _get_parent_module_and_name(model, layer_name):
+    parts = layer_name.split('.')
+    parent = model
+    for part in parts[:-1]:
+        parent = getattr(parent, part)
+    return parent, parts[-1]

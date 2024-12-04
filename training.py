@@ -22,6 +22,7 @@ parser.add_argument('--ws', help='workspace',default='')#mvigl
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='') #checkpoint or pre-trained backbone
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--out', help='out directory',default='Scratch_Xbb_hl')
+parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=True)
 
 args = parser.parse_args()
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
@@ -75,17 +76,39 @@ config = dict(
             out_model_path =  f'{args.out}/models/{experiment_name}.pt',
             start_epoch = hyper_params['start_epoch'],
             num_workers = hyper_params['num_workers'],
-            experiment = experiment
+            experiment = experiment,
+            LoRa = args.LoRa
         )
 
-if args.checkpoint != '': model = helpers.load_weights(model,args.checkpoint,device)
+if args.checkpoint != '': 
+    model = helpers.load_weights(model,args.checkpoint,device)
+    if args.LoRa: 
+        print("using LoRa!!!")
+        lora_layers = ["mod.blocks", "mod.cls_blocks"]
+        model_LoRa = apply_lora_to_model(model, lora_layers, rank=4)
+        for name, param in model_Xbb_hlf_LoRa.named_parameters():
+            if "lora" in name or "head" in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
 
 if __name__ == '__main__':    
 
-    print(model)
-    num_params = sum(p.numel() for p in model.parameters())
-    print(f"Number of parameters in the model: {num_params}")
-    model.to(device)
-    evals, trained_model = train.train_loop(model, config)
+    if not Lora:
+        print(model)
+        num_params = sum(p.numel() for p in model.parameters())
+        print(f"Number of parameters in the model: {num_params}")
+        model.to(device)
+        evals, trained_model = train.train_loop(model, config)
 
-    log_model(experiment, model, model_name = experiment_name )
+        log_model(experiment, model, model_name = experiment_name )
+    else:
+        print(model_LoRa)
+        print("using LoRa!!!")
+        num_params = sum(p.numel() for p in model_LoRa.parameters())
+        print(f"Number of parameters in the model: {num_params}")
+        print(f"Number of trainable parameters: {helpers.count_trainable_parameters(model_LoRa)}")
+        model_LoRa.to(device)
+        evals, trained_model = train.train_loop(model_LoRa, config)
+
+        log_model(experiment, model_LoRa, model_name = experiment_name )    
