@@ -389,10 +389,8 @@ class LoRA(nn.Module):
     def forward(self, *args, **kwargs):
         # Pass inputs through the original layer
         original_output = self.original_layer(*args, **kwargs)
-        print('original : ',original_output)
         # Compute the LoRA adjustment
         lora_output = self.lora_Blora(self.lora_Alora(args[0]))  # Adjust this depending on input structure
-        print('lora : ',lora_output)
         return original_output + lora_output
 
     # Expose weight and bias attributes if necessary

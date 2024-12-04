@@ -117,6 +117,11 @@ def train_loop(model, config):
 
     if config["LoRa"]:
         print("using LoRa!!!")
+        for name, param in model_LoRa.named_parameters():
+            if "lora" in name or "head" in name:
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
         trainable_params = [p for p in model_Xbb_hlf_LoRa.parameters() if p.requires_grad]
         base_opt = torch.optim.RAdam(trainable_params, lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
         opt = Lookahead(base_opt, k=6, alpha=0.5)
