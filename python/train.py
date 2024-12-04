@@ -117,12 +117,18 @@ def train_loop(model, config):
 
     if config["LoRa"]:
         print("using LoRa!!!")
-        for name, param in model_LoRa.named_parameters():
-            if "lora" in name or "head" in name:
+        for name, param in model.named_parameters():
+            if "lora" in name or "head" in name or "Xbb" in name:
                 param.requires_grad = True
             else:
                 param.requires_grad = False
-        trainable_params = [p for p in model_Xbb_hlf_LoRa.parameters() if p.requires_grad]
+        # Check trainable parameters
+        for name, param in model.named_parameters():
+            if param.requires_grad: print(f"Trainable parameter: {name}, Shape: {param.shape}")      
+        # Check non trainable parameters
+        for name, param in model.named_parameters():
+            if not param.requires_grad: print(f"non Trainable parameter: {name}, Shape: {param.shape}")      
+        trainable_params = [p for p in model.parameters() if p.requires_grad]
         base_opt = torch.optim.RAdam(trainable_params, lr=config['LR'], betas=(0.95, 0.999),eps=1e-05) # Any optimizer
         opt = Lookahead(base_opt, k=6, alpha=0.5)
         scheduler = get_scheduler(config['epochs'],num_samples,config['batch_size'],5,opt)

@@ -87,11 +87,11 @@ if args.checkpoint != '':
         lora_layers = ["mod.blocks", "mod.cls_blocks"]
         model_LoRa = helpers.apply_lora_to_model(model, lora_layers, rank=4)
         for name, param in model_LoRa.named_parameters():
-            if "lora" in name or "head" in name:
+            if "lora" in name or "head" in name or "Xbb" in name:
                 param.requires_grad = True
             else:
                 param.requires_grad = False
-
+        
 if __name__ == '__main__':    
 
     if not Lora:
