@@ -32,7 +32,7 @@ data="/raven/u/mvigl/public/Finetune_hep/config/train_list.txt"
 data_val="/raven/u/mvigl/public/Finetune_hep/config/val_list.txt"
 out="/raven/u/mvigl/public/run/Scratch_latent"
 bs=256
-se=4
+se=0
 #subset=0.0001
 #nohup sbatch --job-name="$mess${subset}" --time="${JOBTIME}" single_job.sbatch "$config" "$checkpoint" "$mess" "$data" "$subset" "$data_val" "$out" "$bs" >> "$LOG_FILE" 2>> "$ERR_FILE" &
 #disown -h

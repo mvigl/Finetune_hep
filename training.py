@@ -22,7 +22,7 @@ parser.add_argument('--ws', help='workspace',default='')#mvigl
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='') #checkpoint or pre-trained backbone
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--out', help='out directory',default='Scratch_Xbb_hl')
-parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=True)
+parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=False)
 
 args = parser.parse_args()
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')

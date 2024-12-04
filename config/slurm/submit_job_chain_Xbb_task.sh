@@ -33,7 +33,7 @@ data_val="/raven/u/mvigl/public/Finetune_hep/config/val_list.txt"
 out="/raven/u/mvigl/public/run/Xbb_task"
 bs=512
 #subset=0.9
-se=11
+se=0
 #nohup sbatch --job-name="$mess${subset}" --time="${JOBTIME}" single_job.sbatch "$config" "$checkpoint" "$mess" "$data" "$subset" "$data_val" "$out" "$bs" "$se" >> "$LOG_FILE" 2>> "$ERR_FILE" &
 #disown -h
 

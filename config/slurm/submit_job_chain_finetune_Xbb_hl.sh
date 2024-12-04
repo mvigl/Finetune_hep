@@ -32,7 +32,7 @@ data="/raven/u/mvigl/public/Finetune_hep/config/train_list.txt"
 data_val="/raven/u/mvigl/public/Finetune_hep/config/val_list.txt"
 out="/raven/u/mvigl/public/run/Finetune_Xbb_hl"
 bs=256
-se=2
+se=0
 
 #subset=0.0001
 #nohup sbatch --job-name="$mess${subset}" --time="${JOBTIME}" single_job.sbatch "$config" "$checkpoint" "$mess" "$data" "$subset" "$data_val" "$out" "$bs" "$se" >> "$LOG_FILE" 2>> "$ERR_FILE" &
