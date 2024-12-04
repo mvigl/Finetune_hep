@@ -26,7 +26,7 @@ ERR_FILE="job_script_error.log"
 
 
 config="/raven/u/mvigl/public/Finetune_hep/config/ParT_latent_config.yaml"
-checkpoint="/raven/u/mvigl/public/run/Finetune_latent/models/Finetune_latent_lr0.001_bs256_subset1.0_epoch_1_Val_loss_0.09742338955402374.pt"
+checkpoint="/raven/u/mvigl/public/run/Xbb_task/models/Xbb_task_lr0.001_bs512_subset1.0_epoch_9_Val_loss_0.14788194000720978.pt"
 mess="Finetune_latent"
 data="/raven/u/mvigl/public/Finetune_hep/config/train_list.txt"
 data_val="/raven/u/mvigl/public/Finetune_hep/config/val_list.txt"

@@ -26,11 +26,11 @@ ERR_FILE="job_script_error.log"
 
 
 config="/raven/u/mvigl/public/Finetune_hep/config/ParT_Xbb_hlf_config.yaml"
-checkpoint="/raven/u/mvigl/public/run/Finetune_Xbb_hl/models/Finetune_Xbb_hl_lr0.001_bs256_subset1.0_epoch_1_Val_loss_0.1018531545996666.pt"
-mess="Finetune_Xbb_hl"
+checkpoint="/raven/u/mvigl/public/run/Xbb_task/models/Xbb_task_lr0.001_bs512_subset1.0_epoch_9_Val_loss_0.14788194000720978.pt"
+mess="Finetune_Xbb_hl_LoRa"
 data="/raven/u/mvigl/public/Finetune_hep/config/train_list.txt"
 data_val="/raven/u/mvigl/public/Finetune_hep/config/val_list.txt"
-out="/raven/u/mvigl/public/run/Finetune_Xbb_hl"
+out="/raven/u/mvigl/public/run/Finetune_Xbb_hl_Lora"
 bs=256
 se=0
 
