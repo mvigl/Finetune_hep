@@ -127,49 +127,67 @@ def plot_auc(h5fw,mass=0):
                                 h5fw['Scratch_Xbb_hl']['0_001']['auc'][()],
                                 h5fw['Scratch_Xbb_hl']['0_01']['auc'][()],
                                 h5fw['Scratch_Xbb_hl']['0_1']['auc'][()],
-                                h5fw['Scratch_Xbb_hl']['1']['auc'][()],]
+                                #h5fw['Scratch_Xbb_hl']['1']['auc'][()],
+                                ]
                             )
     Frozen_Xbb_hl = np.array(   [h5fw['Frozen_Xbb_hl']['0_0001']['auc'][()],
                                 h5fw['Frozen_Xbb_hl']['0_001']['auc'][()],
                                 h5fw['Frozen_Xbb_hl']['0_01']['auc'][()],
                                 h5fw['Frozen_Xbb_hl']['0_1']['auc'][()],
-                                h5fw['Frozen_Xbb_hl']['1']['auc'][()],]
+                                #h5fw['Frozen_Xbb_hl']['1']['auc'][()],
+                                ]
                             )
     Finetune_Xbb_hl = np.array(     [h5fw['Finetune_Xbb_hl']['0_0001']['auc'][()],
                                     h5fw['Finetune_Xbb_hl']['0_001']['auc'][()],
                                     h5fw['Finetune_Xbb_hl']['0_01']['auc'][()],
                                     h5fw['Finetune_Xbb_hl']['0_1']['auc'][()],
-                                    h5fw['Finetune_Xbb_hl']['1']['auc'][()],]
-                            )                
-    x=np.array([0.0001,0.001,0.01,0.1,1]) 
+                                    #h5fw['Finetune_Xbb_hl']['1']['auc'][()],
+                                    ]
+                            )           
+    Finetune_Xbb_hl_Lora = np.array(     [h5fw['Finetune_Xbb_hl_Lora']['0_0001']['auc'][()],
+                                    h5fw['Finetune_Xbb_hl_Lora']['0_001']['auc'][()],
+                                    h5fw['Finetune_Xbb_hl_Lora']['0_01']['auc'][()],
+                                    h5fw['Finetune_Xbb_hl_Lora']['0_1']['auc'][()],
+                                    #h5fw['Finetune_Xbb_hl_Lora']['1']['auc'][()],
+                                    ]
+                            )                            
+    #x=np.array([0.0001,0.001,0.01,0.1,1]) 
+    x=np.array([0.0001,0.001,0.01,0.1]) 
     if mass !=0:
         mass_filter = ((h5fw['Frozen_Xbb_hl']['0_0001']['evt_mass'][:]==mass)+(h5fw['Frozen_Xbb_hl']['0_0001']['evt_label'][:]==0)).astype(bool)
         y = h5fw['Frozen_Xbb_hl']['0_0001']['evt_label'][mass_filter][:]
         Scratch_Xbb_hl = []
         Frozen_Xbb_hl = []
         Finetune_Xbb_hl = []
-        for sample in ['0_0001','0_001','0_01','0_1','1']:
+        Finetune_Xbb_hl_Lora = []
+        #for sample in ['0_0001','0_001','0_01','0_1','1']:
+        for sample in ['0_0001','0_001','0_01','0_1']:    
             fpr, tpr, thresholds = roc_curve(y,h5fw['Scratch_Xbb_hl'][f'{sample}']['evt_score'][mass_filter])
             Scratch_Xbb_hl.append(auc(fpr,tpr))
             fpr, tpr, thresholds = roc_curve(y,h5fw['Frozen_Xbb_hl'][f'{sample}']['evt_score'][mass_filter])
             Frozen_Xbb_hl.append(auc(fpr,tpr))
             fpr, tpr, thresholds = roc_curve(y,h5fw['Finetune_Xbb_hl'][f'{sample}']['evt_score'][mass_filter])
             Finetune_Xbb_hl.append(auc(fpr,tpr))
+            fpr, tpr, thresholds = roc_curve(y,h5fw['Finetune_Xbb_hl_Lora'][f'{sample}']['evt_score'][mass_filter])
+            Finetune_Xbb_hl_Lora.append(auc(fpr,tpr))
         Scratch_Xbb_hl = np.array(Scratch_Xbb_hl)   
         Frozen_Xbb_hl = np.array(Frozen_Xbb_hl)   
         Finetune_Xbb_hl = np.array(Finetune_Xbb_hl)    
+        Finetune_Xbb_hl_Lora = np.array(Finetune_Xbb_hl_Lora)    
     ax.plot(x,Frozen_Xbb_hl,color='indianred',label='S+HLF Frozen')
     ax.plot(x,Finetune_Xbb_hl,color='red',label='S+HLF Finetuned')
     ax.plot(x,Scratch_Xbb_hl,color='maroon',label='S+HLF Scratch')
+    ax.plot(x,Finetune_Xbb_hl_Lora,color='green',label='S+HLF Lora ft')
     r.plot(x,Frozen_Xbb_hl/Frozen_Xbb_hl,color='indianred')
     r.plot(x,Finetune_Xbb_hl/Frozen_Xbb_hl,color='red')
     r.plot(x,Scratch_Xbb_hl/Frozen_Xbb_hl,color='maroon')
+    r.plot(x,Finetune_Xbb_hl_Lora/Frozen_Xbb_hl,color='green')
     r.set_ylim(0.975,1.025)
-    r.set_xlim(0.01,10)
-    ax.set_xlim(0.01,10)
+    r.set_xlim(0.0001,1)
+    ax.set_xlim(0.0001,1)
     ax.axvline(x=1, color='black', linestyle='--')
     r.axvline(x=1, color='black', linestyle='--')
-    ax.legend()
+    ax.legend(loc='lower right')
     if mass !=0: plt.savefig(f'plots/auc_mass_{mass}.png')
     else: plt.savefig(f'plots/auc.png')
 
@@ -186,14 +204,17 @@ def plot_bkg_rej(h5fw,sample='0_1'):
     Scratch_Xbb_hl =1/h5fw['Scratch_Xbb_hl'][f'{sample}']['fpr'][:]  
     Frozen_Xbb_hl = 1/h5fw['Frozen_Xbb_hl'][f'{sample}']['fpr'][:]
     Finetune_Xbb_hl =1/h5fw['Finetune_Xbb_hl'][f'{sample}']['fpr'][:]  
+    Finetune_Xbb_hl_Lora =1/h5fw['Finetune_Xbb_hl_Lora'][f'{sample}']['fpr'][:]  
       
     ax.plot(tpr_common,Frozen_Xbb_hl,color='indianred',label='S+HLF Frozen')
     ax.plot(tpr_common,Finetune_Xbb_hl,color='red',label='S+HLF Finetuned')
     ax.plot(tpr_common,Scratch_Xbb_hl,color='maroon',label='S+HLF Scratch')
+    ax.plot(tpr_common,Finetune_Xbb_hl_Lora,color='green',label='S+HLF LoRa ft')
     r.plot(tpr_common,Frozen_Xbb_hl/Frozen_Xbb_hl,color='indianred')
     r.plot(tpr_common,Finetune_Xbb_hl/Frozen_Xbb_hl,color='red')
     r.plot(tpr_common,Scratch_Xbb_hl/Frozen_Xbb_hl,color='maroon')
-    r.set_ylim(0,5)
+    r.plot(tpr_common,Finetune_Xbb_hl_Lora/Frozen_Xbb_hl,color='green')
+    r.set_ylim(0,2)
     r.set_xlim(0.6,1)
     ax.set_xlim(0.6,1)
     ax.set_ylim(1,Finetune_Xbb_hl[int(len(tpr_common)*0.6)])
@@ -218,29 +239,42 @@ def plot_bkg_rej_seff(mass=0,seff=0.9):
                         1/h5fw['Scratch_Xbb_hl']['0_001']['fpr'][cut],
                         1/h5fw['Scratch_Xbb_hl']['0_01']['fpr'][cut],
                         1/h5fw['Scratch_Xbb_hl']['0_1']['fpr'][cut],
-                        1/h5fw['Scratch_Xbb_hl']['1']['fpr'][cut],]  
+                        #1/h5fw['Scratch_Xbb_hl']['1']['fpr'][cut],
+                        ]  
     )
 
     Frozen_Xbb_hl = np.array( [  1/h5fw['Frozen_Xbb_hl']['0_001']['fpr'][cut],
                         1/h5fw['Frozen_Xbb_hl']['0_001']['fpr'][cut],
                         1/h5fw['Frozen_Xbb_hl']['0_01']['fpr'][cut],
                         1/h5fw['Frozen_Xbb_hl']['0_1']['fpr'][cut],
-                        1/h5fw['Frozen_Xbb_hl']['1']['fpr'][cut],]  
+                        #1/h5fw['Frozen_Xbb_hl']['1']['fpr'][cut],
+                        ]  
     )
     Finetune_Xbb_hl = np.array( [  1/h5fw['Finetune_Xbb_hl']['0_0001']['fpr'][cut],
                         1/h5fw['Finetune_Xbb_hl']['0_001']['fpr'][cut],
                         1/h5fw['Finetune_Xbb_hl']['0_01']['fpr'][cut],
                         1/h5fw['Finetune_Xbb_hl']['0_1']['fpr'][cut],
-                        1/h5fw['Finetune_Xbb_hl']['1']['fpr'][cut],]  
+                        #1/h5fw['Finetune_Xbb_hl']['1']['fpr'][cut],
+                        ]  
     )
-    x=np.array([0.0001,0.001,0.01,0.1,1])  
+    Finetune_Xbb_hl_Lora = np.array( [  1/h5fw['Finetune_Xbb_hl_Lora']['0_0001']['fpr'][cut],
+                        1/h5fw['Finetune_Xbb_hl_Lora']['0_001']['fpr'][cut],
+                        1/h5fw['Finetune_Xbb_hl_Lora']['0_01']['fpr'][cut],
+                        1/h5fw['Finetune_Xbb_hl_Lora']['0_1']['fpr'][cut],
+                        #1/h5fw['Finetune_Xbb_hl_Lora']['1']['fpr'][cut],
+                        ]  
+    )
+    #x=np.array([0.0001,0.001,0.01,0.1,1])  
+    x=np.array([0.0001,0.001,0.01,0.1])  
     if mass !=0:
         mass_filter = ((h5fw['Frozen_Xbb_hl']['0_0001']['evt_mass'][:]==mass)+(h5fw['Frozen_Xbb_hl']['0_0001']['evt_label'][:]==0)).astype(bool)
         y = h5fw['Frozen_Xbb_hl']['0_0001']['evt_label'][mass_filter][:]
         Scratch_Xbb_hl = []
         Frozen_Xbb_hl = []
         Finetune_Xbb_hl = []
-        for sample in ['0_0001','0_001','0_01','0_1','1']:
+        Finetune_Xbb_hl_Lora = []
+       #for sample in ['0_0001','0_001','0_01','0_1','1']:
+        for sample in ['0_0001','0_001','0_01','0_1']:
             fpr, tpr, thresholds = roc_curve(y,h5fw['Scratch_Xbb_hl'][f'{sample}']['evt_score'][mass_filter])
             fpr = np.interp(tpr_common,tpr,fpr)
             Scratch_Xbb_hl.append(1/fpr[cut])
@@ -250,18 +284,24 @@ def plot_bkg_rej_seff(mass=0,seff=0.9):
             fpr, tpr, thresholds = roc_curve(y,h5fw['Finetune_Xbb_hl'][f'{sample}']['evt_score'][mass_filter])
             fpr = np.interp(tpr_common,tpr,fpr)
             Finetune_Xbb_hl.append(1/fpr[cut])
+            fpr, tpr, thresholds = roc_curve(y,h5fw['Finetune_Xbb_hl_Lora'][f'{sample}']['evt_score'][mass_filter])
+            fpr = np.interp(tpr_common,tpr,fpr)
+            Finetune_Xbb_hl_Lora.append(1/fpr[cut])
         Scratch_Xbb_hl = np.array(Scratch_Xbb_hl)   
         Frozen_Xbb_hl = np.array(Frozen_Xbb_hl)   
         Finetune_Xbb_hl = np.array(Finetune_Xbb_hl) 
+        Finetune_Xbb_hl_Lora = np.array(Finetune_Xbb_hl_Lora) 
     ax.plot(x,Frozen_Xbb_hl,color='indianred',label='S+HLF Frozen')
     ax.plot(x,Finetune_Xbb_hl,color='red',label='S+HLF Finetuned')
     ax.plot(x,Scratch_Xbb_hl,color='maroon',label='S+HLF Scratch')
+    ax.plot(x,Finetune_Xbb_hl_Lora,color='green',label='S+HLF LoRa ft')
     r.plot(x,Frozen_Xbb_hl/Frozen_Xbb_hl,color='indianred')
     r.plot(x,Finetune_Xbb_hl/Frozen_Xbb_hl,color='red')
     r.plot(x,Scratch_Xbb_hl/Frozen_Xbb_hl,color='maroon')
-    r.set_ylim(0,5)
-    r.set_xlim(0.01,10)
-    ax.set_xlim(0.01,10)
+    r.plot(x,Finetune_Xbb_hl_Lora/Frozen_Xbb_hl,color='green')
+    r.set_ylim(0,2)
+    r.set_xlim(0.0001,1)
+    ax.set_xlim(0.0001,1)
     ax.axvline(x=1, color='black', linestyle='--')
     r.axvline(x=1, color='black', linestyle='--')
     ax.legend()
@@ -283,7 +323,9 @@ def plot_all_masses(masses,seff=0.9,metric='auc'):
     Scratch_Xbb_hl = []
     Frozen_Xbb_hl = []
     Finetune_Xbb_hl = []
-    sample = '1'
+    Finetune_Xbb_hl_Lora = []
+    sample = '0_1'
+    #sample = '1'
     for mass in masses:
         mass_filter = ((h5fw['Frozen_Xbb_hl'][f'{sample}']['evt_mass'][:]==mass)+(h5fw['Frozen_Xbb_hl'][f'{sample}']['evt_label'][:]==0)).astype(bool)
         y = h5fw['Frozen_Xbb_hl'][f'{sample}']['evt_label'][mass_filter][:]
@@ -302,17 +344,25 @@ def plot_all_masses(masses,seff=0.9,metric='auc'):
         else:  
             fpr = np.interp(tpr_common,tpr,fpr)
             Finetune_Xbb_hl.append(1/fpr[cut])
+        fpr, tpr, thresholds = roc_curve(y,h5fw['Finetune_Xbb_hl_Lora'][f'{sample}']['evt_score'][mass_filter])
+        if metric=='auc': Finetune_Xbb_hl_Lora.append(auc(fpr,tpr))
+        else:  
+            fpr = np.interp(tpr_common,tpr,fpr)
+            Finetune_Xbb_hl_Lora.append(1/fpr[cut])        
     Scratch_Xbb_hl = np.array(Scratch_Xbb_hl)   
     Frozen_Xbb_hl = np.array(Frozen_Xbb_hl)   
     Finetune_Xbb_hl = np.array(Finetune_Xbb_hl) 
+    Finetune_Xbb_hl_Lora = np.array(Finetune_Xbb_hl_Lora) 
     ax.plot(x,Frozen_Xbb_hl,color='indianred',label='S+HLF Frozen')
     ax.plot(x,Finetune_Xbb_hl,color='red',label='S+HLF Finetuned')
     ax.plot(x,Scratch_Xbb_hl,color='maroon',label='S+HLF Scratch')
+    ax.plot(x,Finetune_Xbb_hl_Lora,color='green',label='S+HLF LoRa ft')
     r.plot(x,Frozen_Xbb_hl/Frozen_Xbb_hl,color='indianred')
     r.plot(x,Finetune_Xbb_hl/Frozen_Xbb_hl,color='red')
     r.plot(x,Scratch_Xbb_hl/Frozen_Xbb_hl,color='maroon')
+    r.plot(x,Finetune_Xbb_hl_Lora/Frozen_Xbb_hl,color='green')
     if metric=='auc': r.set_ylim(0.975,1.025)
-    else: r.set_ylim(0,5)
+    else: r.set_ylim(0,2)
     ax.set_xlim(600,4500)
     r.set_xlim(600,4500)
     ax.legend()
@@ -402,15 +452,16 @@ def plot_QCD_rej_vs_jmass(h5fw,sample='1',feat_name='sdmass',jetnumber=0, seff=0
     else: plt.savefig(f'plots/QCD_{seff}_{feat_name}_{sample}{mess}.png')
 if __name__ == '__main__':    
 
-    filelist = '/u/mvigl/public/run/SB_samples.txt'
+    filelist = '/raven/u/mvigl/public/run/SB_samples.txt'
     tpr_common = np.linspace(0,1,10000)
-    #with h5py.File(f'/u/mvigl/public/run/scores_SB.h5', 'w') as out_file: 
-    #    for model in ['Finetune_Xbb_hl']:#['Scratch_Xbb_hl','Frozen_Xbb_hl','Finetune_Xbb_hl']:
+    #with h5py.File(f'/raven/u/mvigl/public/run/scores_SB.h5', 'w') as out_file: 
+    #    for model in ['Scratch_Xbb_hl','Frozen_Xbb_hl','Finetune_Xbb_hl','Finetune_Xbb_hl_Lora']:
     #        group = out_file.create_group(f'{model}')
-    #        for sample in ['1']:#['0_0001','0_001','0_01','0_1','1']:
-    #            in_dir = f'/u/mvigl/public/run/{model}/scores/{sample}'
+    #        #for sample in ['0_0001','0_001','0_01','0_1','1']:
+    #        for sample in ['0_0001','0_001','0_01','0_1']:    
+    #            in_dir = f'/raven/u/mvigl/public/run/{model}/scores/{sample}'
     #            feat_dir = f'/ptmp/mvigl/H5_samples_full/'
-    #            Xbb_dir = f'/u/mvigl/public/run/Xbb_scores_test/'
+    #            Xbb_dir = f'/raven/u/mvigl/public/run/Xbb_scores_test/'
     #            evt_score,evt_label,evt_mass,mass,sdmass,Xbb_score,Xbb_label,weights = get_data(in_dir,filelist,feat_dir,Xbb_dir)
     #            Xbb_score=np.nan_to_num(Xbb_score)
     #            top_two_indices = np.argsort(Xbb_score, axis=1)[:, -2:]  # highest Xbb scores
@@ -437,51 +488,52 @@ if __name__ == '__main__':
     #            sub_group.create_dataset('fpr', data=fpr.reshape(-1))
     #            sub_group.create_dataset('tpr', data=tpr_common.reshape(-1))
     #for sample in ['0_0001']:
-    #    in_dir = f'/u/mvigl/public/run/Scratch_Xbb_hl/scores/{sample}'
+    #    in_dir = f'/raven/u/mvigl/public/run/Scratch_Xbb_hl/scores/{sample}'
     #    feat_dir = f'/ptmp/mvigl/H5_samples_full/'
-    #    Xbb_dir = f'/u/mvigl/public/run/Xbb_scores_test/'
+    #    Xbb_dir = f'/raven/u/mvigl/public/run/Xbb_scores_test/'
     #    evt_score,evt_label,evt_mass,mass,sdmass,Xbb_score = get_data(in_dir,filelist,feat_dir,Xbb_dir)
     #    print(Xbb_score.shape)
     #    print(mass.shape)
     #    print(sdmass.shape)
-
-    with h5py.File('/u/mvigl/public/run/scores_SB.h5','r') as h5fw :
-        b=np.linspace(80,200,51)
-        plot_bkg_rej_vs_jmass(  h5fw,
-                                sample='1',
-                                feat_name='mass',
-                                jetnumber=0, 
-                                seff=0.9,
-                                bins=b,
-                                density=False,
-                                log=True,
-                                mess=''
-                            )
-
-        plot_QCD_rej_vs_jmass(  h5fw,
-                                sample='1',
-                                feat_name='mass',
-                                jetnumber=0, 
-                                seff=0.9,
-                                bins=b,
-                                density=False,
-                                log=True,
-                                mess=''
-                            )          
-                            
-                                      
-    #masses = [600,1000,1200,1400,1600,1800,2000,2500,3000,4000,4500]
-    #with h5py.File('/u/mvigl/public/run/scores_SB.h5','r') as h5fw : 
-    #    plot_all_masses(masses,seff=0.9,metric='auc')
-    #    plot_all_masses(masses,seff=0.9,metric='bkg_rej')
-    #    plot_auc(h5fw,mass=0)  
-    #    plot_bkg_rej(sample='1')    
-    #    plot_bkg_rej(sample='0_1')         
-    #    plot_bkg_rej(sample='0_01')          
-    #    plot_bkg_rej_seff(mass=0,seff=0.9)
-    #    for mass in masses:
-    #        plot_auc(h5fw,mass=mass)
-    #        plot_bkg_rej_seff(mass=mass,seff=0.9)
+    #with h5py.File('/raven/u/mvigl/public/run/scores_SB.h5','r') as h5fw :
+    #    b=np.linspace(80,200,51)
+    #    plot_bkg_rej_vs_jmass(  h5fw,
+    #                            sample='1',
+    #                            feat_name='mass',
+    #                            jetnumber=0, 
+    #                            seff=0.9,
+    #                            bins=b,
+    #                            density=False,
+    #                            log=True,
+    #                            mess=''
+    #                        )
+#
+    #    plot_QCD_rej_vs_jmass(  h5fw,
+    #                            sample='1',
+    #                            feat_name='mass',
+    #                            jetnumber=0, 
+    #                            seff=0.9,
+    #                            bins=b,
+    #                            density=False,
+    #                            log=True,
+    #                            mess=''
+    #                        )          
+    #                        
+    #                                  
+    masses = [600,1000,1200,1400,1600,1800,2000,2500,3000,4000,4500]
+    with h5py.File('/raven/u/mvigl/public/run/scores_SB.h5','r') as h5fw : 
+        plot_all_masses(masses,seff=0.9,metric='auc')
+        plot_all_masses(masses,seff=0.9,metric='bkg_rej')
+        plot_auc(h5fw,mass=0)  
+        #plot_bkg_rej(sample='1')    
+        plot_bkg_rej(h5fw,sample='0_1')         
+        plot_bkg_rej(h5fw,sample='0_01')          
+        plot_bkg_rej(h5fw,sample='0_001')          
+        plot_bkg_rej(h5fw,sample='0_0001')          
+        plot_bkg_rej_seff(mass=0,seff=0.9)
+        for mass in masses:
+            plot_auc(h5fw,mass=mass)
+            plot_bkg_rej_seff(mass=mass,seff=0.9)
 
 
     

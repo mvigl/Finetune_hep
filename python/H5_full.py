@@ -30,9 +30,9 @@ if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
 tree = uproot.open(fname)['deepntuplizer/tree']     
 print(tree)
 
-helpers.jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
-helpers.labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]
-helpers.pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]
+#helpers.jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
+#helpers.labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]
+#helpers.pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]
 
 larr = tree.arrays(helpers.labelVars)
 jarr = tree.arrays(helpers.jVars)
@@ -56,9 +56,9 @@ if len(njets) < 2:
     print('no events')
     sys.exit()
 
-helpers.labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]
-helpers.jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
-helpers.pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]
+#helpers.labelVars = [f'label_{v}' for v in ['QCD_b','QCD_bb','QCD_c','QCD_cc','QCD_others','H_bb']]
+#helpers.jVars = [f'fj_{v}' for v in ['pt','eta','doubleb','phi','mass','sdmass']]
+#helpers.pVars = [f'pfcand_{v}' for v in ['ptrel','erel','etarel','phirel','dxy','dxysig','dz','dzsig','deltaR','charge','isChargedHad','isNeutralHad','isGamma','isEl','isMu']]
 
 
 maxJets = 5

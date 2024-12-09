@@ -14,26 +14,42 @@ parser.add_argument('--ishead',  action='store_true', help='ishead', default=Fal
 parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/public/Finetune_hep/config/Xbb_test_list.txt')
 parser.add_argument('--scaler_path',  help='scaler_path',default='')
 parser.add_argument('--use_hlf',  action='store_true', help='use_hlf', default=True)
-
+parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=True)
 args = parser.parse_args()
 
 device = helpers.get_device()
 if args.ishead: 
     print('head')
     model = models.head_model(args.config,save_representaions=args.save_representaions,for_inference=True)
+    model = helpers.load_weights(model,args.checkpoint,device)
 else: 
     model = models.full_model(args.config,save_representaions=args.save_representaions,for_inference=True)
-model = helpers.load_weights(model,args.checkpoint,device)
+    if args.LoRa: 
+        print("using LoRa!!!")
+        lora_layers = ["mod.blocks", "mod.cls_blocks"]
+        model_LoRa = helpers.apply_lora_to_model(model, lora_layers, rank=4)
+        model_LoRa = helpers.load_weights(model_LoRa,args.checkpoint,device)
+    else:
+        model = helpers.load_weights(model,args.checkpoint,device)
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
 if (not os.path.exists(f'{args.out}/scores')): os.system(f'mkdir {args.out}/scores')
 
 if __name__ == '__main__':    
 
-    print(model)
-    model.to(device)
-    if args.ishead: 
-        out_dim = args.out_dim
-        if args.save_representaions: out_dim = args.repDim
-        models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
-    else: models.save_rep(model,device,args.data,args.out,args.repDim)
+    if args.LoRa: 
+        print(model_LoRa)
+        model_LoRa.to(device)
+        if args.ishead: 
+            out_dim = args.out_dim
+            if args.save_representaions: out_dim = args.repDim
+            models.save_rep_head(model_LoRa,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
+        else: models.save_rep(model_LoRa,device,args.data,args.out,args.repDim)
+    else:    
+        print(model)
+        model.to(device)
+        if args.ishead: 
+            out_dim = args.out_dim
+            if args.save_representaions: out_dim = args.repDim
+            models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
+        else: models.save_rep(model,device,args.data,args.out,args.repDim)
     

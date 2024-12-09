@@ -17,8 +17,8 @@ parser.add_argument('--data', help='data',default='../Finetune_hep/data/test_lis
 parser.add_argument('--data_val', help='data_val',default='../Finetune_hep/data/test_list.txt')
 parser.add_argument('--project_name', help='project_name',default='FM_SBI_test')
 parser.add_argument('--subset',  type=float, help='njets_mlp',default=1)
-parser.add_argument('--api_key', help='api_key',default='')#r1SBLyPzovxoWBPDLx3TAE02O
-parser.add_argument('--ws', help='workspace',default='')#mvigl
+parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')#r1SBLyPzovxoWBPDLx3TAE02O
+parser.add_argument('--ws', help='workspace',default='mvigl')#mvigl
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='') #checkpoint or pre-trained backbone
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--out', help='out directory',default='Scratch_Xbb_hl')
@@ -94,7 +94,7 @@ if args.checkpoint != '':
         
 if __name__ == '__main__':    
 
-    if not Lora:
+    if not args.LoRa:
         print(model)
         num_params = sum(p.numel() for p in model.parameters())
         print(f"Number of parameters in the model: {num_params}")
