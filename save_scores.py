@@ -26,7 +26,7 @@ else:
     model = models.full_model(args.config,save_representaions=args.save_representaions,for_inference=True)
     if args.LoRa: 
         print("using LoRa!!!")
-        lora_layers = ["mod.blocks", "mod.cls_blocks"]
+        lora_layers = ["mod.blocks", "mod.cls_blocks","mod.embed"]
         model_LoRa = helpers.apply_lora_to_model(model, lora_layers, rank=4)
         model_LoRa = helpers.load_weights(model_LoRa,args.checkpoint,device)
     else:

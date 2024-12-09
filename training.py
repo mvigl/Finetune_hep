@@ -84,7 +84,7 @@ if args.checkpoint != '':
     model = helpers.load_weights(model,args.checkpoint,device)
     if args.LoRa: 
         print("using LoRa!!!")
-        lora_layers = ["mod.blocks", "mod.cls_blocks"]
+        lora_layers = ["mod.blocks", "mod.cls_blocks","mod.embed"]
         model_LoRa = helpers.apply_lora_to_model(model, lora_layers, rank=4)
         for name, param in model_LoRa.named_parameters():
             if "lora" in name or "head" in name or "Xbb" in name:
