@@ -34,20 +34,19 @@ def train_step(model,opt,loss_fn,train_batch,device,scheduler,Alpha=0):
         target = torch.tensor(train_batch['label']).float().to(device)
         loss = loss_fn(preds,target)
     else:
-        preds_Xbb,preds = infer(model,train_batch,device)
+        preds = infer(model,train_batch,device)
         target = torch.tensor(train_batch['label']).float().to(device)
-        loss_event = loss_fn(preds,target)
+        loss_event = loss_fn(preds[1],target)
         target_Xbb = torch.tensor(train_batch['labelXbb']).float().to(device).squeeze(1)
         loss_fn_Xbb = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.39]).to(device),reduction='none')
-        preds_Xbb = preds_Xbb.squeeze(-1)
-        mask = train_batch['jet_mask'].squeeze(-1)
+        preds_Xbb = preds[0].squeeze(-1)
+        mask = torch.tensor(train_batch['jet_mask']).float().to(device).squeeze(-1)
         loss_Xbb = loss_fn_Xbb(preds_Xbb,target_Xbb) * mask
         loss = loss_event + Alpha*(loss_Xbb.sum() / mask.sum())
 
     loss.backward()
     opt.step()
     if scheduler!=False: scheduler.step()
-    return {'loss': float(loss)}
 
 def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
     with torch.no_grad():
@@ -59,13 +58,15 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
             train_batch['labels']=train_batch['labels'].numpy()
             if model.Task == 'Event': 
                 train_batch['jet_mask']=train_batch['jet_mask'].numpy()
-                if model.Alpha: train_batch['X_label']=train_batch['X_label'].numpy()
+                train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch = build_features(train_batch)
             if i==0:
-                preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
+                if model.Alpha: preds_train = infer_val(model,train_batch,device)[1].detach().cpu().numpy()
+                else: preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
                 target_train = train_batch['label']
             else:    
-                preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
+                if model.Alpha: preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device)[1].detach().cpu().numpy()),axis=0)
+                else: preds_train = np.concatenate((preds_train,infer_val(model,train_batch,device).detach().cpu().numpy()),axis=0)
                 target_train = np.concatenate((target_train,train_batch['label']),axis=0)        
         preds_train = torch.tensor(preds_train).float().to(device)
         target_train = torch.tensor(target_train).float().to(device)
@@ -76,13 +77,15 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
             val_batch['labels']=val_batch['labels'].numpy()
             if model.Task == 'Event': 
                 val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
-                if model.Alpha: val_batch['X_label']=val_batch['X_label'].numpy()
+                val_batch['X_label']=val_batch['X_label'].numpy()
             val_batch = build_features(val_batch)
             if i==0:
-                preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
+                if model.Alpha: preds_val = infer_val(model,val_batch,device)[1].detach().cpu().numpy()
+                else: preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
                 target_val = val_batch['label']
             else:    
-                preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
+                if model.Alpha: preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device)[1].detach().cpu().numpy()),axis=0)  
+                else: preds_val = np.concatenate((preds_val,infer_val(model,val_batch,device).detach().cpu().numpy()),axis=0)  
                 target_val = np.concatenate((target_val,val_batch['label']),axis=0)        
         preds_val = torch.tensor(preds_val).float().to(device)
         target_val = torch.tensor(target_val).float().to(device)
@@ -124,6 +127,8 @@ def train_loop(model, config):
         build_features = helpers.build_features_and_labels_Xbb
     else:    
         print('Evt task')
+        print(model.Alpha)
+        print('alpha = ', config['alphaXbb'])
         loss_fn = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([13.76]).to(config['device']))
         Dataset = helpers.CustomDataset(config['idxmap'],config['integer_file_map'])
         Dataset_val = helpers.CustomDataset(config['idxmap_val'],config['integer_file_map_val'])
@@ -164,9 +169,9 @@ def train_loop(model, config):
             train_batch['labels']=train_batch['labels'].numpy()
             if model.Task == 'Event': 
                 train_batch['jet_mask']=train_batch['jet_mask'].numpy()
-                if model.Alpha: train_batch['X_label']=train_batch['X_label'].numpy()
+                train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch = build_features(train_batch)
-            report = train_step(model, opt, loss_fn,train_batch ,config['device'],scheduler,config['alphaXbb'])
+            train_step(model, opt, loss_fn,train_batch ,config['device'],scheduler,config['alphaXbb'])
         evals.append(eval_fn(model, loss_fn,train_loader,val_loader,config['device'],build_features))    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:
