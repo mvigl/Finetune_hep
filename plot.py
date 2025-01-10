@@ -454,39 +454,39 @@ if __name__ == '__main__':
 
     filelist = '/raven/u/mvigl/public/run/SB_samples.txt'
     tpr_common = np.linspace(0,1,10000)
-    #with h5py.File(f'/raven/u/mvigl/public/run/scores_SB.h5', 'w') as out_file: 
-    #    for model in ['Scratch_Xbb_hl','Frozen_Xbb_hl','Finetune_Xbb_hl','Finetune_Xbb_hl_Lora']:
-    #        group = out_file.create_group(f'{model}')
-    #        #for sample in ['0_0001','0_001','0_01','0_1','1']:
-    #        for sample in ['0_0001','0_001','0_01','0_1']:    
-    #            in_dir = f'/raven/u/mvigl/public/run/{model}/scores/{sample}'
-    #            feat_dir = f'/ptmp/mvigl/H5_samples_full/'
-    #            Xbb_dir = f'/raven/u/mvigl/public/run/Xbb_scores_test/'
-    #            evt_score,evt_label,evt_mass,mass,sdmass,Xbb_score,Xbb_label,weights = get_data(in_dir,filelist,feat_dir,Xbb_dir)
-    #            Xbb_score=np.nan_to_num(Xbb_score)
-    #            top_two_indices = np.argsort(Xbb_score, axis=1)[:, -2:]  # highest Xbb scores
-    #            print(top_two_indices)
-    #            Xbb_score = np.take_along_axis(Xbb_score, top_two_indices, axis=1)
-    #            print(mass)
-    #            mass = np.take_along_axis(mass, top_two_indices, axis=1)
-    #            print(mass)
-    #            sdmass = np.take_along_axis(sdmass, top_two_indices, axis=1)
-    #            Xbb_label = np.take_along_axis(Xbb_label, top_two_indices, axis=1)
-    #            fpr, tpr, thresholds = roc_curve(evt_label,evt_score)
-    #            Auc = auc(fpr,tpr)
-    #            fpr = np.interp(tpr_common,tpr,fpr)
-    #            sub_group = group.create_group(f'{sample}')
-    #            sub_group.create_dataset('evt_score', data=evt_score.reshape(-1))
-    #            sub_group.create_dataset('evt_label', data=evt_label.reshape(-1),dtype='i4')
-    #            sub_group.create_dataset('evt_mass', data=evt_mass.reshape(-1),dtype='i4')
-    #            sub_group.create_dataset('Xbb_score', data=Xbb_score.reshape((-1,2)))
-    #            sub_group.create_dataset('Xbb_label', data=Xbb_label.reshape((-1,2)),dtype='i4')
-    #            sub_group.create_dataset('mass', data=mass.reshape((-1,2)))
-    #            sub_group.create_dataset('sdmass', data=sdmass.reshape((-1,2)))
-    #            sub_group.create_dataset('weights', data=weights.reshape(-1))
-    #            sub_group.create_dataset('auc', data=Auc)
-    #            sub_group.create_dataset('fpr', data=fpr.reshape(-1))
-    #            sub_group.create_dataset('tpr', data=tpr_common.reshape(-1))
+    with h5py.File(f'/raven/u/mvigl/public/run/scores_SB.h5', 'w') as out_file: 
+        for model in ['Scratch_Xbb_hl','Frozen_Xbb_hl','Finetune_Xbb_hl','Finetune_Xbb_hl_Lora']:
+            group = out_file.create_group(f'{model}')
+            #for sample in ['0_0001','0_001','0_01','0_1','1']:
+            for sample in ['0_0001','0_001','0_01','0_1']:    
+                in_dir = f'/raven/u/mvigl/public/run/{model}/scores/{sample}'
+                feat_dir = f'/ptmp/mvigl/H5_samples_full/'
+                Xbb_dir = f'/raven/u/mvigl/public/run/Xbb_scores_test/'
+                evt_score,evt_label,evt_mass,mass,sdmass,Xbb_score,Xbb_label,weights = get_data(in_dir,filelist,feat_dir,Xbb_dir)
+                Xbb_score=np.nan_to_num(Xbb_score)
+                top_two_indices = np.argsort(Xbb_score, axis=1)[:, -2:]  # highest Xbb scores
+                print(top_two_indices)
+                Xbb_score = np.take_along_axis(Xbb_score, top_two_indices, axis=1)
+                print(mass)
+                mass = np.take_along_axis(mass, top_two_indices, axis=1)
+                print(mass)
+                sdmass = np.take_along_axis(sdmass, top_two_indices, axis=1)
+                Xbb_label = np.take_along_axis(Xbb_label, top_two_indices, axis=1)
+                fpr, tpr, thresholds = roc_curve(evt_label,evt_score)
+                Auc = auc(fpr,tpr)
+                fpr = np.interp(tpr_common,tpr,fpr)
+                sub_group = group.create_group(f'{sample}')
+                sub_group.create_dataset('evt_score', data=evt_score.reshape(-1))
+                sub_group.create_dataset('evt_label', data=evt_label.reshape(-1),dtype='i4')
+                sub_group.create_dataset('evt_mass', data=evt_mass.reshape(-1),dtype='i4')
+                sub_group.create_dataset('Xbb_score', data=Xbb_score.reshape((-1,2)))
+                sub_group.create_dataset('Xbb_label', data=Xbb_label.reshape((-1,2)),dtype='i4')
+                sub_group.create_dataset('mass', data=mass.reshape((-1,2)))
+                sub_group.create_dataset('sdmass', data=sdmass.reshape((-1,2)))
+                sub_group.create_dataset('weights', data=weights.reshape(-1))
+                sub_group.create_dataset('auc', data=Auc)
+                sub_group.create_dataset('fpr', data=fpr.reshape(-1))
+                sub_group.create_dataset('tpr', data=tpr_common.reshape(-1))
     #for sample in ['0_0001']:
     #    in_dir = f'/raven/u/mvigl/public/run/Scratch_Xbb_hl/scores/{sample}'
     #    feat_dir = f'/ptmp/mvigl/H5_samples_full/'
