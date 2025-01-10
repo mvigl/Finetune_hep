@@ -18,6 +18,7 @@ class ParticleTransformerWrapper(nn.Module):
         self.head_nlayers = kwargs['head_nlayers']
         self.head_latent = kwargs['head_latent']
         self.Task = kwargs['Task']
+        self.Alpha = kwargs['Alpha']
         self.hlf_dim = kwargs['hlf_dim']
 
         if self.head_latent:
@@ -85,6 +86,7 @@ class ParticleTransformerWrapper(nn.Module):
             output_parT = torch.cat( ( output_Xbb, hl_feats ) ,axis=-1 )
         if self.save_representaions: return output_parT    
         output_head = self.head(output_parT,jet_mask)
+        if self.Alpha: return output_Xbb,output_head
         return output_head
 
 def get_model(data_config, **kwargs):
@@ -115,6 +117,7 @@ def get_model(data_config, **kwargs):
         head_width=data_config['head']['width'],
         head_latent=data_config['head']['latent'],
         Task=data_config['Task'],
+        Alpha=data_config['Alpha'],
         head_Njets_max=data_config['head']['Njets_max'],
         hlf_dim=len(data_config['inputs']['hlf']['vars']),
         save_representaions=data_config['save_representaions'],

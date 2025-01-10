@@ -26,12 +26,24 @@ def infer_val(model,batch,device):
         return infer(model,batch,device)
     
 
-def train_step(model,opt,loss_fn,train_batch,device,scheduler):
+def train_step(model,opt,loss_fn,train_batch,device,scheduler,Alpha=0):
     model.train()
     opt.zero_grad()
-    preds = infer(model,train_batch,device)
-    target = torch.tensor(train_batch['label']).float().to(device)
-    loss = loss_fn(preds,target)
+    if model.Alpha == False:
+        preds = infer(model,train_batch,device)
+        target = torch.tensor(train_batch['label']).float().to(device)
+        loss = loss_fn(preds,target)
+    else:
+        preds_Xbb,preds = infer(model,train_batch,device)
+        target = torch.tensor(train_batch['label']).float().to(device)
+        loss_event = loss_fn(preds,target)
+        target_Xbb = torch.tensor(train_batch['labelXbb']).float().to(device).squeeze(1)
+        loss_fn_Xbb = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([21.39]).to(device),reduction='none')
+        preds_Xbb = preds_Xbb.squeeze(-1)
+        mask = train_batch['jet_mask'].squeeze(-1)
+        loss_Xbb = loss_fn_Xbb(preds_Xbb,target_Xbb) * mask
+        loss = loss_event + Alpha*(loss_Xbb.sum() / mask.sum())
+
     loss.backward()
     opt.step()
     if scheduler!=False: scheduler.step()
@@ -45,7 +57,9 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
-            if model.Task == 'Event': train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+            if model.Task == 'Event': 
+                train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+                if model.Alpha: train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch = build_features(train_batch)
             if i==0:
                 preds_train = infer_val(model,train_batch,device).detach().cpu().numpy()
@@ -60,7 +74,9 @@ def eval_fn(model,loss_fn,train_loader,val_loader,device,build_features):
             val_batch['X_jet']=val_batch['X_jet'].numpy()
             val_batch['X_pfo']=val_batch['X_pfo'].numpy()
             val_batch['labels']=val_batch['labels'].numpy()
-            if model.Task == 'Event': val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
+            if model.Task == 'Event': 
+                val_batch['jet_mask']=val_batch['jet_mask'].numpy() 
+                if model.Alpha: val_batch['X_label']=val_batch['X_label'].numpy()
             val_batch = build_features(val_batch)
             if i==0:
                 preds_val = infer_val(model,val_batch,device).detach().cpu().numpy()
@@ -146,9 +162,11 @@ def train_loop(model, config):
             train_batch['X_jet']=train_batch['X_jet'].numpy()
             train_batch['X_pfo']=train_batch['X_pfo'].numpy()
             train_batch['labels']=train_batch['labels'].numpy()
-            if model.Task == 'Event': train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+            if model.Task == 'Event': 
+                train_batch['jet_mask']=train_batch['jet_mask'].numpy()
+                if model.Alpha: train_batch['X_label']=train_batch['X_label'].numpy()
             train_batch = build_features(train_batch)
-            report = train_step(model, opt, loss_fn,train_batch ,config['device'],scheduler)
+            report = train_step(model, opt, loss_fn,train_batch ,config['device'],scheduler,config['alphaXbb'])
         evals.append(eval_fn(model, loss_fn,train_loader,val_loader,config['device'],build_features))    
         val_loss = evals[epoch]['validation_loss']
         if val_loss < best_val_loss:

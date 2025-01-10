@@ -16,13 +16,14 @@ parser.add_argument('--config', help='config',default='../Finetune_hep/config/Pa
 parser.add_argument('--data', help='data',default='../Finetune_hep/data/test_list.txt')
 parser.add_argument('--data_val', help='data_val',default='../Finetune_hep/data/test_list.txt')
 parser.add_argument('--project_name', help='project_name',default='FM_SBI_test')
-parser.add_argument('--subset',  type=float, help='njets_mlp',default=1)
+parser.add_argument('--subset',  type=float, help='subset',default=1)
 parser.add_argument('--api_key', help='api_key',default='r1SBLyPzovxoWBPDLx3TAE02O')#r1SBLyPzovxoWBPDLx3TAE02O
 parser.add_argument('--ws', help='workspace',default='mvigl')#mvigl
 parser.add_argument('--checkpoint',  help='training-checkpoint',default='') #checkpoint or pre-trained backbone
 parser.add_argument('--start_epoch', type=int, help='start_epoch',default=0)
 parser.add_argument('--out', help='out directory',default='Scratch_Xbb_hl')
 parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=False)
+parser.add_argument('--alphaXbb',  type=float, help='alphaXbb',default=0)
 
 args = parser.parse_args()
 if (not os.path.exists(args.out)): os.system(f'mkdir {args.out}')
@@ -50,8 +51,10 @@ hyper_params = {
    "start_epoch": args.start_epoch, 
    "num_workers": args.num_workers,
    "subset": args.subset,
+   "alphaXbb": args.alphaXbb
 }
 experiment_name = f'{args.mess}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_subset{args.subset}'
+if args.alphaXbb!=0: experiment_name = f'{args.mess}_lr{hyper_params["learning_rate"]}_bs{hyper_params["batch_size"]}_subset{args.subset}_alphaXbb{args.alphaXbb}'
 experiment = Experiment(
     api_key = args.api_key,
     project_name = args.project_name,
@@ -77,7 +80,8 @@ config = dict(
             start_epoch = hyper_params['start_epoch'],
             num_workers = hyper_params['num_workers'],
             experiment = experiment,
-            LoRa = args.LoRa
+            LoRa = args.LoRa,
+            alphaXbb = args.alphaXbb
         )
 
 if args.checkpoint != '': 

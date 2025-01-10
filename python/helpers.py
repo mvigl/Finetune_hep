@@ -190,6 +190,7 @@ def build_features_and_labels(Data, transform_features=True):
     for var in pVars:
         a[var] = Data['X_pfo'][:,:,:,pVars.index(var)]
     a['label_sig'] = Data['labels']
+    a['label_Xbb'] = Data['X_label'][:,:,labelVars.index('label_H_bb')] 
     a['jet_mask'] = Data['jet_mask']
 
     etasign = np.sign(Data['X_jet'][:,:,jVars.index('fj_eta')])
@@ -265,6 +266,8 @@ def build_features_and_labels(Data, transform_features=True):
 
     evt_label_list = ['label_sig']
     out['label'] = np.stack([a[n].astype('int') for n in evt_label_list], axis=1)
+    Xbb_label_list = ['label_Xbb']
+    out['labelXbb'] = np.stack([a[n].astype('int') for n in Xbb_label_list], axis=1)
 
     Data['X_jet'][:,:,jVars.index('fj_pt')] = log(Data['X_jet'][:,:,jVars.index('fj_pt')])
     Data['X_jet'][:,:,jVars.index('fj_mass')] = log(Data['X_jet'][:,:,jVars.index('fj_mass')])

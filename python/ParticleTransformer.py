@@ -485,6 +485,7 @@ class ParticleTransformer(nn.Module):
                  head_width=128,
                  head_latent=False,
                  Task='Xbb',
+                 Alpha=False,
                  head_Njets_max=5,
                  hlf_dim=5,
                  save_representaions = False,

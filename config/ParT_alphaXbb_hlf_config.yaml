@@ -44,7 +44,7 @@ head:
    Njets_max: 5
 
 Task: 'Event'
-Alpha: False
+Alpha: True
 
 save_representaions: False
 
