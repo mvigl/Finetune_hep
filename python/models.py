@@ -86,7 +86,7 @@ def save_rep(model,device,filelist,out_dir,repDim):
                         Data.close()      
     return 0
 
-def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hlf=True,scaler_path='',out_dim=1):
+def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hlf=True,scaler_path='',out_dim=1,alphaXbb=0):
 
     with torch.no_grad():
         model.to(device)
@@ -132,7 +132,11 @@ def save_rep_head(model,device,filelist,out_dir,repDim,Xbb_scores_path='',use_hl
                 else: preds = model(x).detach().cpu().numpy() 
 
                 Data = h5py.File(out_dir_i, 'w')
-                Data.create_dataset('evt_score', data=preds.reshape(-1,out_dim))
-                Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                if alphaXbb!=0:
+                    Data.create_dataset('evt_score', data=preds[1].reshape(-1,out_dim))
+                    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')
+                else: 
+                    Data.create_dataset('evt_score', data=preds.reshape(-1,out_dim))
+                    Data.create_dataset('evt_label', data=target.reshape(-1),dtype='i4')    
                 Data.close()   
         

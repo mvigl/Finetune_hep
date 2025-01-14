@@ -15,6 +15,7 @@ parser.add_argument('--Xbb', help='data',default='/raven/u/mvigl/public/Finetune
 parser.add_argument('--scaler_path',  help='scaler_path',default='')
 parser.add_argument('--use_hlf',  action='store_true', help='use_hlf', default=True)
 parser.add_argument('--LoRa',  action='store_true', help='use_LoRa', default=True)
+parser.add_argument('--alphaXbb',  type=float, help='alphaXbb',default=0)
 args = parser.parse_args()
 
 device = helpers.get_device()
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         if args.ishead: 
             out_dim = args.out_dim
             if args.save_representaions: out_dim = args.repDim
-            models.save_rep_head(model_LoRa,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
+            models.save_rep_head(model_LoRa,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim,args.alphaXbb)
         else: models.save_rep(model_LoRa,device,args.data,args.out,args.repDim)
     else:    
         print(model)
@@ -50,6 +51,6 @@ if __name__ == '__main__':
         if args.ishead: 
             out_dim = args.out_dim
             if args.save_representaions: out_dim = args.repDim
-            models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim)
+            models.save_rep_head(model,device,args.data,args.out,args.repDim,args.Xbb,args.use_hlf,args.scaler_path,out_dim,args.alphaXbb)
         else: models.save_rep(model,device,args.data,args.out,args.repDim)
     
